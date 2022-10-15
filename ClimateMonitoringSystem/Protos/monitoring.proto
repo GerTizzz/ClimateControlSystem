@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option csharp_namespace = "ClimateMonitoringSystem.Protos";
+
+package monitoring;
+
+service ClimateMonitoring {
+	rpc Predict (ClimateMonitoringRequest) returns (ClimateMonitoringReply);
+}
+
+message ClimateMonitoringRequest {
+	float cluster_load = 1;
+	float cpu_usage = 2;
+	float cluster_temperature = 3;
+	float previous_temperature = 4;
+	float previous_humidity = 5;
+	float air_humidity_outside = 6;
+	float air_dry_temperature_outside = 7;
+	float air_wet_temperature_outside = 8;
+	float wind_speed = 9;
+	float wind_direction = 10;
+	float wind_enthalpy = 11;
+	float mean_cooling_value = 12;
+}
+
+message ClimateMonitoringReply {
+	string reply = 1;
+}
