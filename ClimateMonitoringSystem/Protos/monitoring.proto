@@ -5,7 +5,8 @@ option csharp_namespace = "ClimateMonitoringSystem.Protos";
 package monitoring;
 
 service ClimateMonitoring {
-	rpc Predict (ClimateMonitoringRequest) returns (ClimateMonitoringReply);
+	rpc SendDataToPredict (ClimateMonitoringRequest) returns (ClimateMonitoringReply);
+	rpc SendDataToPredictStream (stream ClimateMonitoringRequest) returns (stream ClimateMonitoringReply);
 }
 
 message ClimateMonitoringRequest {

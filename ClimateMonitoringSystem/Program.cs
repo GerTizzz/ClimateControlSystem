@@ -2,6 +2,7 @@
 using ClimateMonitoringSystem.Protos;
 using Microsoft.VisualBasic.FileIO;
 using Client = ClimateMonitoringSystem.Protos.ClimateMonitoring.ClimateMonitoringClient;
+using Grpc.Core;
 
 namespace ClimateMonitoringSystem
 {
@@ -9,37 +10,62 @@ namespace ClimateMonitoringSystem
     {
         static async Task Main(string[] args)
         {
-            string dataSetLocation = Directory.GetCurrentDirectory() + "\Dataset with headers.csv";
+            string dataSetLocation = Directory.GetCurrentDirectory() + "\\Dataset with headers.csv";
 
             float[][] dataSet = GetDataSet(dataSetLocation);
 
             var client = GetClient("https://localhost:7286");
 
-            CancellationTokenSource tokenSource = new CancellationTokenSource();
+            CancellationTokenSource sendingRequestTokenSource = new CancellationTokenSource();
 
-            SendRequest(client, dataSet, tokenSource).Start();
+            Console.WriteLine("!!!Sending requests has been started!!!");
 
-            Console.WriteLine("ya tut");
-        }
-
-        static Client GetClient(string address)
-        {
-            var channel = GrpcChannel.ForAddress(address);
-
-            return new Client(channel);
-        }
-
-        static async Task SendRequest(Client client, float[][] dataSet, CancellationTokenSource tokenSource)
-        {
-            while (tokenSource.IsCancellationRequested is false)
+            using (AsyncDuplexStreamingCall<ClimateMonitoringRequest, ClimateMonitoringReply> call = client.SendDataToPredictStream())
             {
-                await Task.Delay(15000);
-                var response = await client.PredictAsync(GenerateRequest(dataSet));
+                var getResponsesTask = GetResponsesFromStream(call);
+
+                SendRequestsOverStream(call, dataSet, sendingRequestTokenSource);
+
+                string command = Console.ReadLine();
+
+                while (command != "stop")
+                {
+                    command = Console.ReadLine();
+                }
+
+                sendingRequestTokenSource.Cancel();
+
+                await call.RequestStream.CompleteAsync();
+
+                await getResponsesTask;
+            }
+
+            Console.WriteLine("!!!Sending requests has been stopped!!!");            
+
+            Console.ReadLine();
+        }
+
+        private static async Task GetResponsesFromStream(AsyncDuplexStreamingCall<ClimateMonitoringRequest, ClimateMonitoringReply> call)
+        {
+            await foreach (var response in call.ResponseStream.ReadAllAsync())
+            {
                 Console.WriteLine(response);
             }
         }
 
-        static ClimateMonitoringRequest GenerateRequest(float[][] dataSet)
+        private static async Task SendRequestsOverStream(AsyncDuplexStreamingCall<ClimateMonitoringRequest, ClimateMonitoringReply> call,
+            float[][] dataSet, CancellationTokenSource tokenSource)
+        {
+            while (tokenSource.IsCancellationRequested is false)
+            {
+                await Task.Delay(5000);
+                await call.RequestStream.WriteAsync(GenerateRequest(dataSet));                    
+            }
+
+            await call.RequestStream.CompleteAsync();
+        }
+
+        private static ClimateMonitoringRequest GenerateRequest(float[][] dataSet)
         {
             Random random = new Random();
 
@@ -68,7 +94,14 @@ namespace ClimateMonitoringSystem
             };
         }
 
-        static float[][] GetDataSet(string dataSetLocation)
+        private static Client GetClient(string address)
+        {
+            var channel = GrpcChannel.ForAddress(address);
+
+            return new Client(channel);
+        }
+
+        private static float[][] GetDataSet(string dataSetLocation)
         {
             float[][] dataSet;
 
@@ -84,7 +117,7 @@ namespace ClimateMonitoringSystem
                     string[] fields = parser.ReadFields();
                     foreach (string field in fields)
                     {
-                        list.Last().Add(float.Parse(field));
+                        list.Last().Add(float.Parse(field.Replace('.', ',')));
                     }
                 }
 

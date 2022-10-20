@@ -21,13 +21,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\monitoring.proto" GrpcServices="Client" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Dataset with headers.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\monitoring.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>
