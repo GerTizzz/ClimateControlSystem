@@ -10,18 +10,19 @@ service ClimateMonitoring {
 }
 
 message ClimateMonitoringRequest {
-	float cluster_load = 1;
-	float cpu_usage = 2;
-	float cluster_temperature = 3;
-	float previous_temperature = 4;
-	float previous_humidity = 5;
-	float air_humidity_outside = 6;
-	float air_dry_temperature_outside = 7;
-	float air_wet_temperature_outside = 8;
-	float wind_speed = 9;
-	float wind_direction = 10;
-	float wind_enthalpy = 11;
-	float mean_cooling_value = 12;
+	int64 arrived_time_ticks = 1;
+	float cluster_load = 2;
+	float cpu_usage = 3;
+	float cluster_temperature = 4;
+	float previous_temperature = 5;
+	float previous_humidity = 6;
+	float air_humidity_outside = 7;
+	float air_dry_temperature_outside = 8;
+	float air_wet_temperature_outside = 9;
+	float wind_speed = 10;
+	float wind_direction = 11;
+	float wind_enthalpy = 12;
+	float mean_cooling_value = 13;
 }
 
 message ClimateMonitoringReply {

@@ -77,8 +77,9 @@ namespace ClimateMonitoringSystem
                 requestData[i] = dataSet[arrayIndex][i];
             }
 
-            return new ClimateMonitoringRequest()
+            ClimateMonitoringRequest reqest = new ClimateMonitoringRequest()
             {
+                ArrivedTimeTicks = DateTime.UtcNow.Ticks,
                 ClusterLoad = requestData[0],
                 CpuUsage = requestData[1],
                 ClusterTemperature = requestData[2],
@@ -92,6 +93,8 @@ namespace ClimateMonitoringSystem
                 WindEnthalpy = requestData[10],
                 MeanCoolingValue = requestData[11]
             };
+
+            return reqest;
         }
 
         private static Client GetClient(string address)

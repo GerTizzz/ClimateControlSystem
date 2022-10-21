@@ -1,7 +1,8 @@
-﻿namespace ClimateControlSystem.Shared
+﻿namespace ClimateControlSystem.Server.Resources
 {
-    public record PredictionResult
+    public record PredictionRequest
     {
+        public long ArrivedTimeTicks { get; init; }
         public float ClusterLoad { get; init; }
         public float CpuUsage { get; init; }
         public float ClusterTemperature { get; init; }
@@ -14,7 +15,5 @@
         public float WindDirection { get; init; }
         public float WindEnthalpy { get; init; }
         public float MeanCoolingValue { get; init; }
-        public float PredictedTemperature { get; init; }
-        public float PredictedHumidity { get; init; }
     }
 }
