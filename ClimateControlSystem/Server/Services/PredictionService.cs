@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Resources;
+using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Services.MediatR.Commands;
+using ClimateControlSystem.Server.Services.MediatR.Queries;
+using ClimateControlSystem.Shared;
 using MediatR;
 
 namespace ClimateControlSystem.Server.Services
@@ -12,32 +14,52 @@ namespace ClimateControlSystem.Server.Services
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;
 
-        public PredictionService(IPredictionEngineService predictionManager, IMapper mapper, IMediator mediator)
+        public PredictionService(IPredictionEngineService predictionEngine, IMapper mapper, IMediator mediator)
         {
             _mapper = mapper;
             _mediator = mediator;
-            _predictionEngine = predictionManager;
+            _predictionEngine = predictionEngine;
         }
 
-        public async Task<PredictionResult> GetPrediction(PredictionRequest incomingRequest)
+        public Task<PredictionResult> Predict(IncomingMonitoringData newClimateData)
         {
-            PredictionResult predictionResult =  _predictionEngine.Predict(incomingRequest);
+            PredictionResult predictionResult = _predictionEngine.Predict(newClimateData);
 
-            ClimateRecord newClimateRecord = CreateClimateRecord(incomingRequest, predictionResult);
+            _ = CreateClimateRecord(newClimateData, predictionResult);
 
-            _ = _mediator.Send(new SavePredictionCommand() { Data = newClimateRecord });
-
-            return predictionResult;
+            return Task.FromResult(predictionResult);
         }
 
-        private ClimateRecord CreateClimateRecord(PredictionRequest incomingRequest, PredictionResult predictionResult)
+        private Task CreateClimateRecord(IncomingMonitoringData incomingData, PredictionResult predictedData)
         {
-            ClimateRecord newClimateRecord = _mapper.Map<ClimateRecord>(incomingRequest);
+            MonitoringData monitoringData = _mapper.Map<MonitoringData>(incomingData);
 
-            newClimateRecord.PredictedTemperature = predictionResult.PredictedTemperature;
-            newClimateRecord.PredictedHumidity = predictionResult.PredictedHumidity;
+            CalculateLastPredictionAccuracy(monitoringData).Wait();
 
-            return newClimateRecord;
+            monitoringData.PredictedTemperature = predictedData.PredictedTemperature;
+            monitoringData.PredictedHumidity = predictedData.PredictedHumidity;
+
+            _mediator.Send(new SavePredictionCommand() { Data = monitoringData });
+
+             return Task.CompletedTask;
+        }
+
+        private Task CalculateLastPredictionAccuracy(MonitoringData monitoringData)
+        {
+            var actualTemperature = monitoringData.PreviousTemperature;
+            var actualHumidity = monitoringData.PreviousHumidity;
+
+            var lastRecord = _mediator.Send(new GetLastPredictionQuery()).Result;
+
+            var predictedTemperature = lastRecord.PredictedTemperature;
+            var predictedHumidity = lastRecord.PredictedHumidity;
+
+            lastRecord.PredictedTemperatureAccuracy = 100f - Math.Abs(predictedTemperature - actualTemperature) / actualTemperature;
+            lastRecord.PredictedHumidityAccuracy =  100f - Math.Abs(predictedHumidity - actualHumidity) / actualHumidity;
+
+            _mediator.Send(new UpdatePredictionAccuraciesCommand() { Data = lastRecord }).Wait();
+
+            return Task.CompletedTask;
         }
     }
 }

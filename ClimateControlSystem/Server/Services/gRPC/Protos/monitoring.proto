@@ -10,7 +10,7 @@ service ClimateMonitoring {
 }
 
 message ClimateMonitoringRequest {
-	int64 arrived_time_ticks = 1;
+	int64 measurement_time_ticks = 1;
 	float cluster_load = 2;
 	float cpu_usage = 3;
 	float cluster_temperature = 4;

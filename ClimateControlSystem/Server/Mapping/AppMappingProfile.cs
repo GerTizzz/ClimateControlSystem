@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Protos;
-using ClimateControlSystem.Server.Resources;
-using ClimateControlSystem.Server.Services.PredictionEngine;
+using ClimateControlSystem.Server.Resources.Common;
+using ClimateControlSystem.Server.Resources.RepositoryResources;
+using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
+using ClimateControlSystem.Shared;
 
 namespace ClimateControlSystem.Server.Mapping
 {
@@ -9,9 +11,15 @@ namespace ClimateControlSystem.Server.Mapping
     {
         public AppMappingProfile()
         {
-            CreateMap<ClimateMonitoringRequest, PredictionRequest>();
+            #region gRPC communication
 
-            CreateMap<PredictionRequest, TensorPredictionRequest>()
+            CreateMap<ClimateMonitoringRequest, IncomingMonitoringData>();
+
+            #endregion
+
+            #region PredictEngine
+
+            CreateMap<IncomingMonitoringData, TensorPredictionRequest>()
                 .ForMember(tensor => tensor.serving_default_input_1, opt => opt
                     .MapFrom(property => new float[]
                     {
@@ -35,7 +43,23 @@ namespace ClimateControlSystem.Server.Mapping
                 .ForMember(result => result.PredictedHumidity, tensor => tensor
                     .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[1]));
 
-            CreateMap<PredictionRequest, ClimateRecord>();
+            #endregion
+
+            #region PredictionService
+
+            CreateMap<IncomingMonitoringData, MonitoringData>();
+
+            #endregion
+
+            #region Repository
+
+            CreateMap<MonitoringData, MonitoringDataRecord>();
+
+            CreateMap<MonitoringDataRecord, MonitoringData>();
+
+            CreateMap<MonitoringDataRecord, PredictionResult>();
+
+            #endregion
         }
     }
 }

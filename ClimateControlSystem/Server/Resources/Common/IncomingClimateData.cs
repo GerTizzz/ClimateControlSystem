@@ -1,8 +1,8 @@
-﻿namespace ClimateControlSystem.Server.Resources
+﻿namespace ClimateControlSystem.Server.Resources.Common
 {
-    public record PredictionRequest
+    public record IncomingMonitoringData
     {
-        public long ArrivedTimeTicks { get; init; }
+        public long MeasurementTimeTicks { get; init; }
         public float ClusterLoad { get; init; }
         public float CpuUsage { get; init; }
         public float ClusterTemperature { get; init; }

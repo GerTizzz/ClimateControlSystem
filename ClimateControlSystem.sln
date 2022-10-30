@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateControlSystem.Client
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateControlSystem.Shared", "ClimateControlSystem\Shared\ClimateControlSystem.Shared.csproj", "{24CB1ACA-EC6B-4E7F-ADD1-CC06CA0FF8F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateMonitoringSystem", "ClimateMonitoringSystem\ClimateMonitoringSystem.csproj", "{4D1B723A-DEA1-4A50-9A7B-8CFAF1A214C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateMonitoringSystem", "ClimateMonitoringSystem\ClimateMonitoringSystem.csproj", "{4D1B723A-DEA1-4A50-9A7B-8CFAF1A214C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

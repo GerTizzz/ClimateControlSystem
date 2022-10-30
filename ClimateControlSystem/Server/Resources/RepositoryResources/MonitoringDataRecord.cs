@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ClimateControlSystem.Server.Resources
+namespace ClimateControlSystem.Server.Resources.RepositoryResources
 {
-    public class ClimateRecord
+    public class MonitoringDataRecord
     {
         [Key]
         public int Id { get; set; }
-        public long ArrivedTimeTicks { get; set; }
+        public long MeasurementTimeTicks { get; set; }
         public float ClusterLoad { get; set; }
         public float CpuUsage { get; set; }
         public float ClusterTemperature { get; set; }
@@ -21,5 +21,7 @@ namespace ClimateControlSystem.Server.Resources
         public float MeanCoolingValue { get; set; }
         public float PredictedTemperature { get; set; }
         public float PredictedHumidity { get; set; }
+        public float? PredictedTemperatureAccuracy { get; set; }
+        public float? PredictedHumidityAccuracy { get; set; }
     }
 }

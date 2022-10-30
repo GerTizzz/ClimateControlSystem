@@ -1,4 +1,4 @@
-﻿namespace ClimateControlSystem.Server.Resources
+﻿namespace ClimateControlSystem.Server.Resources.Common
 {
     public record PredictionResult
     {

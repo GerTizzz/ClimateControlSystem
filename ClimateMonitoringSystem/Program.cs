@@ -8,6 +8,8 @@ namespace ClimateMonitoringSystem
 {
     internal class Program
     {
+        private static int rawIndex = 1;
+
         static async Task Main(string[] args)
         {
             string dataSetLocation = Directory.GetCurrentDirectory() + "\\Dataset with headers.csv";
@@ -24,12 +26,14 @@ namespace ClimateMonitoringSystem
             {
                 var getResponsesTask = GetResponsesFromStream(call);
 
-                SendRequestsOverStream(call, dataSet, sendingRequestTokenSource);
+                _ = SendRequestsOverStream(call, dataSet, sendingRequestTokenSource);
 
+                #pragma warning disable CS8600
                 string command = Console.ReadLine();
 
                 while (command != "stop")
                 {
+                    #pragma warning disable CS8600
                     command = Console.ReadLine();
                 }
 
@@ -67,19 +71,22 @@ namespace ClimateMonitoringSystem
 
         private static ClimateMonitoringRequest GenerateRequest(float[][] dataSet)
         {
-            Random random = new Random();
-
             float[] requestData = new float[12];
 
             for (int i = 0; i < requestData.Length; i++)
             {
-                int arrayIndex = random.Next(0, dataSet.Length);
-                requestData[i] = dataSet[arrayIndex][i];
+                requestData[i] = dataSet[rawIndex][i];
             }
 
-            ClimateMonitoringRequest reqest = new ClimateMonitoringRequest()
+            rawIndex++;
+            if (rawIndex == dataSet.GetLength(0))
             {
-                ArrivedTimeTicks = DateTime.UtcNow.Ticks,
+                rawIndex = 0;
+            }
+
+            ClimateMonitoringRequest request = new ClimateMonitoringRequest()
+            {
+                MeasurementTimeTicks = DateTime.UtcNow.Ticks,
                 ClusterLoad = requestData[0],
                 CpuUsage = requestData[1],
                 ClusterTemperature = requestData[2],
@@ -94,7 +101,7 @@ namespace ClimateMonitoringSystem
                 MeanCoolingValue = requestData[11]
             };
 
-            return reqest;
+            return request;
         }
 
         private static Client GetClient(string address)

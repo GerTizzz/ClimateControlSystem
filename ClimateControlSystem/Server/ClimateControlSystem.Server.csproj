@@ -7,7 +7,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<Protobuf Include="Protos\monitoring.proto" GrpcServices="Server" />
+		<Protobuf Include="Services\gRPC\Protos\monitoring.proto" GrpcServices="Server" />
 	</ItemGroup>
 
   <ItemGroup>
@@ -39,9 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-	<Folder Include="Protos\" />
-	<Folder Include="Resources\MlModel\" />
+	<Folder Include="Services\gRPC\Protos\" />
   </ItemGroup>
 
 </Project>

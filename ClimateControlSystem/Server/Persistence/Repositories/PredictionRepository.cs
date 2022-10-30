@@ -1,24 +1,102 @@
-﻿using ClimateControlSystem.Server.Domain.Repositories;
+﻿using AutoMapper;
+using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Persistence.Context;
-using ClimateControlSystem.Server.Resources;
+using ClimateControlSystem.Server.Resources.RepositoryResources;
+using ClimateControlSystem.Shared;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClimateControlSystem.Server.Persistence.Repositories
 {
     public class PredictionRepository : IPredictionRepository
     {
-        private readonly AppDbContext _context;
+        private readonly PredictionsDbContext _context;
+        private readonly IMapper _mapper;
 
-        public PredictionRepository(AppDbContext context)
+        public PredictionRepository(PredictionsDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<int> AddPredictionAsync(ClimateRecord newRecord)
+        public async Task<bool> AddPredictionAsync(MonitoringData newMonitoringData)
         {
-            await _context.PredictionResults.AddAsync(newRecord);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var monitoringRecord = _mapper.Map<MonitoringDataRecord>(newMonitoringData);
 
-            return _context.PredictionResults.Last().Id;
+                await _context.MonitoringData.AddAsync(monitoringRecord);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<List<MonitoringData>> GetClimateRecordsAsync(int amountOfRecords)
+        {
+            try
+            {
+                var result = await _context.MonitoringData
+                    .OrderBy(record => record.MeasurementTimeTicks)
+                    .Take(amountOfRecords)
+                    .Select(record => _mapper.Map<MonitoringData>(record))
+                    .ToListAsync();
+                return result;
+            }
+            catch (Exception exc)
+            {
+                return await Task.FromResult(new List<MonitoringData>());
+                //log
+            }
+        }
+
+        public async Task<MonitoringData> GetLastPredictionAsync()
+        {
+            try
+            {
+                MonitoringDataRecord lastRecord = await _context.MonitoringData
+                    .OrderBy(record => record.Id)
+                    .LastAsync();
+
+                var lastPrediction = _mapper.Map<MonitoringData>(lastRecord);
+
+                return lastPrediction;
+            }
+            catch (Exception exc)
+            {
+                return new MonitoringData();
+            }
+        }
+
+        public async Task<bool> UpdatePredictionAccuracies(MonitoringData updatedData)
+        {
+            try
+            {
+                var dataToUpdate = await _context.MonitoringData
+                    .OrderByDescending(record => record.Id)
+                    .LastOrDefaultAsync(record => record.MeasurementTimeTicks == updatedData.MeasurementTimeTicks);
+
+                if (dataToUpdate is null)
+                {
+                    //log
+                    return false;
+                }
+
+                dataToUpdate.PredictedTemperatureAccuracy = updatedData.PredictedTemperatureAccuracy;
+                dataToUpdate.PredictedHumidityAccuracy = updatedData.PredictedHumidityAccuracy;
+
+                _context.Update(dataToUpdate);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception exc)
+            {
+                return false;
+            }
         }
     }
 }

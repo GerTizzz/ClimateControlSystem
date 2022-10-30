@@ -13,21 +13,23 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string modelLocation = Directory.GetCurrentDirectory() + "\\" + builder.Configuration["ModelLocationPath"];
+//C:\Users\miste\Desktop\DC Climate Control System\ClimateControlSystem\ClimateControlSystem\Server\Resources\PredictionEngineResources\MlModel\keras model\
+string _modelLocation = Directory.GetCurrentDirectory() + "\\" + builder.Configuration["ModelLocationPath"];
+string _predictionDbConnectionString = builder.Configuration.GetConnectionString("PredictionsDbConnection");
 
-builder.Services.AddControllersWithViews();
+//builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddMediatR(typeof(MediatREntrypoint).Assembly);
 builder.Services.AddAutoMapper(typeof(AppMappingProfile));
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<PredictionsDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("PredictionsDbConnection"));
+    options.UseSqlServer(_predictionDbConnectionString);
 });
 builder.Services.AddScoped<IPredictionRepository, PredictionRepository>();
 builder.Services.AddScoped<IPredictionService, PredictionService>();
 builder.Services.AddGrpc();
 builder.Services.AddSingleton<IPredictionEngineService>(sp => 
-    new PredictionEngineService(sp.GetService<IMapper>(), modelLocation));
+    new PredictionEngineService(sp.GetService<IMapper>(), _modelLocation));
 
 var app = builder.Build();
 

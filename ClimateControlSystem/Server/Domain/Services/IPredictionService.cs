@@ -1,9 +1,9 @@
-﻿using ClimateControlSystem.Server.Resources;
+﻿using ClimateControlSystem.Server.Resources.Common;
 
 namespace ClimateControlSystem.Server.Domain.Services
 {
     public interface IPredictionService
     {
-        public Task<PredictionResult> GetPrediction(PredictionRequest incomingRequest);
+        public Task<PredictionResult> Predict(IncomingMonitoringData incomingRequest);
     }
 }
