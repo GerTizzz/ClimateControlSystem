@@ -5,70 +5,216 @@
 
 <h3>Графики прогнозов</h3>
 
-@if (dic == null)
+@if (Monitorings == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <Line Data="dic" Config="lineConfig"></Line>
+    <Line Data="TemperatureData" Config="TemperatureLineConfig"></Line>
+    <Line Data="HumidityData" Config="HumidityLineConfig"></Line>
 }
 
 @code{
-    List<MonitoringData> monitorings;
 
-    LineConfig lineConfig;
+    List<MonitoringData> Monitorings;
 
-    List<object> dic;
+    LineConfig TemperatureLineConfig;
+    LineConfig HumidityLineConfig;
+
+    List<object> TemperatureData;
+    List<object> HumidityData;
 
     protected override async Task OnInitializedAsync()
     {
-        monitorings = await ClimateService.GetClimateRecordsAsync(25);
-        dic = new List<object>();
-        for (int i = 0; i < monitorings.Count; i++)
+        Monitorings = await ClimateService.GetClimateRecordsAsync(25);
+        TemperatureData = GetTemperatureData(Monitorings);
+        HumidityData = GetHumidityData(Monitorings);
+
+        TemperatureLineConfig = GetTemperatureConfig();
+        HumidityLineConfig = GetHumidityConfig();
+    }
+
+    private List<object> GetTemperatureData(List<MonitoringData> monitorings)
+    {
+        List<object> temperature = new List<object>();
+
+        for (int i = 0; i < Monitorings.Count; i++)
         {
-            if (i < monitorings.Count - 1)
+            if (i < Monitorings.Count - 1)
             {
-                dic.Add(new
+                temperature.Add(new
                 {
-                    time = monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
-                    value = monitorings[i].PredictedTemperature,
+                    time = Monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
+                    value = Monitorings[i].PredictedTemperature,
                     type = "Predicted"
                 });
             }
 
             if (i > 0)
             {
-                dic.Add(new
+                temperature.Add(new
                 {
-                    time = monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss"),
-                    value = monitorings[i].PreviousTemperature,
+                    time = Monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss"),
+                    value = Monitorings[i].PreviousTemperature,
                     type = "Measured"
                 });
             }
         }
 
-        lineConfig = new LineConfig()
+        return temperature;
+    }
+
+    private List<object> GetHumidityData(List<MonitoringData> monitorings)
+    {
+        List<object> humidity = new List<object>();
+
+        for (int i = 0; i < monitorings.Count; i++)
+        {
+            if (i < monitorings.Count - 1)
             {
-                Title = new Title()
+                humidity.Add(new
+                {
+                    time = monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
+                    value = monitorings[i].PredictedHumidity,
+                    type = "Predicted"
+                });
+            }
+
+            if (i > 0)
+            {
+                humidity.Add(new
+                {
+                    time = monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss"),
+                    value = monitorings[i].PreviousHumidity,
+                    type = "Measured"
+                });
+            }
+        }
+
+        return humidity;
+    }
+
+    private LineConfig GetTemperatureConfig()
+    {
+        return new LineConfig()
+        {
+            Title = new Title()
+            {
+                Visible = true,
+                Text = "Показатели температуры",
+                Style = new TextStyle()
+                {
+                    Fill = "#000",
+                    FontSize = 20
+                }
+            },
+            Padding = "auto",
+            ForceFit = true,
+            XField = "time",
+            YField = "value",
+            SeriesField = "type",
+            Point = new LineViewConfigPoint() 
+            { 
+                Style = new GraphicStyle() { LineWidth = 3, FillOpacity = 5 },
+                Size = 10,
+                Visible = true,
+                Shape = "diamond"
+            },
+            LineStyle = new LineStyle()
+            {
+                LineWidth = 8
+            },
+            Legend = new Legend() 
+            {
+                Position = "top-right",
+                Text = new LegendText()
+                {
+                    Style = new TextStyle()
+                    {
+                        Fill = "#000",
+                        FontSize = 20
+                    }                    
+                }     
+            },
+            XAxis = new ValueCatTimeAxis()
+            {
+                Title = new BaseAxisTitle()
+                {
+                    Text = "Время",
+                    Style = new TextStyle()
+                    {
+                        FontSize = 16
+                    },
+                    Visible = true
+                },
+                Visible = true,
+                TickLine = new BaseAxisTickLine()
                 {
                     Visible = true,
-                    Text = "Прогнозирование температуры"
+                    Style = new LineStyle()
+                    {
+                        LineWidth = 2,
+                        Stroke = "#aaa"
+                    }
                 },
-                Description = new Description()
+                Line = new BaseAxisLine()
                 {
                     Visible = true,
-                    Text = "Значения спрогнозированной и действительной температуры"
+                    Style = new LineStyle()
+                    {
+                        Stroke = "#aaa"
+                    }
                 },
-                Padding = "auto",
-                ForceFit = true,
-                XField = "time",
-                YField = "value",
-                Smooth = true,
-                SeriesField = "type"
-                //XAxis = new ValueCatTimeAxis() { Title = new BaseAxisTitle() { Text = "Время" } },
-                //YAxis = new ValueAxis() { Title = new BaseAxisTitle() { Text = "Температура"} },
-                //Legend = new Legend() { Position = "top-right" }
-            };
+                Grid = new BaseAxisGrid()
+                {
+                    Visible = true,
+                    Line = new BaseAxisGridLine()
+                    {
+                        Type = ""
+                    }
+                }
+            },
+            YAxis = new ValueAxis() 
+            {
+                Title = new BaseAxisTitle()
+                { 
+                    Text = "Градусы C*",
+                    Style = new TextStyle()
+                    {
+                        FontSize = 16,                        
+                    },
+                    AutoRotate = true,
+                    Visible = true
+                },
+                Visible = true
+            },
+        };
+    }
+
+    private LineConfig GetHumidityConfig()
+    {
+        return new LineConfig()
+        {
+            Title = new Title()
+            {
+                Visible = true,
+                Text = "Показатели влажности"
+            },
+            Description = new Description()
+            {
+                Visible = true,
+                Text = "Значения спрогнозированной и действительной влажности"
+            },
+            Padding = "auto",
+            ForceFit = true,
+            XField = "time",
+            YField = "value",
+            Smooth = true,
+            SeriesField = "type"
+            //XAxis = new ValueCatTimeAxis() { Title = new BaseAxisTitle() { Text = "Время" } },
+            //YAxis = new ValueAxis() { Title = new BaseAxisTitle() { Text = "Температура"} },
+            //Legend = new Legend() { Position = "top-right" }
+        };
     }
 }
