@@ -1,0 +1,74 @@
+﻿@page "/predictionsgraphics"
+@inject IClimateService ClimateService
+
+<PageTitle>Predictions Journal</PageTitle>
+
+<h3>Графики прогнозов</h3>
+
+@if (dic == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <Line Data="dic" Config="lineConfig"></Line>
+}
+
+@code{
+    List<MonitoringData> monitorings;
+
+    LineConfig lineConfig;
+
+    List<object> dic;
+
+    protected override async Task OnInitializedAsync()
+    {
+        monitorings = await ClimateService.GetClimateRecordsAsync(25);
+        dic = new List<object>();
+        for (int i = 0; i < monitorings.Count; i++)
+        {
+            if (i < monitorings.Count - 1)
+            {
+                dic.Add(new
+                {
+                    time = monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
+                    value = monitorings[i].PredictedTemperature,
+                    type = "Predicted"
+                });
+            }
+
+            if (i > 0)
+            {
+                dic.Add(new
+                {
+                    time = monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss"),
+                    value = monitorings[i].PreviousTemperature,
+                    type = "Measured"
+                });
+            }
+        }
+
+        lineConfig = new LineConfig()
+            {
+                Title = new Title()
+                {
+                    Visible = true,
+                    Text = "Прогнозирование температуры"
+                },
+                Description = new Description()
+                {
+                    Visible = true,
+                    Text = "Значения спрогнозированной и действительной температуры"
+                },
+                Padding = "auto",
+                ForceFit = true,
+                XField = "time",
+                YField = "value",
+                Smooth = true,
+                SeriesField = "type"
+                //XAxis = new ValueCatTimeAxis() { Title = new BaseAxisTitle() { Text = "Время" } },
+                //YAxis = new ValueAxis() { Title = new BaseAxisTitle() { Text = "Температура"} },
+                //Legend = new Legend() { Position = "top-right" }
+            };
+    }
+}

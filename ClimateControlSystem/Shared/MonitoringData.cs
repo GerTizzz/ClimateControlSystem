@@ -2,7 +2,7 @@
 {
     public class MonitoringData
     {
-        public long MeasurementTimeTicks { get; set; }
+        public DateTime MeasurementTime { get; set; }
         public float ClusterLoad { get; set; }
         public float CpuUsage { get; set; }
         public float ClusterTemperature { get; set; }

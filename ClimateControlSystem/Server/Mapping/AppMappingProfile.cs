@@ -47,15 +47,19 @@ namespace ClimateControlSystem.Server.Mapping
 
             #region PredictionService
 
-            CreateMap<IncomingMonitoringData, MonitoringData>();
+            CreateMap<IncomingMonitoringData, MonitoringData>()
+                .ForMember(data => data.MeasurementTime, incoming => incoming
+                    .MapFrom(incomingSrc => new DateTime(incomingSrc.MeasurementTimeTicks)));
 
-            #endregion
-
+        #endregion
+            
             #region Repository
 
             CreateMap<MonitoringData, MonitoringDataRecord>();
 
-            CreateMap<MonitoringDataRecord, MonitoringData>();
+            CreateMap<MonitoringDataRecord, MonitoringData>()
+                .ForMember(data => data.MeasurementTime, record => record
+                    .MapFrom(recordSrc => new DateTime(recordSrc.MeasurementTimeTicks)));
 
             CreateMap<MonitoringDataRecord, PredictionResult>();
 

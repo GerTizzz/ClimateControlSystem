@@ -77,7 +77,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             {
                 var dataToUpdate = await _context.MonitoringData
                     .OrderByDescending(record => record.Id)
-                    .LastOrDefaultAsync(record => record.MeasurementTimeTicks == updatedData.MeasurementTimeTicks);
+                    .LastOrDefaultAsync(record => record.MeasurementTimeTicks == updatedData.MeasurementTime.Ticks);
 
                 if (dataToUpdate is null)
                 {
