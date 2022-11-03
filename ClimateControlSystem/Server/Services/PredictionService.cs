@@ -13,27 +13,34 @@ namespace ClimateControlSystem.Server.Services
         private readonly IPredictionEngineService _predictionEngine;
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;
+        private readonly IMonitoringHub _monitoringHub;
 
-        public PredictionService(IPredictionEngineService predictionEngine, IMapper mapper, IMediator mediator)
+        public PredictionService(IPredictionEngineService predictionEngine,
+                                 IMapper mapper,
+                                 IMediator mediator,
+                                 IMonitoringHub monitoringHub)
         {
             _mapper = mapper;
             _mediator = mediator;
             _predictionEngine = predictionEngine;
+            _monitoringHub = monitoringHub;
         }
 
         public Task<PredictionResult> Predict(IncomingMonitoringData newClimateData)
         {
             PredictionResult predictionResult = _predictionEngine.Predict(newClimateData);
 
-            _ = CreateClimateRecord(newClimateData, predictionResult);
+            MonitoringData monitoringData = _mapper.Map<MonitoringData>(newClimateData);
+
+            _ = CreateClimateRecord(monitoringData, predictionResult);
+
+            _ = SendNewMonitoringDataToWebClients(monitoringData);
 
             return Task.FromResult(predictionResult);
         }
 
-        private Task CreateClimateRecord(IncomingMonitoringData incomingData, PredictionResult predictedData)
+        private Task CreateClimateRecord(MonitoringData monitoringData, PredictionResult predictedData)
         {
-            MonitoringData monitoringData = _mapper.Map<MonitoringData>(incomingData);
-
             CalculateLastPredictionAccuracy(monitoringData).Wait();
 
             monitoringData.PredictedTemperature = predictedData.PredictedTemperature;
@@ -60,6 +67,11 @@ namespace ClimateControlSystem.Server.Services
             _mediator.Send(new UpdatePredictionAccuraciesCommand() { Data = lastRecord }).Wait();
 
             return Task.CompletedTask;
+        }
+
+        private async Task SendNewMonitoringDataToWebClients(MonitoringData monitoringData)
+        {
+            await _monitoringHub.SendMonitoringData(monitoringData);
         }
     }
 }

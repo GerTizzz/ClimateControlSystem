@@ -1,9 +1,70 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager NavigationManager
+@inject IClimateService ClimateService
+@implements IAsyncDisposable
 
 <PageTitle>Monitoring Panel</PageTitle>
 
 <h3>Панель мониторинга</h3>
 
-@code {
+@if (Monitorings == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table>
+        <tr>
+            <th></th>
+            <th></th>
+        </tr>
+    </table>
+@*    <Line Data="TemperatureData" Config="TemperatureLineConfig"></Line>
+    <Line Data="HumidityData" Config="HumidityLineConfig"></Line>*@
+}
 
+@code {
+    private HubConnection? hubConnection;
+
+    List<MonitoringData> Monitorings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Monitorings = await ClimateService.GetClimateRecordsAsync(25);
+        Monitorings.Capacity = 25;
+        await Connect();
+    }
+
+    private async Task Connect()
+    {
+        hubConnection = new HubConnectionBuilder()
+        .WithUrl(NavigationManager.ToAbsoluteUri("/monitoringhub"))
+        .Build();
+
+        hubConnection.On<MonitoringData>("GetMonitoringData", (newData) => MonitoringDataArrived(newData));
+
+        await hubConnection.StartAsync();
+    }
+
+    private Task MonitoringDataArrived(MonitoringData monitoringData)
+    {
+        if (Monitorings != null && Monitorings.Count == Monitorings.Capacity)
+        {
+            Monitorings.RemoveAt(0);            
+        }
+
+        Monitorings.Add(monitoringData);
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection != null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
 }

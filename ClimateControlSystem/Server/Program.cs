@@ -1,6 +1,7 @@
 using AutoMapper;
 using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Domain.Services;
+using ClimateControlSystem.Server.Hubs;
 using ClimateControlSystem.Server.Mapping;
 using ClimateControlSystem.Server.Persistence.Context;
 using ClimateControlSystem.Server.Persistence.Repositories;
@@ -9,6 +10,7 @@ using ClimateControlSystem.Server.Services.gRPC;
 using ClimateControlSystem.Server.Services.MediatR;
 using ClimateControlSystem.Server.Services.PredictionEngine;
 using MediatR;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,9 +29,13 @@ builder.Services.AddDbContext<PredictionsDbContext>(options =>
 });
 builder.Services.AddScoped<IPredictionRepository, PredictionRepository>();
 builder.Services.AddScoped<IPredictionService, PredictionService>();
+builder.Services.AddTransient<IMonitoringHub, MonitoringHub>();
 builder.Services.AddGrpc();
 builder.Services.AddSingleton<IPredictionEngineService>(sp => 
     new PredictionEngineService(sp.GetService<IMapper>(), _modelLocation));
+builder.Services.AddSignalR();
+builder.Services.AddResponseCompression(options =>
+options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" }));
 
 var app = builder.Build();
 
@@ -46,7 +52,7 @@ var app = builder.Build();
 //}
 
 app.UseHttpsRedirection();
-
+app.UseResponseCompression();
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
@@ -56,6 +62,7 @@ app.MapGrpcService<ClimateDataReciever>();
 
 app.MapRazorPages();
 app.MapControllers();
+app.MapHub<MonitoringHub>("/monitoringhub");
 app.MapFallbackToFile("index.html");
 
 app.Run();
