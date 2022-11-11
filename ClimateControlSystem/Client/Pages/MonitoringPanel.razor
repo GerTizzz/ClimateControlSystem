@@ -31,9 +31,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Monitorings = await ClimateService.GetClimateRecordsAsync(25);
-        Monitorings.Capacity = 25;
-        await Connect();
+        //Monitorings = await ClimateService.GetClimateRecordsAsync(25);
+        //Monitorings.Capacity = 25;
+        //await Connect();
     }
 
     private async Task Connect()

@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Domain.Services;
+using ClimateControlSystem.Server.Hubs;
 using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Services.MediatR.Commands;
 using ClimateControlSystem.Server.Services.MediatR.Queries;
 using ClimateControlSystem.Shared;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ClimateControlSystem.Server.Services
 {
@@ -13,12 +15,12 @@ namespace ClimateControlSystem.Server.Services
         private readonly IPredictionEngineService _predictionEngine;
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;
-        private readonly IMonitoringHub _monitoringHub;
+        private readonly IHubContext<MonitoringHub> _monitoringHub;
 
         public PredictionService(IPredictionEngineService predictionEngine,
                                  IMapper mapper,
                                  IMediator mediator,
-                                 IMonitoringHub monitoringHub)
+                                 IHubContext<MonitoringHub> monitoringHub)
         {
             _mapper = mapper;
             _mediator = mediator;
@@ -71,7 +73,7 @@ namespace ClimateControlSystem.Server.Services
 
         private async Task SendNewMonitoringDataToWebClients(MonitoringData monitoringData)
         {
-            await _monitoringHub.SendMonitoringData(monitoringData);
+            await _monitoringHub.Clients.All.SendAsync("SendMonitoringData", monitoringData);
         }
     }
 }

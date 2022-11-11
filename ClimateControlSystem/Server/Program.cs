@@ -11,6 +11,7 @@ using ClimateControlSystem.Server.Services.MediatR;
 using ClimateControlSystem.Server.Services.PredictionEngine;
 using MediatR;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,13 +30,15 @@ builder.Services.AddDbContext<PredictionsDbContext>(options =>
 });
 builder.Services.AddScoped<IPredictionRepository, PredictionRepository>();
 builder.Services.AddScoped<IPredictionService, PredictionService>();
-builder.Services.AddTransient<IMonitoringHub, MonitoringHub>();
 builder.Services.AddGrpc();
 builder.Services.AddSingleton<IPredictionEngineService>(sp => 
     new PredictionEngineService(sp.GetService<IMapper>(), _modelLocation));
 builder.Services.AddSignalR();
 builder.Services.AddResponseCompression(options =>
-options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" }));
+    options.MimeTypes = ResponseCompressionDefaults
+    .MimeTypes
+    .Concat(new[] { "application/octet-stream" })
+);
 
 var app = builder.Build();
 
