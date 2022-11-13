@@ -5,6 +5,8 @@ namespace ClimateControlSystem.Client.Services.ClimateService
 {
     public class ClimateService : IClimateService
     {
+        private const int RecordsCount = 25;
+
         private readonly HttpClient _httpClient;
 
         public List<MonitoringData> ClimateRecords { get; set; } = new List<MonitoringData>();
@@ -14,12 +16,9 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             _httpClient = httpClient;
         }
 
-        public async Task<List<MonitoringData>> GetClimateRecordsAsync(int climateRecordsAmount)
+        public async Task<List<MonitoringData>> GetClimateRecordsAsync()
         {
-            //string query = $"https://localhost:7286/api/climate/{climateRecordsAmount}";
-            //Console.WriteLine(ClimateRecords.Count);
-
-            var result = await _httpClient.GetFromJsonAsync<List<MonitoringData>>($"api/climate/{climateRecordsAmount}") ?? new List<MonitoringData>();
+            var result = await _httpClient.GetFromJsonAsync<List<MonitoringData>>($"api/climate/{RecordsCount}") ?? new List<MonitoringData>();
 
             return result;
         }

@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.SignalR.Client
+@using ClimateControlSystem.Client.Resources
 @inject NavigationManager NavigationManager
 @inject IClimateService ClimateService
 @implements IAsyncDisposable
@@ -8,39 +9,52 @@
 
 <h3>Панель мониторинга</h3>
 
-@if (Monitorings == null)
+@if (ActualAndPredictedTemperature is null || ActualAndPredictedHumidity is null ||
+ActualAndPredictedTemperature.Count == 0 || ActualAndPredictedHumidity.Count == 0)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <table>
+@*    <table>
         <tr>
             <th></th>
             <th></th>
         </tr>
-    </table>
-@*    <Line Data="TemperatureData" Config="TemperatureLineConfig"></Line>
-    <Line Data="HumidityData" Config="HumidityLineConfig"></Line>*@
+    </table>*@
+    <Line Data="ActualAndPredictedTemperature" Config="TemperatureDataLineConfig"></Line>
+    <Line Data="ActualAndPredictedHumidity" Config="HumidityDataLineConfig"></Line>
 }
 
 @code {
-    private HubConnection? hubConnection;
+    LineConfig TemperatureDataLineConfig;
+    LineConfig HumidityDataLineConfig;
 
-    List<MonitoringData> Monitorings;
+    List<GraphicData> ActualAndPredictedTemperature;
+    List<GraphicData> ActualAndPredictedHumidity;
+
+    private HubConnection? hubConnection;
 
     protected override async Task OnInitializedAsync()
     {
-        //Monitorings = await ClimateService.GetClimateRecordsAsync(25);
-        //Monitorings.Capacity = 25;
-        //await Connect();
+        ActualAndPredictedTemperature = new List<GraphicData>(15);
+        ActualAndPredictedHumidity = new List<GraphicData>(15);
+        TemperatureDataLineConfig = GetTemperatureLineConfig();
+        HumidityDataLineConfig = GetHumidityDataConfig();
+        await Connect();
     }
 
     private async Task Connect()
     {
+        //hubConnection = new HubConnectionBuilder()
+        //    .WithUrl(NavigationManager.ToAbsoluteUri("/monitoringhub"))
+        //    .WithAutomaticReconnect()
+        //    .Build();
+
         hubConnection = new HubConnectionBuilder()
-        .WithUrl(NavigationManager.ToAbsoluteUri("/monitoringhub"))
-        .Build();
+            .WithUrl("https://localhost:7286/monitoringhub")
+            .WithAutomaticReconnect()
+            .Build();
 
         hubConnection.On<MonitoringData>("GetMonitoringData", (newData) => MonitoringDataArrived(newData));
 
@@ -49,12 +63,39 @@ else
 
     private Task MonitoringDataArrived(MonitoringData monitoringData)
     {
-        if (Monitorings != null && Monitorings.Count == Monitorings.Capacity)
+        if (ActualAndPredictedTemperature is null || ActualAndPredictedHumidity is null)
         {
-            Monitorings.RemoveAt(0);            
+            return Task.CompletedTask;
         }
 
-        Monitorings.Add(monitoringData);
+        if (ActualAndPredictedTemperature.Count == ActualAndPredictedTemperature.Capacity)
+        {
+            ActualAndPredictedTemperature.RemoveAt(0);            
+        }
+
+        ActualAndPredictedTemperature.Add(new GraphicData(monitoringData.MeasurementTime.ToString("HH:mm:ss"),
+                monitoringData.PredictedTemperature, "Predicted"));
+
+        if (ActualAndPredictedTemperature.Count != 0)
+        {
+                ActualAndPredictedTemperature.Add(new GraphicData(monitoringData.MeasurementTime.ToString("HH:mm:ss"),
+                    monitoringData.PreviousTemperature, "Measured"));
+        }
+
+        if (ActualAndPredictedHumidity.Count == ActualAndPredictedHumidity.Capacity)
+        {
+            ActualAndPredictedHumidity.RemoveAt(0);            
+        }
+
+        ActualAndPredictedHumidity.Add(new GraphicData(monitoringData.MeasurementTime.ToString("HH:mm:ss"),
+            monitoringData.PredictedHumidity, "Predicted"));
+
+        if (ActualAndPredictedHumidity.Count != 0)
+        {
+                ActualAndPredictedHumidity.Add(new GraphicData(monitoringData.MeasurementTime.ToString("HH:mm:ss"),
+                    monitoringData.PreviousHumidity, "Measured"));
+        }
+
         StateHasChanged();
 
         return Task.CompletedTask;
@@ -67,4 +108,135 @@ else
             await hubConnection.DisposeAsync();
         }
     }
+
+    private LineConfig GetTemperatureLineConfig()
+    {
+        var config = GetBaseLineConfig();
+
+        config.Title.Text = "Действительная и спрогнозированная температуры";
+        config.YAxis.Title.Text = "Градусы °C";
+        //var min = ActualAndPredictedTemperature.Min(item => item.value);
+        //var max = ActualAndPredictedTemperature.Max(item => item.value);
+        //var delta = max - min;
+        //config.YAxis.Max = max + delta / 10;
+        //config.YAxis.Min = min - delta / 10;
+
+        return config;
+    }
+
+    private LineConfig GetHumidityDataConfig()
+    {
+        var config = GetBaseLineConfig();
+
+        config.Title.Text = "Действительная и спрогнозированная влажности";
+        config.YAxis.Title.Text = "Показатели влажности %";
+        //var min = ActualAndPredictedHumidity.Min(item => item.value);
+        //var max = ActualAndPredictedHumidity.Max(item => item.value);
+        //var delta = max - min;
+        //config.YAxis.Max = max + delta / 10;
+        //config.YAxis.Min = min - delta / 10;
+
+        return config;
+    }
+
+    private LineConfig GetBaseLineConfig()
+    {
+        return new LineConfig()
+        {
+            Title = new Title()
+            {
+                Visible = true,
+                Style = new TextStyle()
+                {
+                    Fill = "#000",
+                    FontSize = 20
+                }
+            },
+            Padding = "auto",
+            ForceFit = true,
+            XField = "time",
+            YField = "value",
+            SeriesField = "type",
+            Point = new LineViewConfigPoint()
+            {
+                Style = new GraphicStyle() { LineWidth = 3, FillOpacity = 5 },
+                Size = 10,
+                Visible = true,
+                Shape = "diamond"
+            },
+            LineStyle = new LineStyle()
+            {
+                LineWidth = 8
+            },
+            Legend = new Legend()
+            {
+                Position = "top-right",
+                Text = new LegendText()
+                {
+                    Style = new TextStyle()
+                    {
+                        Fill = "#000",
+                        FontSize = 20
+                    }
+                }
+            },
+            XAxis = new ValueCatTimeAxis()
+            {
+                Title = new BaseAxisTitle()
+                {
+                    Text = "Время",
+                    Style = new TextStyle()
+                    {
+                        FontSize = 16
+                    },
+                    Visible = true
+                },
+                Visible = true,
+                TickLine = new BaseAxisTickLine()
+                {
+                    Visible = true,
+                    Style = new LineStyle()
+                    {
+                        LineWidth = 2,
+                        Stroke = "#aaa"
+                    },
+                },
+                Line = new BaseAxisLine()
+                {
+                    Visible = true,
+                    Style = new LineStyle()
+                    {
+                        Stroke = "#aaa"
+                    }
+                },
+                Grid = new BaseAxisGrid()
+                {
+                    Visible = true,
+                    Line = new BaseAxisGridLine()
+                    {
+                        Type = "",
+                        Style = new LineStyle()
+                        {
+                            Stroke = "#ddd",
+                            LineDash = new int[] { 4, 2 }
+                        }
+                    }
+                }
+            },
+            YAxis = new ValueAxis()
+            {
+                Title = new BaseAxisTitle()
+                {
+                    Style = new TextStyle()
+                    {
+                        FontSize = 16,
+                    },
+                    AutoRotate = true,
+                    Visible = true
+                },
+                Visible = true
+            },
+        };
+    }
+
 }

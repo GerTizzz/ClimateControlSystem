@@ -1,5 +1,4 @@
-﻿using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Shared;
+﻿using ClimateControlSystem.Shared;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ClimateControlSystem.Server.Hubs

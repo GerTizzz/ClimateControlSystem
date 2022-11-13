@@ -5,7 +5,7 @@
 
 <h3>Журнал прогнозов</h3>
 
-@if (monitorings == null)
+@if (Monitorings == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -34,7 +34,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var record in monitorings)
+            @foreach (var record in Monitorings)
             {
                 <tr>
                     <td>@record.MeasurementTime.ToString("HH:mm:ss")</td>
@@ -61,10 +61,10 @@ else
 }
 
 @code {
-    private MonitoringData[]? monitorings;
+    private List<MonitoringData> Monitorings;
 
     protected override async Task OnInitializedAsync()
     {
-        monitorings = (await ClimateService.GetClimateRecordsAsync(25)).ToArray();
+        Monitorings = await ClimateService.GetClimateRecordsAsync();
     }
 }

@@ -1,4 +1,5 @@
 ﻿@page "/predictionsgraphics"
+@using ClimateControlSystem.Client.Resources
 @inject IClimateService ClimateService
 
 <PageTitle>Predictions Journal</PageTitle>
@@ -33,13 +34,13 @@ else
     LineConfig HumidityDataLineConfig;
     LineConfig AccuracyLineConfig;
 
-    List<object> ActualAndPredictedTemperature;
-    List<object> ActualAndPredictedHumidity;
-    List<object> Accuracy;
+    List<GraphicData> ActualAndPredictedTemperature;
+    List<GraphicData> ActualAndPredictedHumidity;
+    List<GraphicData> Accuracy;
 
     protected override async Task OnInitializedAsync()
     {
-        Monitorings = await ClimateService.GetClimateRecordsAsync(25);
+        Monitorings = await ClimateService.GetClimateRecordsAsync();
 
         HasData = Monitorings.Count >= 2;
 
@@ -57,102 +58,67 @@ else
         AccuracyLineConfig = GetAccuracyConfig();
     }
 
-    private List<object> GetTemperatureData(List<MonitoringData> monitorings)
+    private List<GraphicData> GetTemperatureData(List<MonitoringData> monitorings)
     {
-        List<object> temperatureData = new List<object>();
+        List<GraphicData> temperatureData = new List<GraphicData>();
 
         for (int i = 0; i < Monitorings.Count; i++)
         {
             if (i < Monitorings.Count - 1)
             {
-                temperatureData.Add(new
-                {
-                    time = Monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
-                    value = Monitorings[i].PredictedTemperature,
-                    type = "Predicted"
-                });
+                temperatureData.Add(new GraphicData(Monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
+                    Monitorings[i].PredictedTemperature, "Predicted"));
             }
 
             if (i > 0)
             {
-                temperatureData.Add(new
-                {
-                    time = Monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss"),
-                    value = Monitorings[i].PreviousTemperature,
-                    type = "Measured"
-                });
+                temperatureData.Add(new GraphicData(Monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss"),
+                    Monitorings[i].PreviousTemperature, "Measured"));
             }
         }
 
         return temperatureData;
     }
 
-    private List<object> GetHumidityData(List<MonitoringData> monitorings)
+    private List<GraphicData> GetHumidityData(List<MonitoringData> monitorings)
     {
-        List<object> humidityData = new List<object>();
+        List<GraphicData> humidityData = new List<GraphicData>();
 
         for (int i = 0; i < monitorings.Count; i++)
         {
             if (i < monitorings.Count - 1)
             {
-                humidityData.Add(new
-                {
-                    time = monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
-                    value = monitorings[i].PredictedHumidity,
-                    type = "Predicted"
-                });
+                humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
+                    monitorings[i].PredictedHumidity, "Predicted"));
             }
 
             if (i > 0)
             {
-                humidityData.Add(new
-                {
-                    time = monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss"),
-                    value = monitorings[i].PreviousHumidity,
-                    type = "Measured"
-                });
+                humidityData.Add(new GraphicData(monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss"),
+                    monitorings[i].PreviousHumidity, "Measured"));
             }
         }
 
         return humidityData;
     }
 
-    private List<object> GetAccuracyData(List<MonitoringData> monitorings)
+    private List<GraphicData> GetAccuracyData(List<MonitoringData> monitorings)
     {
-        List<object> temperatureAccuracy = new List<object>();
+        List<GraphicData> temperatureAccuracy = new List<GraphicData>();
 
         for (int i = 0; i < monitorings.Count; i++)
         {
-            temperatureAccuracy.Add(new
+            if (monitorings[i].PredictedHumidityAccuracy.HasValue is false || monitorings[i].PredictedTemperatureAccuracy.HasValue is false)
             {
-                time = monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
-                value = monitorings[i].PredictedTemperatureAccuracy,
-                type = "Temperature"
-            });
+                continue;
+            }
 
-            temperatureAccuracy.Add(new
-            {
-                time = monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
-                value = monitorings[i].PredictedHumidityAccuracy,
-                type = "Humidity"
-            });
+            temperatureAccuracy.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
+                monitorings[i].PredictedTemperatureAccuracy.Value, "Temperature"));
+
+            temperatureAccuracy.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
+                monitorings[i].PredictedHumidityAccuracy.Value, "Humidity"));
         }
-
-        //if (temperatureAccuracy.Count >= 2)
-        //{
-        //    temperatureAccuracy.Add(new
-        //    {
-        //        time = temperatureAccuracy.First(),
-        //        value = 100f,
-        //        type = "Result"
-        //    });
-        //    temperatureAccuracy.Add(new
-        //    {
-        //        time = temperatureAccuracy.Last(),
-        //        value = 100f,
-        //        type = "Result"
-        //    });
-        //}
 
         return temperatureAccuracy;
     }
@@ -163,6 +129,11 @@ else
 
         config.Title.Text = "Действительная и спрогнозированная температуры";
         config.YAxis.Title.Text = "Градусы °C";
+        var min = ActualAndPredictedTemperature.Min(item => item.value);
+        var max = ActualAndPredictedTemperature.Max(item => item.value);
+        var delta = max - min;
+        config.YAxis.Max = max + delta / 10;
+        config.YAxis.Min = min - delta / 10;
 
         return config;
     }
@@ -173,6 +144,11 @@ else
 
         config.Title.Text = "Действительная и спрогнозированная влажности";
         config.YAxis.Title.Text = "Показатели влажности %";
+        var min = ActualAndPredictedHumidity.Min(item => item.value);
+        var max = ActualAndPredictedHumidity.Max(item => item.value);
+        var delta = max - min;
+        config.YAxis.Max = max + delta / 10;
+        config.YAxis.Min = min - delta / 10;
 
         return config;
     }
@@ -183,8 +159,11 @@ else
 
         config.Title.Text = "Точность прогноза температуры";
         config.YAxis.Title.Text = "Точнсть прогноза %";
-        //config.YAxis.Max = Accuracy.Max();
-        //config.YAxis.Min = Accuracy.Min();
+        var min = Accuracy.Min(item => item.value);
+        var max = Accuracy.Max(item => item.value);
+        var delta = max - min;
+        config.YAxis.Max = max + delta / 10;
+        config.YAxis.Min = min - delta / 10;
 
         return config;
     }
