@@ -73,7 +73,7 @@ namespace ClimateControlSystem.Server.Services
 
         private async Task SendNewMonitoringDataToWebClients(MonitoringData monitoringData)
         {
-            await _monitoringHub.Clients.All.SendAsync("SendMonitoringData", monitoringData);
+            await _monitoringHub.Clients.All.SendAsync("GetMonitoringData", monitoringData);
         }
     }
 }

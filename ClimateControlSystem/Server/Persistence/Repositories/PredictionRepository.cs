@@ -40,7 +40,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             try
             {
                 var result = await _context.MonitoringData
-                    .OrderBy(record => record.MeasurementTimeTicks)
+                    .OrderByDescending(record => record.MeasurementTimeTicks)
                     .Take(amountOfRecords)
                     .Select(record => _mapper.Map<MonitoringData>(record))
                     .ToListAsync();
@@ -49,7 +49,6 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             catch (Exception exc)
             {
                 return await Task.FromResult(new List<MonitoringData>());
-                //log
             }
         }
 
@@ -81,7 +80,6 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
 
                 if (dataToUpdate is null)
                 {
-                    //log
                     return false;
                 }
 

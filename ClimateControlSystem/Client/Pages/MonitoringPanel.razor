@@ -46,13 +46,8 @@ else
 
     private async Task Connect()
     {
-        //hubConnection = new HubConnectionBuilder()
-        //    .WithUrl(NavigationManager.ToAbsoluteUri("/monitoringhub"))
-        //    .WithAutomaticReconnect()
-        //    .Build();
-
         hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7286/monitoringhub")
+            .WithUrl(NavigationManager.ToAbsoluteUri("/monitoringhub"))
             .WithAutomaticReconnect()
             .Build();
 
@@ -78,8 +73,8 @@ else
 
         if (ActualAndPredictedTemperature.Count != 0)
         {
-                ActualAndPredictedTemperature.Add(new GraphicData(monitoringData.MeasurementTime.ToString("HH:mm:ss"),
-                    monitoringData.PreviousTemperature, "Measured"));
+            ActualAndPredictedTemperature.Add(new GraphicData(monitoringData.MeasurementTime.ToString("HH:mm:ss"),
+                monitoringData.PreviousTemperature, "Measured"));
         }
 
         if (ActualAndPredictedHumidity.Count == ActualAndPredictedHumidity.Capacity)
@@ -92,11 +87,11 @@ else
 
         if (ActualAndPredictedHumidity.Count != 0)
         {
-                ActualAndPredictedHumidity.Add(new GraphicData(monitoringData.MeasurementTime.ToString("HH:mm:ss"),
-                    monitoringData.PreviousHumidity, "Measured"));
+            ActualAndPredictedHumidity.Add(new GraphicData(monitoringData.MeasurementTime.ToString("HH:mm:ss"),
+                monitoringData.PreviousHumidity, "Measured"));
         }
-
-        StateHasChanged();
+        
+        InvokeAsync(StateHasChanged);
 
         return Task.CompletedTask;
     }

@@ -42,6 +42,8 @@ builder.Services.AddResponseCompression(options =>
 
 var app = builder.Build();
 
+app.UseHttpsRedirection();
+
 app.UseResponseCompression();
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
