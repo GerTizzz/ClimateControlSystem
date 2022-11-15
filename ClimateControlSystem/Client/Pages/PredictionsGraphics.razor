@@ -66,13 +66,13 @@ else
         {
             if (i < Monitorings.Count - 1)
             {
-                temperatureData.Add(new GraphicData(Monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
+                temperatureData.Add(new GraphicData(Monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
                     Monitorings[i].PredictedTemperature, "Predicted"));
             }
 
             if (i > 0)
             {
-                temperatureData.Add(new GraphicData(Monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss"),
+                temperatureData.Add(new GraphicData(Monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
                     Monitorings[i].PreviousTemperature, "Measured"));
             }
         }
@@ -88,13 +88,13 @@ else
         {
             if (i < monitorings.Count - 1)
             {
-                humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
+                humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
                     monitorings[i].PredictedHumidity, "Predicted"));
             }
 
             if (i > 0)
             {
-                humidityData.Add(new GraphicData(monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss"),
+                humidityData.Add(new GraphicData(monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
                     monitorings[i].PreviousHumidity, "Measured"));
             }
         }
@@ -113,10 +113,10 @@ else
                 continue;
             }
 
-            temperatureAccuracy.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
+            temperatureAccuracy.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
                 monitorings[i].PredictedTemperatureAccuracy.Value, "Temperature"));
 
-            temperatureAccuracy.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss"),
+            temperatureAccuracy.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
                 monitorings[i].PredictedHumidityAccuracy.Value, "Humidity"));
         }
 

@@ -2,7 +2,7 @@
 {
     public record IncomingMonitoringData
     {
-        public long MeasurementTimeTicks { get; init; }
+        public DateTimeOffset MeasurementTime { get; init; }
         public float ClusterLoad { get; init; }
         public float CpuUsage { get; init; }
         public float ClusterTemperature { get; init; }

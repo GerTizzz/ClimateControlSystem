@@ -3,6 +3,7 @@ using ClimateMonitoringSystem.Protos;
 using Microsoft.VisualBasic.FileIO;
 using Client = ClimateMonitoringSystem.Protos.ClimateMonitoring.ClimateMonitoringClient;
 using Grpc.Core;
+using Google.Protobuf.WellKnownTypes;
 
 namespace ClimateMonitoringSystem
 {
@@ -86,7 +87,7 @@ namespace ClimateMonitoringSystem
 
             ClimateMonitoringRequest request = new ClimateMonitoringRequest()
             {
-                MeasurementTimeTicks = DateTime.UtcNow.Ticks,
+                MeasurementTime = DateTimeOffset.Now.ToTimestamp(),
                 ClusterLoad = requestData[0],
                 CpuUsage = requestData[1],
                 ClusterTemperature = requestData[2],

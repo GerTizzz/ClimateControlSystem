@@ -6,7 +6,7 @@ namespace ClimateControlSystem.Server.Resources.RepositoryResources
     {
         [Key]
         public int Id { get; set; }
-        public long MeasurementTimeTicks { get; set; }
+        public DateTimeOffset MeasurementTime { get; set; }
         public float ClusterLoad { get; set; }
         public float CpuUsage { get; set; }
         public float ClusterTemperature { get; set; }

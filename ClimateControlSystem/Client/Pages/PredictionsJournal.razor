@@ -37,7 +37,7 @@ else
             @foreach (var record in Monitorings)
             {
                 <tr>
-                    <td>@record.MeasurementTime.ToString("HH:mm:ss")</td>
+                    <td style="font-size:small">@record.MeasurementTime.ToString("HH:mm:ss")<br/>@record.MeasurementTime.ToString("dd:MM:yyyy")</td>
                     <td>@record.ClusterLoad</td>
                     <td>@record.CpuUsage</td>
                     <td>@record.ClusterTemperature</td>

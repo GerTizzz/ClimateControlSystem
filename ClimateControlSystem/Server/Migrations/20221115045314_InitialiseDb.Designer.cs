@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClimateControlSystem.Server.Migrations
 {
     [DbContext(typeof(PredictionsDbContext))]
-    [Migration("20221030151725_Initial")]
-    partial class Initial
+    [Migration("20221115045314_InitialiseDb")]
+    partial class InitialiseDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -53,8 +53,8 @@ namespace ClimateControlSystem.Server.Migrations
                     b.Property<float>("MeanCoolingValue")
                         .HasColumnType("real");
 
-                    b.Property<long>("MeasurementTimeTicks")
-                        .HasColumnType("bigint");
+                    b.Property<DateTimeOffset>("MeasurementTime")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<float>("PredictedHumidity")
                         .HasColumnType("real");
@@ -98,9 +98,9 @@ namespace ClimateControlSystem.Server.Migrations
                             ClusterTemperature = 56f,
                             CpuUsage = 5945.632f,
                             MeanCoolingValue = 17.7f,
-                            MeasurementTimeTicks = 0L,
-                            PredictedHumidity = 19.65f,
-                            PredictedTemperature = 23.6f,
+                            MeasurementTime = new DateTimeOffset(new DateTime(2022, 11, 15, 9, 53, 14, 549, DateTimeKind.Unspecified).AddTicks(7676), new TimeSpan(0, 5, 0, 0, 0)),
+                            PredictedHumidity = 18.77f,
+                            PredictedTemperature = 23.32f,
                             PreviousHumidity = 19.71f,
                             PreviousTemperature = 23.48f,
                             WindDirection = 225f,

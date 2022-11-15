@@ -4,13 +4,15 @@ option csharp_namespace = "ClimateMonitoringSystem.Protos";
 
 package monitoring;
 
+import "google/protobuf/timestamp.proto";
+
 service ClimateMonitoring {
 	rpc SendDataToPredict (ClimateMonitoringRequest) returns (ClimateMonitoringReply);
 	rpc SendDataToPredictStream (stream ClimateMonitoringRequest) returns (stream ClimateMonitoringReply);
 }
 
 message ClimateMonitoringRequest {
-	int64 measurement_time_ticks = 1;
+	google.protobuf.Timestamp measurement_time = 1;
 	float cluster_load = 2;
 	float cpu_usage = 3;
 	float cluster_temperature = 4;

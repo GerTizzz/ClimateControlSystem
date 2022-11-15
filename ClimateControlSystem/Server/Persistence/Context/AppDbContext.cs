@@ -16,6 +16,7 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 new MonitoringDataRecord()
                 {
                     Id = 1,
+                    MeasurementTime = DateTimeOffset.Now,
                     ClusterLoad = 50.8f,
                     CpuUsage = 5945.632f,
                     ClusterTemperature = 56f,

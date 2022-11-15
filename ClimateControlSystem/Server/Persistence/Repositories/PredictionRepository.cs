@@ -40,7 +40,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             try
             {
                 var result = await _context.MonitoringData
-                    .OrderByDescending(record => record.MeasurementTimeTicks)
+                    .OrderByDescending(record => record.MeasurementTime)
                     .Take(amountOfRecords)
                     .Select(record => _mapper.Map<MonitoringData>(record))
                     .ToListAsync();
@@ -76,7 +76,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             {
                 var dataToUpdate = await _context.MonitoringData
                     .OrderByDescending(record => record.Id)
-                    .LastOrDefaultAsync(record => record.MeasurementTimeTicks == updatedData.MeasurementTime.Ticks);
+                    .LastOrDefaultAsync(record => record.MeasurementTime == updatedData.MeasurementTime);
 
                 if (dataToUpdate is null)
                 {

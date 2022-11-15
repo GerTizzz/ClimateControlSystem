@@ -13,7 +13,9 @@ namespace ClimateControlSystem.Server.Mapping
         {
             #region gRPC communication
 
-            CreateMap<ClimateMonitoringRequest, IncomingMonitoringData>();
+            CreateMap<ClimateMonitoringRequest, IncomingMonitoringData>()
+                .ForMember(data => data.MeasurementTime, request => request
+                    .MapFrom(requestSrc => requestSrc.MeasurementTime.ToDateTimeOffset()));
 
             #endregion
 
@@ -47,19 +49,15 @@ namespace ClimateControlSystem.Server.Mapping
 
             #region PredictionService
 
-            CreateMap<IncomingMonitoringData, MonitoringData>()
-                .ForMember(data => data.MeasurementTime, incoming => incoming
-                    .MapFrom(incomingSrc => new DateTime(incomingSrc.MeasurementTimeTicks)));
+            CreateMap<IncomingMonitoringData, MonitoringData>();
 
-        #endregion
+            #endregion
             
             #region Repository
 
             CreateMap<MonitoringData, MonitoringDataRecord>();
 
-            CreateMap<MonitoringDataRecord, MonitoringData>()
-                .ForMember(data => data.MeasurementTime, record => record
-                    .MapFrom(recordSrc => new DateTime(recordSrc.MeasurementTimeTicks)));
+            CreateMap<MonitoringDataRecord, MonitoringData>();
 
             CreateMap<MonitoringDataRecord, PredictionResult>();
 
