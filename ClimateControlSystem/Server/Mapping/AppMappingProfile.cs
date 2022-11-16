@@ -15,7 +15,7 @@ namespace ClimateControlSystem.Server.Mapping
 
             CreateMap<ClimateMonitoringRequest, IncomingMonitoringData>()
                 .ForMember(data => data.MeasurementTime, request => request
-                    .MapFrom(requestSrc => requestSrc.MeasurementTime.ToDateTimeOffset()));
+                    .MapFrom(requestSrc => requestSrc.MeasurementTime.ToDateTimeOffset().ToLocalTime()));
 
             #endregion
 

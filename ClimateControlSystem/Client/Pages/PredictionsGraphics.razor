@@ -14,9 +14,10 @@ else
 {
     if (HasData)
     {
-        <Line Data="ActualAndPredictedTemperature" Config="TemperatureDataLineConfig"></Line>
-        <Line Data="ActualAndPredictedHumidity" Config="HumidityDataLineConfig"></Line>
-        <Line Data="Accuracy" Config="AccuracyLineConfig"></Line>
+        <button @onclick="Update" class="btn-primary">Обновить</button>
+        <Line @ref="TemperatureChart" Data="ActualAndPredictedTemperature" Config="TemperatureDataLineConfig"/>
+        <Line Data="ActualAndPredictedHumidity" Config="HumidityDataLineConfig"/>
+        <Line Data="Accuracy" Config="AccuracyLineConfig"/>
     }
     else
     {
@@ -25,6 +26,7 @@ else
 }
 
 @code{
+    Line TemperatureChart;
 
     List<MonitoringData> Monitorings;
 
@@ -56,6 +58,15 @@ else
         TemperatureDataLineConfig = GetTemperatureLineConfig();
         HumidityDataLineConfig = GetHumidityDataConfig();
         AccuracyLineConfig = GetAccuracyConfig();
+    }
+
+    public async Task Update()
+    {
+        Monitorings = await ClimateService.GetClimateRecordsAsync();
+
+        ActualAndPredictedTemperature = GetTemperatureData(Monitorings);
+
+        await TemperatureChart.UpdateChart(csData: ActualAndPredictedTemperature);
     }
 
     private List<GraphicData> GetTemperatureData(List<MonitoringData> monitorings)

@@ -9,29 +9,20 @@
 
 <h3>Панель мониторинга</h3>
 
-@if (ActualAndPredictedTemperature is null || ActualAndPredictedHumidity is null ||
-ActualAndPredictedTemperature.Count == 0 || ActualAndPredictedHumidity.Count == 0)
+@if (ActualAndPredictedTemperature is null || ActualAndPredictedHumidity is null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>Загрузка...</em></p>
 }
 else
 {
-@*    <table>
-        <tr>
-            <td><p>График температуры</p></td>
-            <td><p>График влажности</p></td>
-        </tr>  
-        <tr>
-            <td><Line Data="ActualAndPredictedTemperature" Config="TemperatureDataLineConfig" /></td>
-            <td><Line Data="ActualAndPredictedHumidity" Config="HumidityDataLineConfig" /></td>
-        </tr>
-    </table>*@
-
-    <Line Data="ActualAndPredictedTemperature" Config="TemperatureDataLineConfig"/>
-    <Line Data="ActualAndPredictedHumidity" Config="HumidityDataLineConfig"/>
+    <Line @ref="TemperatureChart" Data="ActualAndPredictedTemperature" Config="TemperatureDataLineConfig"/>
+    <Line @ref="HumidityChart" Data="ActualAndPredictedHumidity" Config="HumidityDataLineConfig"/>
 }
 
 @code {
+    Line TemperatureChart;
+    Line HumidityChart;
+
     LineConfig TemperatureDataLineConfig;
     LineConfig HumidityDataLineConfig;
 
@@ -43,11 +34,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        ActualAndPredictedTemperature = new List<GraphicData>(15);
-        ActualAndPredictedHumidity = new List<GraphicData>(15);
         Monitorings = new List<MonitoringData>(15);
+
+        ActualAndPredictedTemperature = GetTemperatureData(Monitorings);
+        ActualAndPredictedHumidity = GetHumidityData(Monitorings);
+
         TemperatureDataLineConfig = GetTemperatureLineConfig();
         HumidityDataLineConfig = GetHumidityDataConfig();
+
         await Connect();
     }
 
@@ -65,8 +59,6 @@ else
 
     private async Task MonitoringDataArrived(MonitoringData monitoringData)
     {
-        Console.WriteLine(monitoringData.MeasurementTime.ToString());
-
         if (Monitorings is null)
         {
             return;
@@ -74,7 +66,6 @@ else
 
         if (Monitorings.Count == Monitorings.Capacity)
         {
-            Console.WriteLine("Удаляю");
             Monitorings.RemoveAt(0);
         }
 
@@ -83,9 +74,13 @@ else
         ActualAndPredictedTemperature = GetTemperatureData(Monitorings);
         ActualAndPredictedHumidity = GetHumidityData(Monitorings);
 
-        await Task.Delay(300);
+        TemperatureDataLineConfig = GetTemperatureLineConfig();
+        HumidityDataLineConfig = GetHumidityDataConfig();
 
-        StateHasChanged();
+        await TemperatureChart.UpdateChart(csData: ActualAndPredictedTemperature, csConfig: TemperatureDataLineConfig);
+        await HumidityChart.UpdateChart(csData: ActualAndPredictedHumidity, csConfig: HumidityDataLineConfig);
+
+        await TemperatureChart.Render();
     }
 
     public async ValueTask DisposeAsync()

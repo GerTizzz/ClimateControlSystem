@@ -41,7 +41,7 @@ namespace ClimateControlSystem.Server.Migrations
             migrationBuilder.InsertData(
                 table: "MonitoringData",
                 columns: new[] { "Id", "AirDryTemperatureOutside", "AirHumidityOutside", "AirWetTemperatureOutside", "ClusterLoad", "ClusterTemperature", "CpuUsage", "MeanCoolingValue", "MeasurementTime", "PredictedHumidity", "PredictedHumidityAccuracy", "PredictedTemperature", "PredictedTemperatureAccuracy", "PreviousHumidity", "PreviousTemperature", "WindDirection", "WindEnthalpy", "WindSpeed" },
-                values: new object[] { 1, -3f, 91f, -3.91f, 50.8f, 56f, 5945.632f, 17.7f, new DateTimeOffset(new DateTime(2022, 11, 15, 9, 53, 14, 549, DateTimeKind.Unspecified).AddTicks(7676), new TimeSpan(0, 5, 0, 0, 0)), 18.77f, null, 23.32f, null, 19.71f, 23.48f, 225f, -4.06f, 3f });
+                values: new object[] { 1, -3f, 91f, -3.91f, 50.8f, 56f, 5945.632f, 17.7f, DateTimeOffset.Now, 18.77f, null, 23.32f, null, 19.71f, 23.48f, 225f, -4.06f, 3f });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
