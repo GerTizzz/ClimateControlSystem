@@ -6,9 +6,9 @@ namespace ClimateControlSystem.Server.Services.MediatR.Handlers
 {
     public class SavePredictionHandler : IRequestHandler<SavePredictionCommand, bool>
     {
-        private readonly IPredictionRepository _predictionRepository;
+        private readonly IMonitoringDataRepository _predictionRepository;
 
-        public SavePredictionHandler(IPredictionRepository predictionRepository)
+        public SavePredictionHandler(IMonitoringDataRepository predictionRepository)
         {
             _predictionRepository = predictionRepository;
         }

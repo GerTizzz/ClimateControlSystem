@@ -7,9 +7,9 @@ namespace ClimateControlSystem.Server.Services.MediatR.Handlers
 {
     public class GetLastPredictionHandler : IRequestHandler<GetLastPredictionQuery, MonitoringData>
     {
-        private readonly IPredictionRepository _predictionRepository;
+        private readonly IMonitoringDataRepository _predictionRepository;
 
-        public GetLastPredictionHandler(IPredictionRepository predictionRepository)
+        public GetLastPredictionHandler(IMonitoringDataRepository predictionRepository)
         {
             _predictionRepository = predictionRepository;
         }
