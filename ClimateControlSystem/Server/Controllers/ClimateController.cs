@@ -26,11 +26,6 @@ namespace ClimateControlSystem.Server.Controllers
         {
             var records = await _predictionRepository.GetClimateRecordsAsync(amountOfRecordsNeeeded);
 
-            TokenHelper.CreatePasswordHash("admin", out byte[] pass, out byte[] salt);
-
-            Console.WriteLine("PASS:!!!" + string.Join(", ", pass) + "!!!");
-            Console.WriteLine("SALT:!!!" + string.Join(", ", salt) + "!!!");
-
             return Ok(records);
         }
     }
