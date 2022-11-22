@@ -5,7 +5,6 @@ using ClimateControlSystem.Client.Services.AuthenticationService;
 using ClimateControlSystem.Client.Services.ClimateService;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
