@@ -82,10 +82,18 @@
 
         for (int i = 0; i < Monitorings.Count; i++)
         {
+            if (i == 0)
+            {
+                temperatureData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                    24f, "Limit"));
+            }
+
             if (i < Monitorings.Count - 1)
             {
                 temperatureData.Add(new GraphicData(Monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
                     Monitorings[i].PredictedTemperature, "Predicted"));
+                temperatureData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                    24f, "Limit"));
             }
 
             if (i > 0)
@@ -104,10 +112,13 @@
 
         for (int i = 0; i < monitorings.Count; i++)
         {
+
             if (i < monitorings.Count - 1)
             {
                 humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
                     monitorings[i].PredictedHumidity, "Predicted"));
+                humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                    21f, "Limit"));
             }
 
             if (i > 0)
@@ -136,6 +147,9 @@
 
             temperatureAccuracy.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
                 monitorings[i].PredictedHumidityAccuracy.Value, "Humidity"));
+
+            temperatureAccuracy.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                100f, "Limit"));
         }
 
         return temperatureAccuracy;
@@ -167,6 +181,7 @@
         var delta = max - min;
         config.YAxis.Max = max + delta / 10;
         config.YAxis.Min = min - delta / 10;
+        config.Point.Shape = "circle";
 
         return config;
     }
@@ -182,6 +197,7 @@
         var delta = max - min;
         config.YAxis.Max = max + delta / 10;
         config.YAxis.Min = min - delta / 10;
+        config.Point.Shape = "square";
 
         return config;
     }
@@ -207,13 +223,13 @@
             Point = new LineViewConfigPoint()
             {
                 Style = new GraphicStyle() { LineWidth = 3, FillOpacity = 5 },
-                Size = 10,
+                Size = 7,
                 Visible = true,
                 Shape = "diamond"
             },
             LineStyle = new LineStyle()
             {
-                LineWidth = 8
+                LineWidth = 5
             },
             Legend = new Legend()
             {
