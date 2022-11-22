@@ -10,9 +10,12 @@ using ClimateControlSystem.Server.Services.gRPC;
 using ClimateControlSystem.Server.Services.MediatR;
 using ClimateControlSystem.Server.Services.PredictionEngine;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,19 +23,36 @@ var builder = WebApplication.CreateBuilder(args);
 string _modelLocation = Directory.GetCurrentDirectory() + "\\" + builder.Configuration["ModelLocationPath"];
 string _predictionDbConnectionString = builder.Configuration.GetConnectionString("PredictionsDbConnection");
 
-//builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
+builder.Services.AddScoped<IMonitoringDataRepository, MonitoringDataRepository>();
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+builder.Services.AddScoped<IPredictionService, PredictionService>();
+builder.Services.AddSingleton<IPredictionEngineService>(sp => 
+    new PredictionEngineService(sp.GetService<IMapper>(), _modelLocation));
+builder.Services.AddScoped<IUserManager, UserManager>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true
+        };
+    });
 builder.Services.AddMediatR(typeof(MediatREntrypoint).Assembly);
 builder.Services.AddAutoMapper(typeof(AppMappingProfile));
 builder.Services.AddDbContext<PredictionsDbContext>(options =>
 {
     options.UseSqlServer(_predictionDbConnectionString);
 });
-builder.Services.AddScoped<IPredictionRepository, PredictionRepository>();
-builder.Services.AddScoped<IPredictionService, PredictionService>();
+builder.Services.AddRazorPages();
+
 builder.Services.AddGrpc();
-builder.Services.AddSingleton<IPredictionEngineService>(sp => 
-    new PredictionEngineService(sp.GetService<IMapper>(), _modelLocation));
+
 builder.Services.AddSignalR();
 builder.Services.AddResponseCompression(options =>
     options.MimeTypes = ResponseCompressionDefaults
@@ -43,6 +63,9 @@ builder.Services.AddResponseCompression(options =>
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseResponseCompression();
 app.UseBlazorFrameworkFiles();

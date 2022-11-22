@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClimateControlSystem.Server.Persistence.Repositories
 {
-    public class PredictionRepository : IPredictionRepository
+    public class MonitoringDataRepository : IMonitoringDataRepository
     {
         private readonly PredictionsDbContext _context;
         private readonly IMapper _mapper;
 
-        public PredictionRepository(PredictionsDbContext context, IMapper mapper)
+        public MonitoringDataRepository(PredictionsDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

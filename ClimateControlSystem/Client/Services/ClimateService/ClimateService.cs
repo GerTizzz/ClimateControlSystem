@@ -16,9 +16,14 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             _httpClient = httpClient;
         }
 
-        public async Task<List<MonitoringData>> GetClimateRecordsAsync()
+        public async Task<List<MonitoringData>> GetClimateRecordsAsync(int countRecords)
         {
-            var result = await _httpClient.GetFromJsonAsync<List<MonitoringData>>($"api/climate/{RecordsCount}") ?? new List<MonitoringData>();
+            if (countRecords > RecordsCount)
+            {
+                countRecords = RecordsCount;
+            }
+
+            var result = await _httpClient.GetFromJsonAsync<List<MonitoringData>>($"api/climate/{countRecords}") ?? new List<MonitoringData>();
 
             return result;
         }

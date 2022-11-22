@@ -2,7 +2,7 @@
 
 namespace ClimateControlSystem.Server.Domain.Repositories
 {
-    public interface IPredictionRepository
+    public interface IMonitoringDataRepository
     {
         Task<bool> AddPredictionAsync(MonitoringData newRecord);
 

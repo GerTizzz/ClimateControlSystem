@@ -5,7 +5,7 @@ using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineReso
 using Microsoft.ML;
 using Microsoft.ML.Transforms;
 
-namespace ClimateControlSystem.Server.Services.PredictionEngine
+namespace ClimateControlSystem.Server.Services
 {
     public sealed class PredictionEngineService : IPredictionEngineService
     {

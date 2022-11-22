@@ -6,9 +6,9 @@ namespace ClimateControlSystem.Server.Services.MediatR.Handlers
 {
     public class UpdatePredictionAccuraciesHandler : IRequestHandler<UpdatePredictionAccuraciesCommand, bool>
     {
-        private readonly IPredictionRepository _predictionRepository;
+        private readonly IMonitoringDataRepository _predictionRepository;
 
-        public UpdatePredictionAccuraciesHandler(IPredictionRepository predictionRepository)
+        public UpdatePredictionAccuraciesHandler(IMonitoringDataRepository predictionRepository)
         {
             _predictionRepository = predictionRepository;
         }

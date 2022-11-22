@@ -9,15 +9,23 @@
 
 <h3>Панель мониторинга</h3>
 
-@if (ActualAndPredictedTemperature is null || ActualAndPredictedHumidity is null)
-{
-    <p><em>Загрузка...</em></p>
-}
-else
-{
-    <Line @ref="TemperatureChart" Data="ActualAndPredictedTemperature" Config="TemperatureDataLineConfig"/>
-    <Line @ref="HumidityChart" Data="ActualAndPredictedHumidity" Config="HumidityDataLineConfig"/>
-}
+<AuthorizeView>
+    <Authorized>
+        @if (ActualAndPredictedTemperature is null || ActualAndPredictedHumidity is null
+        || ActualAndPredictedTemperature.Count == 0 || ActualAndPredictedHumidity.Count == 0)
+        {
+            <p><em>Загрузка...</em></p>
+        }
+        else
+        {
+            <Line @ref="TemperatureChart" Data="ActualAndPredictedTemperature" Config="TemperatureDataLineConfig"/>
+            <Line @ref="HumidityChart" Data="ActualAndPredictedHumidity" Config="HumidityDataLineConfig"/>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <h4>Вы не вошли в систему</h4>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     Line TemperatureChart;
@@ -34,7 +42,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Monitorings = new List<MonitoringData>(15);
+        Monitorings = await ClimateService.GetClimateRecordsAsync(15);
+        Monitorings.Capacity = 15;
 
         ActualAndPredictedTemperature = GetTemperatureData(Monitorings);
         ActualAndPredictedHumidity = GetHumidityData(Monitorings);
@@ -141,11 +150,11 @@ else
 
         config.Title.Text = "Действительная и спрогнозированная температуры";
         config.YAxis.Title.Text = "Градусы °C";
-        //var min = ActualAndPredictedTemperature.Min(item => item.value);
-        //var max = ActualAndPredictedTemperature.Max(item => item.value);
-        //var delta = max - min;
-        //config.YAxis.Max = max + delta / 10;
-        //config.YAxis.Min = min - delta / 10;
+        var min = ActualAndPredictedTemperature.Min(item => item.value);
+        var max = ActualAndPredictedTemperature.Max(item => item.value);
+        var delta = max - min;
+        config.YAxis.Max = max + delta / 10;
+        config.YAxis.Min = min - delta / 10;
 
         return config;
     }
@@ -156,11 +165,11 @@ else
 
         config.Title.Text = "Действительная и спрогнозированная влажности";
         config.YAxis.Title.Text = "Показатели влажности %";
-        //var min = ActualAndPredictedHumidity.Min(item => item.value);
-        //var max = ActualAndPredictedHumidity.Max(item => item.value);
-        //var delta = max - min;
-        //config.YAxis.Max = max + delta / 10;
-        //config.YAxis.Min = min - delta / 10;
+        var min = ActualAndPredictedHumidity.Min(item => item.value);
+        var max = ActualAndPredictedHumidity.Max(item => item.value);
+        var delta = max - min;
+        config.YAxis.Max = max + delta / 10;
+        config.YAxis.Min = min - delta / 10;
 
         return config;
     }
