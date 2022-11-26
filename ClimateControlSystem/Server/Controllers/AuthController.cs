@@ -8,30 +8,30 @@ namespace ClimateControlSystem.Server.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IUserManager _userManager;
+        private readonly IAuthenticateManager _authManager;
 
-        public AuthController(IUserManager usersRepository)
+        public AuthController(IAuthenticateManager authManager)
         {
-            _userManager = usersRepository;
+            _authManager = authManager;
         }
 
-        [HttpPost("register")]
-        public async Task<ActionResult<bool>> Register(UserDtoModel request)
-        {
-            var isCreated = await _userManager.CreateNewUser(request);
+        //[HttpPost("register")]
+        //public async Task<ActionResult<bool>> Register(UserDtoModel request)
+        //{
+        //    var isCreated = await _authManager.Create(request);
 
-            if (isCreated)
-            {
-                return Ok();
-            }
+        //    if (isCreated)
+        //    {
+        //        return Ok();
+        //    }
 
-            return BadRequest();
-        }
+        //    return BadRequest();
+        //}
 
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(UserDtoModel request)
         {
-            var token = await _userManager.GetTokenForUser(request);
+            var token = await _authManager.GetTokenForUser(request);
 
             if (token is null)
             {

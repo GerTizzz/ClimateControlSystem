@@ -16,8 +16,7 @@
         {
             if (HasData)
             {
-                <button @onclick="Update" class="btn-primary">Обновить</button>
-                <Line @ref="TemperatureChart" Data="ActualAndPredictedTemperature" Config="TemperatureDataLineConfig"/>
+                <Line Data="ActualAndPredictedTemperature" Config="TemperatureDataLineConfig"/>
                 <Line Data="ActualAndPredictedHumidity" Config="HumidityDataLineConfig"/>
                 <Line Data="Accuracy" Config="AccuracyLineConfig"/>
             }
@@ -33,8 +32,6 @@
 </AuthorizeView>
 
 @code{
-    Line TemperatureChart;
-
     List<MonitoringData> Monitorings;
 
     bool HasData = false;
@@ -65,15 +62,6 @@
         TemperatureDataLineConfig = GetTemperatureLineConfig();
         HumidityDataLineConfig = GetHumidityDataConfig();
         AccuracyLineConfig = GetAccuracyConfig();
-    }
-
-    public async Task Update()
-    {
-        Monitorings = await ClimateService.GetClimateRecordsAsync(25);
-
-        ActualAndPredictedTemperature = GetTemperatureData(Monitorings);
-
-        await TemperatureChart.UpdateChart(csData: ActualAndPredictedTemperature);
     }
 
     private List<GraphicData> GetTemperatureData(List<MonitoringData> monitorings)

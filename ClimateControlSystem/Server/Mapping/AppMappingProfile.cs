@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Protos;
+using ClimateControlSystem.Server.Resources.Authentication;
 using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Resources.RepositoryResources;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
@@ -62,6 +63,10 @@ namespace ClimateControlSystem.Server.Mapping
             CreateMap<MonitoringDataRecord, PredictionResult>();
 
             #endregion
+
+            CreateMap<AuthenticatedUserModel, UserModel>();
+
+            CreateMap<UserModel, AuthenticatedUserModel>();
         }
     }
 }

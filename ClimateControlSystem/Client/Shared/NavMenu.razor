@@ -7,30 +7,37 @@
     </div>
 </div>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <nav class="column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Мониторинг
-            </NavLink>
-        </div>     
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="predictionsjournal">
-                <span class="oi oi-list" aria-hidden="true"></span> Журнал прогнозов
-            </NavLink>
+<AuthorizeView>
+    <Authorized>
+        <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+            <nav class="column">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="oi oi-home" aria-hidden="true"></span> Мониторинг
+                    </NavLink>
+                </div>     
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="predictionsjournal">
+                        <span class="oi oi-list" aria-hidden="true"></span> Журнал прогнозов
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="predictionsgraphics">
+                        <span class="oi oi-graph" aria-hidden="true"></span> Графики прогнозов
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="users">
+                        <span class="oi oi-person" aria-hidden="true"></span> Профиль
+                    </NavLink>
+                </div>
+            </nav>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="predictionsgraphics">
-                <span class="oi oi-graph" aria-hidden="true"></span> Графики прогнозов
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="verifyauth">
-                <span class="oi oi-person" aria-hidden="true"></span> Профиль
-            </NavLink>
-        </div>
-    </nav>
-</div>
+    </Authorized>
+    <NotAuthorized>
+                <h4>Вы не вошли в систему</h4>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private bool collapseNavMenu = true;

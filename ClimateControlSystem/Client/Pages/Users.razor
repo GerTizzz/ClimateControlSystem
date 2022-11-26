@@ -1,0 +1,58 @@
+﻿@page "/users"
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Данные о пользователях</h3>
+
+<AuthorizeView>
+    <Authorized>
+        <h4>Здравствуйте, @userName!</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Имя</th>
+                    <th>Роль</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in SuperHeroService.Heroes)
+                    {
+                        <tr>
+                            <td>@user.Name</td>
+                            <td>@user.Role</td>
+                            <td>
+                                <button class="btn btn-primary" @onclick="(() => ShowUser(user.Id))"><i class="oi oi-pencil"></i></button>
+                            </td>
+                        </tr>
+                    }
+            </tbody>
+        </table>
+        <button class="btn btn-primary" @onclick="CreateUser">Создать нового пользователя</button>
+    </Authorized>
+    <NotAuthorized>
+        <h4>Вы не вошли в систему</h4>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; }
+
+    private string userName;
+    private bool isAdmin = false;
+    private bool isOperator = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthState;
+
+        if (authState.User.Identity.IsAuthenticated)
+        {
+            userName = authState.User.FindFirst(ClaimTypes.Name).Value;
+
+            isAdmin = authState.User.IsInRole("Admin");
+            isOperator = authState.User.IsInRole("Operator");
+        }
+    }
+}

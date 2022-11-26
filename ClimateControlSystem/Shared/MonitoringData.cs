@@ -1,6 +1,6 @@
 ﻿namespace ClimateControlSystem.Shared
 {
-    public class MonitoringData
+    public sealed class MonitoringData
     {
         public DateTimeOffset MeasurementTime { get; set; }
         public float ClusterLoad { get; set; }

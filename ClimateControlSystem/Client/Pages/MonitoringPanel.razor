@@ -37,8 +37,6 @@
     List<GraphicData> ActualAndPredictedTemperature;
     List<GraphicData> ActualAndPredictedHumidity;
 
-    List<GraphicData> TemperatureLimit;
-
     List<MonitoringData> Monitorings;
 
     private HubConnection? hubConnection;
@@ -50,8 +48,6 @@
 
         ActualAndPredictedTemperature = GetTemperatureData(Monitorings);
         ActualAndPredictedHumidity = GetHumidityData(Monitorings);
-
-        TemperatureLimit = new List<GraphicData>();
 
         TemperatureDataLineConfig = GetTemperatureLineConfig();
         HumidityDataLineConfig = GetHumidityLineConfig();
@@ -111,24 +107,15 @@
 
         for (int i = 0; i < monitorings.Count; i++)
         {
-            if (i == 0)
-            {
-                temperatureData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    24f, "Limit"));
-            }
-
-            if (i < monitorings.Count - 1)
-            {
-                temperatureData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    monitorings[i].PredictedTemperature, "Predicted"));
-                temperatureData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    24f, "Limit"));
-            }
+            temperatureData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                monitorings[i].PredictedTemperature, "Predicted"));
+            temperatureData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                24f, "Limit"));
 
             if (i > 0)
             {
                 temperatureData.Add(new GraphicData(monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    monitorings[i].PreviousTemperature, "Measured"));
+                    monitorings[i - 1].PreviousTemperature, "Measured"));
             }
         }
 
@@ -141,24 +128,15 @@
 
         for (int i = 0; i < monitorings.Count; i++)
         {
-            if (i == 0)
-            {
-                humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    21f, "Limit"));
-            }
-
-            if (i < monitorings.Count - 1)
-            {
-                humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    monitorings[i].PredictedHumidity, "Predicted"));
-                humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    21f, "Limit"));
-            }
+            humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                monitorings[i].PredictedHumidity, "Predicted"));
+            humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                21f, "Limit"));
 
             if (i > 0)
             {
                 humidityData.Add(new GraphicData(monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    monitorings[i].PreviousHumidity, "Measured"));
+                    monitorings[i - 1].PreviousHumidity, "Measured"));
             }
         }
 
