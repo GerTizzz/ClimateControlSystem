@@ -27,6 +27,7 @@ builder.Services.AddScoped<IPredictionService, PredictionService>();
 builder.Services.AddSingleton<IPredictionEngineService>(sp => 
     new PredictionEngineService(sp.GetService<IMapper>(), _modelLocation));
 builder.Services.AddScoped<IAuthenticateManager, AuthenticateManager>();
+builder.Services.AddScoped<IUserManager, UserManager>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

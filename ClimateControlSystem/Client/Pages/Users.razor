@@ -1,11 +1,12 @@
 ﻿@page "/users"
-@attribute [Authorize(Roles = "Admin")]
-
+@inject NavigationManager NavigationManager
+@inject IUsersService UsersService
+@*@attribute [Authorize(Roles = "Admin")]
+*@
 <h3>Данные о пользователях</h3>
 
 <AuthorizeView>
     <Authorized>
-        <h4>Здравствуйте, @userName!</h4>
         <table class="table">
             <thead>
                 <tr>
@@ -15,7 +16,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var user in SuperHeroService.Heroes)
+                @foreach (var user in UsersService.Users)
                     {
                         <tr>
                             <td>@user.Name</td>
@@ -27,32 +28,27 @@
                     }
             </tbody>
         </table>
-        <button class="btn btn-primary" @onclick="CreateUser">Создать нового пользователя</button>
+        <button class="btn btn-primary" @onclick="(() => CreateUser())">Создать нового пользователя</button>
     </Authorized>
     <NotAuthorized>
-        <h4>Вы не вошли в систему</h4>
+        Вы не вошли в систему
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
 
-    [CascadingParameter]
-    public Task<AuthenticationState> AuthState { get; set; }
-
-    private string userName;
-    private bool isAdmin = false;
-    private bool isOperator = false;
-
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthState;
+        await UsersService.GetUsers();
+    }
 
-        if (authState.User.Identity.IsAuthenticated)
-        {
-            userName = authState.User.FindFirst(ClaimTypes.Name).Value;
+    void ShowUser(int id)
+    {
+        NavigationManager.NavigateTo($"/user/{id}");
+    }
 
-            isAdmin = authState.User.IsInRole("Admin");
-            isOperator = authState.User.IsInRole("Operator");
-        }
+    void CreateUser()
+    {
+        NavigationManager.NavigateTo("/user");
     }
 }

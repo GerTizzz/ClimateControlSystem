@@ -1,7 +1,7 @@
 ﻿@page "/user"
 @page "/user/{id:int}"
 @attribute [Authorize(Roles = "Admin")]
-@inject IUserService UserService
+@inject IUsersService UsersService
 
 @if (Id == null)
 {
@@ -21,7 +21,14 @@ else
     </div>
     <div>
         <label for="role">Роль</label>
-        <InputText id="role" @bind-Value="user.Role" class="form-control"></InputText>
+        <InputSelect id="role" @bind-Value="user.Role" class="form-control">
+            <option>Admin</option>
+            <option>Operator</option>
+        </InputSelect>
+    </div>
+        <div>
+        <label for="password">Пароль</label>
+        <InputText id="password" @bind-Value="user.Password" class="form-control"></InputText>
     </div>
     <br />
     <button type="submit" class="btn btn-primary">@btnText</button>
@@ -32,26 +39,25 @@ else
     [Parameter]
     public int? Id { get; set; }
 
-    UserModel user = new UserModel();
+    UserDtoModel user = new UserDtoModel();
 
     string btnText = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         btnText = Id == null ? "Создать пользователя" : "Редактировать пользователя";
-        await SuperHeroService.GetComics();
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        if (Id == null)
+        if (Id != null)
         {
-            //user.Comic = SuperHeroService.Comics.First();
-            //user.ComicId = user.Comic.Id;
-        }
-        else
-        {
-            user = await SuperHeroService.GetSingleSuperHero(Id.Value);
+            var arrivedUser = await UsersService.GetUser(Id.Value);
+
+            user.Role = arrivedUser.Role;
+            user.Name = arrivedUser.Name;
+            user.Password = string.Empty;
+            user.Id = arrivedUser.Id;
         }
     }
 
@@ -59,16 +65,16 @@ else
     {
         if (Id == null)
         {
-            await SuperHeroService.CreateHero(user);
+            await UsersService.CreateUser(user);
         }
         else
         {
-            await SuperHeroService.UpdateHero(user);
+            await UsersService.UpdateUser(user);
         }
     }
 
     async Task DeleteUser()
     {
-        await SuperHeroService.DeleteHero(user.Id);
+        await UsersService.DeleteUser(user.Id);
     }
 }

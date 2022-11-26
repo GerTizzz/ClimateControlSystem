@@ -3,6 +3,7 @@ using ClimateControlSystem.Client;
 using ClimateControlSystem.Client.Authentication;
 using ClimateControlSystem.Client.Services.AuthenticationService;
 using ClimateControlSystem.Client.Services.ClimateService;
+using ClimateControlSystem.Client.Services.UsersService;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -18,5 +19,6 @@ builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<IClimateService, ClimateService>();
+builder.Services.AddScoped<IUsersService, UsersService>();
 
 await builder.Build().RunAsync();
