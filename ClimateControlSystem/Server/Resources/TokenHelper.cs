@@ -26,11 +26,12 @@ namespace ClimateControlSystem.Server.Resources
             }
         }
 
-        public static string CreateToken(UserModel user, string securityKey)
+        public static string CreateToken(AuthenticatedUserModel user, string securityKey)
         {
             List<Claim> claim = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, user.Name)
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(securityKey));

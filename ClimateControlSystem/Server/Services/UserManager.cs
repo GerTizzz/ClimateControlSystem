@@ -1,81 +1,72 @@
-﻿using ClimateControlSystem.Server.Domain.Repositories;
+﻿using AutoMapper;
+using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Resources.Authentication;
 using ClimateControlSystem.Server.Resources;
+using ClimateControlSystem.Server.Resources.Authentication;
 using ClimateControlSystem.Shared;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClimateControlSystem.Server.Services
 {
-    public class UserManager : IUserManager
+    public sealed class UserManager : IUserManager
     {
-        private IUsersRepository _usersRepository;
-        private readonly IConfiguration _configuration;
+        private readonly IUsersRepository _userRepository;
+        private readonly IMapper _mapper;
 
-        public UserManager(IUsersRepository usersRepository, IConfiguration configuration)
+        public UserManager(IUsersRepository userRepository, IMapper mapper)
         {
-            _usersRepository = usersRepository;
-            _configuration = configuration;
+            _userRepository = userRepository;
+            _mapper = mapper;
         }
 
-        public async Task CreateDefaultUser()
+        public async Task<UserModel> GetUserById(int id)
         {
-            await CreateNewUser(new UserDtoModel() { Name = "admin", Password = "admin" });
+            var user = await _userRepository.GetUser(id);
+
+            return _mapper.Map<UserModel>(user);
         }
 
-        public async Task<bool> CreateNewUser(UserDtoModel request)
+        public async Task<List<UserModel>> GetUsers()
         {
-            if (_usersRepository.GetUserByName(request.Name) is not null)
-            {
-                return false;
-            }
+            var users = await _userRepository.GetUsers();
 
-            TokenHelper.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            return users.Select(user => _mapper.Map<UserModel>(user)).ToList();
+        }
 
-            UserModel newUser = new UserModel();
+        public Task<bool> CreateUser(UserDtoModel user)
+        {
+            TokenHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            newUser.Name = request.Name;
+            AuthenticatedUserModel newUser = _mapper.Map<AuthenticatedUserModel>(user);
+
+            newUser.Name = user.Name;
+            newUser.Role = user.Role;
             newUser.PasswordHash = passwordHash;
             newUser.PasswordSalt = passwordSalt;
 
-            await _usersRepository.Create(newUser);
-
-            return true;
+            return _userRepository.Create(newUser);
         }
 
-        public async Task<string> GetTokenForUser(UserDtoModel request)
+        public Task<bool> UpdateUser(UserDtoModel user, int id)
         {
-            UserModel user = await CheckIfUserExist(request);
+            AuthenticatedUserModel authUser = _mapper.Map<AuthenticatedUserModel>(user);
 
-            if (TokenHelper.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt) is false)
-            {
-                return null;
-            }
+            TokenHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            string token = string.Empty;
+            authUser.PasswordHash = passwordHash;
+            authUser.PasswordSalt = passwordSalt;
 
-            if (await IsUserVerifyed(request, user))
-            {
-                token = TokenHelper.CreateToken(user, _configuration.GetSection("AppSettings:Token").Value);
-            }
-
-            return token;
+            return _userRepository.UpdateUser(authUser, id);
         }
 
-        private async Task<UserModel> CheckIfUserExist(UserDtoModel request)
+        public Task<bool> DeleteUser(int id)
         {
-            UserModel user = await _usersRepository.GetUserByName(request.Name);
-                
-            return user;
+            return _userRepository.DeleteUser(id);
         }
 
-        private async Task<bool> IsUserVerifyed(UserDtoModel request, UserModel user)
+        public Task<AuthenticatedUserModel> GetUserByName(string name)
         {
-            if (TokenHelper.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-            {
-                return true;
-            }
-
-            return false;
+            return _userRepository.GetUserByName(name);
         }
     }
 }
