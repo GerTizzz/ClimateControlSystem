@@ -4,7 +4,6 @@ using ClimateControlSystem.Server.Domain.Services;
 using ClimateControlSystem.Server.Resources;
 using ClimateControlSystem.Server.Resources.Authentication;
 using ClimateControlSystem.Shared;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ClimateControlSystem.Server.Services
 {

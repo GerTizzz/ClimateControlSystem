@@ -8,16 +8,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClimateControlSystem.Server.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class ClimateController : ControllerBase
     {
         private readonly IMonitoringDataRepository _predictionRepository;
-        private readonly IMapper _mapper;
 
-        public ClimateController(IMonitoringDataRepository predictionRepository, IMapper mapper)
+        public ClimateController(IMonitoringDataRepository predictionRepository)
         {
             _predictionRepository = predictionRepository;
-            _mapper = mapper;
         }
 
         [HttpGet]

@@ -13,7 +13,7 @@ namespace ClimateControlSystem.Server.Controllers
     {
         private readonly IUserManager _userManager;
 
-        public UserController(UserManager userManager)
+        public UserController(IUserManager userManager)
         {
             _userManager = userManager;
         }

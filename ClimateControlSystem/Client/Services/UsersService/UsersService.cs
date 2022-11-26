@@ -4,7 +4,7 @@ using System.Net.Http.Json;
 
 namespace ClimateControlSystem.Client.Services.UsersService
 {
-    public class UsersService
+    public class UsersService : IUsersService
     {
         private readonly HttpClient _httpClient;
         private readonly NavigationManager _navigationManager;
@@ -27,20 +27,21 @@ namespace ClimateControlSystem.Client.Services.UsersService
         public async Task GetUsers()
         {
             var result = await _httpClient.GetFromJsonAsync<List<UserModel>>("api/user");
+            
             if (result is not null)
             {
                 Users = result;
             }
         }
 
-        public async Task CreateUser(UserModel user)
+        public async Task CreateUser(UserDtoModel user)
         {
             var result = await _httpClient.PostAsJsonAsync("api/user", user);
 
             await SetUsers(result);
         }
 
-        public async Task UpdateUser(UserModel user)
+        public async Task UpdateUser(UserDtoModel user)
         {
             var result = await _httpClient.PutAsJsonAsync($"api/user/{user.Id}", user);
 
@@ -64,7 +65,7 @@ namespace ClimateControlSystem.Client.Services.UsersService
 
             Users = response;
 
-            _navigationManager.NavigateTo("users");
+            _navigationManager.NavigateTo("/users");
         }
     }
 }
