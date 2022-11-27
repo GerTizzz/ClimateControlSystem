@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Resources;
+﻿using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -10,10 +10,10 @@ namespace ClimateControlSystem.Server.Resources.Authentication
 
         public string Name { get; set; }
 
+        public UserType Role { get; set; }
+
         public byte[] PasswordHash { get; set; }
 
         public byte[] PasswordSalt { get; set; }
-
-        public UserType Role { get; set; }
     }
 }

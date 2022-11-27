@@ -64,9 +64,9 @@ namespace ClimateControlSystem.Server.Mapping
 
             #endregion
 
-            CreateMap<AuthenticatedUserModel, UserModel>();
+            CreateMap<AuthenticatedUserModel, UserDtoModel>();
 
-            CreateMap<UserModel, AuthenticatedUserModel>();
+            CreateMap<UserDtoModel, AuthenticatedUserModel>();
         }
     }
 }

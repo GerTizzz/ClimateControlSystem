@@ -1,5 +1,4 @@
 ﻿using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Services;
 using ClimateControlSystem.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +18,7 @@ namespace ClimateControlSystem.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<UserModel>>> GetUsers()
+        public async Task<ActionResult<List<UserDtoModel>>> GetUsers()
         {
             var users = await _userManager.GetUsers();
             return Ok(users);
@@ -27,7 +26,7 @@ namespace ClimateControlSystem.Server.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<UserModel>> GetUser(int id)
+        public async Task<ActionResult<UserDtoModel>> GetUser(int id)
         {
             var requiredUser = await _userManager.GetUserById(id);
 
@@ -40,7 +39,7 @@ namespace ClimateControlSystem.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<UserModel>>> CreateUser(UserDtoModel user)
+        public async Task<ActionResult<List<UserDtoModel>>> CreateUser(UserDtoModel user)
         {
             bool hasCreated = await _userManager.CreateUser(user);
 
@@ -53,7 +52,7 @@ namespace ClimateControlSystem.Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<List<UserModel>>> UpdateUser(UserDtoModel user, int id)
+        public async Task<ActionResult<List<UserDtoModel>>> UpdateUser(UserDtoModel user, int id)
         {
             bool hasUpdated = await _userManager.UpdateUser(user, id);
 
@@ -66,7 +65,7 @@ namespace ClimateControlSystem.Server.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<List<UserModel>>> DeleteSuperHero(int id)
+        public async Task<ActionResult<List<UserDtoModel>>> DeleteUser(int id)
         {
             bool hasDeleted = await _userManager.DeleteUser(id);
 

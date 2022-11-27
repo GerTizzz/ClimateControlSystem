@@ -5,9 +5,9 @@ namespace ClimateControlSystem.Server.Domain.Services
 {
     public interface IUserManager
     {
-        Task<List<UserModel>> GetUsers();
+        Task<List<UserDtoModel>> GetUsers();
 
-        Task<UserModel> GetUserById(int id);
+        Task<UserDtoModel> GetUserById(int id);
 
         Task<bool> CreateUser(UserDtoModel user);
 
