@@ -18,18 +18,18 @@ namespace ClimateControlSystem.Server.Services
             _mapper = mapper;
         }
 
-        public async Task<UserModel> GetUserById(int id)
+        public async Task<UserDtoModel> GetUserById(int id)
         {
             var user = await _userRepository.GetUser(id);
 
-            return _mapper.Map<UserModel>(user);
+            return _mapper.Map<UserDtoModel>(user);
         }
 
-        public async Task<List<UserModel>> GetUsers()
+        public async Task<List<UserDtoModel>> GetUsers()
         {
             var users = await _userRepository.GetUsers();
 
-            return users.Select(user => _mapper.Map<UserModel>(user)).ToList();
+            return users.Select(user => _mapper.Map<UserDtoModel>(user)).ToList();
         }
 
         public Task<bool> CreateUser(UserDtoModel user)

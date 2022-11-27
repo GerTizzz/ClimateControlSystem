@@ -36,7 +36,7 @@ namespace ClimateControlSystem.Client.Services.AuthenticationService
 
             ((AuthStateProvider)_authStateProvider).NotifyUserAuthentication(token);
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             return true;
         }

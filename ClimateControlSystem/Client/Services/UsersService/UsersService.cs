@@ -9,7 +9,7 @@ namespace ClimateControlSystem.Client.Services.UsersService
         private readonly HttpClient _httpClient;
         private readonly NavigationManager _navigationManager;
 
-        public List<UserModel> Users { get; set; } = new List<UserModel>();
+        public List<UserDtoModel> Users { get; set; } = new List<UserDtoModel>();
 
         public UsersService(HttpClient httpClient, NavigationManager navigationManager)
         {
@@ -17,16 +17,16 @@ namespace ClimateControlSystem.Client.Services.UsersService
             _navigationManager = navigationManager;
         }
 
-        public async Task<UserModel> GetUser(int id)
+        public async Task<UserDtoModel> GetUser(int id)
         {
-            var result = await _httpClient.GetFromJsonAsync<UserModel>($"api/user/{id}");
+            var result = await _httpClient.GetFromJsonAsync<UserDtoModel>($"api/user/{id}");
 
             return result;
         }
 
         public async Task GetUsers()
         {
-            var result = await _httpClient.GetFromJsonAsync<List<UserModel>>("api/user");
+            var result = await _httpClient.GetFromJsonAsync<List<UserDtoModel>>("api/user");
             
             if (result is not null)
             {
@@ -56,7 +56,7 @@ namespace ClimateControlSystem.Client.Services.UsersService
 
         private async Task SetUsers(HttpResponseMessage result)
         {
-            var response = await result.Content.ReadFromJsonAsync<List<UserModel>>();
+            var response = await result.Content.ReadFromJsonAsync<List<UserDtoModel>>();
 
             if (response is null)
             {

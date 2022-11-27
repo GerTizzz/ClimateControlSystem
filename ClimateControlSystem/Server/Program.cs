@@ -10,6 +10,7 @@ using ClimateControlSystem.Server.Services.gRPC;
 using ClimateControlSystem.Server.Services.MediatR;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -42,6 +43,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true
         };
     });
+
 builder.Services.AddMediatR(typeof(MediatREntrypoint).Assembly);
 builder.Services.AddAutoMapper(typeof(AppMappingProfile));
 builder.Services.AddDbContext<PredictionsDbContext>(options =>
@@ -64,17 +66,15 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+app.UseRouting();
 app.UseAuthorization();
 
 app.UseResponseCompression();
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
-app.UseRouting();
-
 app.MapGrpcService<ClimateDataReciever>();
 
-//app.MapRazorPages();
 app.MapControllers();
 app.MapHub<MonitoringHub>("/monitoringhub");
 app.MapFallbackToFile("index.html");

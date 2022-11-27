@@ -11,15 +11,15 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (ActualAndPredictedTemperature is null || ActualAndPredictedHumidity is null
-        || ActualAndPredictedTemperature.Count == 0 || ActualAndPredictedHumidity.Count == 0)
+        @if (_actualAndPredictedTemperature is null || _actualAndPredictedHumidity is null
+        || _actualAndPredictedTemperature.Count == 0 || _actualAndPredictedHumidity.Count == 0)
         {
             <p><em>Загрузка...</em></p>
         }
         else
         {
-            <Line @ref="TemperatureChart" Data="ActualAndPredictedTemperature" Config="TemperatureDataLineConfig"/>
-            <Line @ref="HumidityChart" Data="ActualAndPredictedHumidity" Config="HumidityDataLineConfig"/>
+            <Line @ref="_temperatureChart" Data="_actualAndPredictedTemperature" Config="_temperatureDataLineConfig"/>
+            <Line @ref="_humidityChart" Data="_actualAndPredictedHumidity" Config="_humidityDataLineConfig"/>
         }
     </Authorized>
     <NotAuthorized>
@@ -28,76 +28,84 @@
 </AuthorizeView>
 
 @code {
-    Line TemperatureChart;
-    Line HumidityChart;
+    private Line _temperatureChart;
+    private Line _humidityChart;
 
-    LineConfig TemperatureDataLineConfig;
-    LineConfig HumidityDataLineConfig;
+    private LineConfig _temperatureDataLineConfig;
+    private LineConfig _humidityDataLineConfig;
 
-    List<GraphicData> ActualAndPredictedTemperature;
-    List<GraphicData> ActualAndPredictedHumidity;
+    private List<GraphicData> _actualAndPredictedTemperature;
+    private List<GraphicData> _actualAndPredictedHumidity;
 
-    List<MonitoringData> Monitorings;
+    private List<MonitoringData> _monitorings;
 
-    private HubConnection? hubConnection;
+    private HubConnection? _hubConnection;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> _authState { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        Monitorings = await ClimateService.GetClimateRecordsAsync(15);
-        Monitorings.Capacity = 15;
+        var authState = await _authState;
 
-        ActualAndPredictedTemperature = GetTemperatureData(Monitorings);
-        ActualAndPredictedHumidity = GetHumidityData(Monitorings);
+        if (authState.User.Identity.IsAuthenticated)
+        {
+            _monitorings = await ClimateService.GetClimateRecordsAsync(15);
+            _monitorings.Capacity = 15;
 
-        TemperatureDataLineConfig = GetTemperatureLineConfig();
-        HumidityDataLineConfig = GetHumidityLineConfig();
+            _actualAndPredictedTemperature = GetTemperatureData(_monitorings);
+            _actualAndPredictedHumidity = GetHumidityData(_monitorings);
 
-        await Connect();
+            _temperatureDataLineConfig = GetTemperatureLineConfig();
+            _humidityDataLineConfig = GetHumidityLineConfig();
+
+            await Connect();
+        }
     }
 
     private async Task Connect()
     {
-        hubConnection = new HubConnectionBuilder()
+        _hubConnection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri("/monitoringhub"))
             .WithAutomaticReconnect()
             .Build();
 
-        hubConnection.On<MonitoringData>("GetMonitoringData", (newData) => MonitoringDataArrived(newData));
+        _hubConnection.On<MonitoringData>("GetMonitoringData", (newData) => MonitoringDataArrived(newData));
 
-        await hubConnection.StartAsync();
+        await _hubConnection.StartAsync();
     }
 
     private async Task MonitoringDataArrived(MonitoringData monitoringData)
     {
-        if (Monitorings is null)
+        if (_monitorings is null)
         {
             return;
         }
 
-        if (Monitorings.Count == Monitorings.Capacity)
+        if (_monitorings.Count == _monitorings.Capacity)
         {
-            Monitorings.RemoveAt(0);
+            _monitorings.RemoveAt(0);
         }
 
-        Monitorings.Add(monitoringData);
+        _monitorings.Add(monitoringData);
 
-        ActualAndPredictedTemperature = GetTemperatureData(Monitorings);
-        ActualAndPredictedHumidity = GetHumidityData(Monitorings);
+        _actualAndPredictedTemperature = GetTemperatureData(_monitorings);
+        _actualAndPredictedHumidity = GetHumidityData(_monitorings);
 
-        TemperatureDataLineConfig = GetTemperatureLineConfig();
-        HumidityDataLineConfig = GetHumidityLineConfig();
+        _temperatureDataLineConfig = GetTemperatureLineConfig();
+        _humidityDataLineConfig = GetHumidityLineConfig();
 
-        await TemperatureChart.UpdateChart(csData: ActualAndPredictedTemperature, csConfig: TemperatureDataLineConfig);
-        await HumidityChart.UpdateChart(csData: ActualAndPredictedHumidity, csConfig: HumidityDataLineConfig);
+        await _temperatureChart.UpdateChart(csData: _actualAndPredictedTemperature, csConfig: _temperatureDataLineConfig);
+        await _humidityChart.UpdateChart(csData: _actualAndPredictedHumidity, csConfig: _humidityDataLineConfig);
 
-        await TemperatureChart.Render();
+        await _temperatureChart.Render();
     }
 
     public async ValueTask DisposeAsync()
     {
-        if (hubConnection != null)
+        if (_hubConnection != null)
         {
-            await hubConnection.DisposeAsync();
+            await _hubConnection.DisposeAsync();
         }
     }
 
@@ -149,8 +157,8 @@
 
         config.Title.Text = "Действительная и спрогнозированная температуры";
         config.YAxis.Title.Text = "Градусы °C";
-        var min = ActualAndPredictedTemperature.Min(item => item.value);
-        var max = ActualAndPredictedTemperature.Max(item => item.value);
+        var min = _actualAndPredictedTemperature.Min(item => item.value);
+        var max = _actualAndPredictedTemperature.Max(item => item.value);
         var delta = max - min;
         config.YAxis.Max = max + delta / 10;
         config.YAxis.Min = min - delta / 10;
@@ -164,8 +172,8 @@
 
         config.Title.Text = "Действительная и спрогнозированная влажности";
         config.YAxis.Title.Text = "Показатели влажности %";
-        var min = ActualAndPredictedHumidity.Min(item => item.value);
-        var max = ActualAndPredictedHumidity.Max(item => item.value);
+        var min = _actualAndPredictedHumidity.Min(item => item.value);
+        var max = _actualAndPredictedHumidity.Max(item => item.value);
         var delta = max - min;
         config.YAxis.Max = max + delta / 10;
         config.YAxis.Min = min - delta / 10;
