@@ -29,7 +29,9 @@ namespace ClimateControlSystem.Server.Services
         {
             var users = await _userRepository.GetUsers();
 
-            return users.Select(user => _mapper.Map<UserDtoModel>(user)).ToList();
+            var result = users.Select(user => _mapper.Map<UserDtoModel>(user)).ToList();
+
+            return result;
         }
 
         public Task<bool> CreateUser(UserDtoModel user)
