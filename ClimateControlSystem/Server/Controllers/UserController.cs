@@ -43,12 +43,14 @@ namespace ClimateControlSystem.Server.Controllers
         {
             bool hasCreated = await _userManager.CreateUser(user);
 
+            var result = await _userManager.GetUsers();
+
             if (hasCreated)
             {
-                return Ok(_userManager.GetUsers());
+                return Ok(result);
             }
 
-            return BadRequest(_userManager.GetUsers());
+            return BadRequest(result);
         }
 
         [HttpPut("{id}")]
@@ -56,12 +58,14 @@ namespace ClimateControlSystem.Server.Controllers
         {
             bool hasUpdated = await _userManager.UpdateUser(user, id);
 
+            var result = await _userManager.GetUsers();
+
             if (hasUpdated)
             {
-                return Ok(_userManager.GetUsers());
+                return Ok(result);
             }
 
-            return BadRequest(_userManager.GetUsers());
+            return BadRequest(result);
         }
 
         [HttpDelete("{id}")]
@@ -69,12 +73,14 @@ namespace ClimateControlSystem.Server.Controllers
         {
             bool hasDeleted = await _userManager.DeleteUser(id);
 
+            var result = await _userManager.GetUsers();
+
             if (hasDeleted)
             {
-                return Ok(_userManager.GetUsers());
+                return Ok(result);
             }
 
-            return BadRequest(_userManager.GetUsers());
+            return BadRequest(result);
         }
     }
 }
