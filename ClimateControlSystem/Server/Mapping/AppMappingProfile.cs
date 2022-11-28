@@ -64,9 +64,19 @@ namespace ClimateControlSystem.Server.Mapping
 
             #endregion
 
-            CreateMap<AuthenticatedUserModel, UserDtoModel>();
+            CreateMap<AuthenticatedUserModel, UserDtoModel>()
+                .ForMember(dto => dto.Name, auth => auth
+                    .MapFrom(authSrc => authSrc.Name))
+                .ForMember(dto => dto.Role, auth => auth
+                    .MapFrom(authSrc => authSrc.Role))
+                .ForMember(dto => dto.Id, auth => auth
+                    .MapFrom(authSrc => authSrc.Id));
 
-            CreateMap<UserDtoModel, AuthenticatedUserModel>();
+            CreateMap<UserDtoModel, AuthenticatedUserModel>()
+                .ForMember(auth => auth.Name, dto => dto
+                    .MapFrom(dtoSrc => dtoSrc.Name))
+                .ForMember(auth => auth.Role, dto => dto
+                    .MapFrom(dtoSrc => dtoSrc.Role));
         }
     }
 }
