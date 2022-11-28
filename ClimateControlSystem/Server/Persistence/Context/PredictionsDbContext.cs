@@ -2,6 +2,7 @@
 using ClimateControlSystem.Server.Resources.RepositoryResources;
 using ClimateControlSystem.Shared;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ClimateControlSystem.Server.Persistence.Context
 {
@@ -37,8 +38,8 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 });
 
             modelBuilder.Entity<AuthenticatedUserModel>()
-                .Property(s => s.Role)
-                .HasConversion<string>();
+                .Property(user => user.Role)
+                .HasConversion(new EnumToStringConverter<UserType>());
 
             modelBuilder.Entity<AuthenticatedUserModel>().HasData(
                 new AuthenticatedUserModel()

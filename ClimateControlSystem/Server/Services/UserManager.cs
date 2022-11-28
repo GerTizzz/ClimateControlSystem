@@ -38,8 +38,6 @@ namespace ClimateControlSystem.Server.Services
 
             AuthenticatedUserModel newUser = _mapper.Map<AuthenticatedUserModel>(user);
 
-            newUser.Name = user.Name;
-            newUser.Role = user.Role;
             newUser.PasswordHash = passwordHash;
             newUser.PasswordSalt = passwordSalt;
 

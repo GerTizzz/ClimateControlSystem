@@ -3,6 +3,7 @@
     public enum UserType
     {
         Admin,
-        Operator
+        Operator,
+        Undefined
     }
 }

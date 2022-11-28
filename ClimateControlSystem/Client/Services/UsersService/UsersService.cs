@@ -65,7 +65,7 @@ namespace ClimateControlSystem.Client.Services.UsersService
 
             Users = response;
 
-            _navigationManager.NavigateTo("/users");
+            _navigationManager.NavigateTo("users");
         }
     }
 }
