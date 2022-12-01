@@ -1,18 +1,18 @@
-﻿using ClimateControlSystem.Server.Resources.Authentication;
+﻿using ClimateControlSystem.Server.Resources.RepositoryResources;
 
 namespace ClimateControlSystem.Server.Domain.Repositories
 {
     public interface IUsersRepository
     {
-        Task<List<AuthenticatedUserModel>> GetUsers();
+        Task<List<UserRecord>> GetUsers();
 
-        Task<AuthenticatedUserModel> GetUser(int id);
+        Task<UserRecord> GetUser(int id);
 
-        Task<bool> Create(AuthenticatedUserModel newUser);
+        Task<bool> Create(UserRecord newUser);
 
-        Task<AuthenticatedUserModel?> GetUserByName(string userName);
+        Task<UserRecord?> GetUserByName(string userName);
 
-        Task<bool> UpdateUser(AuthenticatedUserModel updateUser, int id);
+        Task<bool> UpdateUser(UserRecord updateUser, int id);
 
         Task<bool> DeleteUser(int id);
     }

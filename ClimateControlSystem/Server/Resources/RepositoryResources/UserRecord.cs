@@ -1,9 +1,9 @@
 ﻿using ClimateControlSystem.Shared;
 using System.ComponentModel.DataAnnotations;
 
-namespace ClimateControlSystem.Server.Resources.Authentication
+namespace ClimateControlSystem.Server.Resources.RepositoryResources
 {
-    public class AuthenticatedUserModel
+    public sealed class UserRecord
     {
         [Key]
         public int Id { get; set; }

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Protos;
-using ClimateControlSystem.Server.Resources.Authentication;
 using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Resources.RepositoryResources;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
@@ -56,15 +55,15 @@ namespace ClimateControlSystem.Server.Mapping
             
             #region Repository
 
-            CreateMap<MonitoringData, MonitoringDataRecord>();
+            CreateMap<MonitoringData, MonitoringRecord>();
 
-            CreateMap<MonitoringDataRecord, MonitoringData>();
+            CreateMap<MonitoringRecord, MonitoringData>();
 
-            CreateMap<MonitoringDataRecord, PredictionResult>();
+            CreateMap<MonitoringRecord, PredictionResult>();
 
             #endregion
 
-            CreateMap<AuthenticatedUserModel, UserDtoModel>()
+            CreateMap<UserRecord, UserDtoModel>()
                 .ForMember(dto => dto.Name, auth => auth
                     .MapFrom(authSrc => authSrc.Name))
                 .ForMember(dto => dto.Role, auth => auth
@@ -72,7 +71,7 @@ namespace ClimateControlSystem.Server.Mapping
                 .ForMember(dto => dto.Id, auth => auth
                     .MapFrom(authSrc => authSrc.Id));
 
-            CreateMap<UserDtoModel, AuthenticatedUserModel>()
+            CreateMap<UserDtoModel, UserRecord>()
                 .ForMember(auth => auth.Name, dto => dto
                     .MapFrom(dtoSrc => dtoSrc.Name))
                 .ForMember(auth => auth.Role, dto => dto

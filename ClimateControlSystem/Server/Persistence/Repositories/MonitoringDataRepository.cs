@@ -22,9 +22,9 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
         {
             try
             {
-                var monitoringRecord = _mapper.Map<MonitoringDataRecord>(newMonitoringData);
+                var monitoringRecord = _mapper.Map<MonitoringRecord>(newMonitoringData);
 
-                await _context.MonitoringData.AddAsync(monitoringRecord);
+                await _context.Monitorings.AddAsync(monitoringRecord);
                 await _context.SaveChangesAsync();
             }
             catch
@@ -39,7 +39,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
         {
             try
             {
-                var result = await _context.MonitoringData
+                var result = await _context.Monitorings
                     .OrderByDescending(record => record.MeasurementTime)
                     .Take(amountOfRecords)
                     .Select(record => _mapper.Map<MonitoringData>(record))
@@ -56,7 +56,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
         {
             try
             {
-                MonitoringDataRecord lastRecord = await _context.MonitoringData
+                MonitoringRecord lastRecord = await _context.Monitorings
                     .OrderBy(record => record.Id)
                     .LastAsync();
 
@@ -74,7 +74,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
         {
             try
             {
-                var dataToUpdate = await _context.MonitoringData
+                var dataToUpdate = await _context.Monitorings
                     .OrderByDescending(record => record.Id)
                     .LastOrDefaultAsync(record => record.MeasurementTime == updatedData.MeasurementTime);
 
