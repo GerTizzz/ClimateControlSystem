@@ -1,6 +1,6 @@
 ﻿using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Persistence.Context;
-using ClimateControlSystem.Server.Resources.Authentication;
+using ClimateControlSystem.Server.Resources.RepositoryResources;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClimateControlSystem.Server.Persistence.Repositories
@@ -14,7 +14,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<List<AuthenticatedUserModel>> GetUsers()
+        public async Task<List<UserRecord>> GetUsers()
         {
             var users = await _context.Users
                 .ToListAsync();
@@ -22,7 +22,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             return users;
         }
 
-        public async Task<AuthenticatedUserModel> GetUser(int id)
+        public async Task<UserRecord> GetUser(int id)
         {
             var user = await _context.Users
                 .OrderBy(user => user.Id)
@@ -31,7 +31,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             return user;
         }
 
-        public async Task<bool> Create(AuthenticatedUserModel newUser)
+        public async Task<bool> Create(UserRecord newUser)
         {
             if (_context.Users.Any(user => user.Name == newUser.Name))
             {
@@ -44,13 +44,13 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             return true;
         }
 
-        public async Task<AuthenticatedUserModel> GetUserByName(string userName)
+        public async Task<UserRecord> GetUserByName(string userName)
         {
             return await _context.Users.OrderBy(user => user.Id)
                 .FirstOrDefaultAsync(user => user.Name == userName);
         }
 
-        public async Task<bool> UpdateUser(AuthenticatedUserModel updateUser, int id)
+        public async Task<bool> UpdateUser(UserRecord updateUser, int id)
         {
             var requiredUser = await _context.Users
                 .FirstOrDefaultAsync(user => user.Id == id);

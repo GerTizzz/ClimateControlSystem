@@ -2,7 +2,7 @@
 
 namespace ClimateControlSystem.Server.Resources.RepositoryResources
 {
-    public class MonitoringDataRecord
+    public sealed class MonitoringRecord
     {
         [Key]
         public int Id { get; set; }
@@ -19,9 +19,5 @@ namespace ClimateControlSystem.Server.Resources.RepositoryResources
         public float WindDirection { get; set; }
         public float WindEnthalpy { get; set; }
         public float MeanCoolingValue { get; set; }
-        public float PredictedTemperature { get; set; }
-        public float PredictedHumidity { get; set; }
-        public float? PredictedTemperatureAccuracy { get; set; }
-        public float? PredictedHumidityAccuracy { get; set; }
     }
 }

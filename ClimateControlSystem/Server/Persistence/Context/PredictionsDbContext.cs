@@ -1,4 +1,4 @@
-﻿using ClimateControlSystem.Server.Resources.Authentication;
+﻿using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Resources.RepositoryResources;
 using ClimateControlSystem.Shared;
 using Microsoft.EntityFrameworkCore;
@@ -8,16 +8,20 @@ namespace ClimateControlSystem.Server.Persistence.Context
 {
     public class PredictionsDbContext : DbContext
     {
-        public DbSet<MonitoringDataRecord> MonitoringData { get; set; }
-        public DbSet<AuthenticatedUserModel> Users { get; set; }
+        public DbSet<MonitoringRecord> Monitorings { get; set; }
+        public DbSet<UserRecord> Users { get; set; }
+        public DbSet<AccuracyRecord> Accuracies { get; set; }
+        public DbSet<ClimateEventRecord> ClimateEvents { get; set; }
+        public DbSet<PredictionRecord> Predictions { get; set; }
+        public DbSet<ConfigRecord> Configs { get; set; }
         public PredictionsDbContext(DbContextOptions options) : base(options)
         {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<MonitoringDataRecord>().HasData(
-                new MonitoringDataRecord()
+            modelBuilder.Entity<MonitoringRecord>().HasData(
+                new MonitoringRecord()
                 {
                     Id = 1,
                     MeasurementTime = DateTimeOffset.Now,
@@ -32,17 +36,29 @@ namespace ClimateControlSystem.Server.Persistence.Context
                     WindSpeed = 3f,
                     WindDirection = 225f,
                     WindEnthalpy = -4.06f,
-                    MeanCoolingValue = 17.7f,
+                    MeanCoolingValue = 17.7f
+                });
+
+            modelBuilder.Entity<PredictionRecord>().HasData(
+                new PredictionRecord()
+                {
+                    Id = 1,
                     PredictedTemperature = 23.32f,
                     PredictedHumidity = 18.77f
                 });
 
-            modelBuilder.Entity<AuthenticatedUserModel>()
+
+
+            modelBuilder.Entity<ClimateEventRecord>()
+                .Property(climateEvent => climateEvent.EventType)
+                .HasConversion(new EnumToStringConverter<ClimateEventType>());
+
+            modelBuilder.Entity<UserRecord>()
                 .Property(user => user.Role)
                 .HasConversion(new EnumToStringConverter<UserType>());
 
-            modelBuilder.Entity<AuthenticatedUserModel>().HasData(
-                new AuthenticatedUserModel()
+            modelBuilder.Entity<UserRecord>().HasData(
+                new UserRecord()
                 {
                     Id = 1,
                     Name = "admin",

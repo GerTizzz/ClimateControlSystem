@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace ClimateControlSystem.Server.Resources
+namespace ClimateControlSystem.Server.Resources.Authentication
 {
     public static class TokenHelper
     {

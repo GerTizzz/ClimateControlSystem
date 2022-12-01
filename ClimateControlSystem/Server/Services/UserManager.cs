@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Resources;
 using ClimateControlSystem.Server.Resources.Authentication;
+using ClimateControlSystem.Server.Resources.RepositoryResources;
 using ClimateControlSystem.Shared;
 
 namespace ClimateControlSystem.Server.Services
@@ -38,7 +38,7 @@ namespace ClimateControlSystem.Server.Services
         {
             TokenHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            AuthenticatedUserModel newUser = _mapper.Map<AuthenticatedUserModel>(user);
+            UserRecord newUser = _mapper.Map<UserRecord>(user);
 
             newUser.PasswordHash = passwordHash;
             newUser.PasswordSalt = passwordSalt;
@@ -48,7 +48,7 @@ namespace ClimateControlSystem.Server.Services
 
         public Task<bool> UpdateUser(UserDtoModel user, int id)
         {
-            AuthenticatedUserModel authUser = _mapper.Map<AuthenticatedUserModel>(user);
+            UserRecord authUser = _mapper.Map<UserRecord>(user);
 
             TokenHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
@@ -63,7 +63,7 @@ namespace ClimateControlSystem.Server.Services
             return _userRepository.DeleteUser(id);
         }
 
-        public Task<AuthenticatedUserModel> GetUserByName(string name)
+        public Task<UserRecord> GetUserByName(string name)
         {
             return _userRepository.GetUserByName(name);
         }
