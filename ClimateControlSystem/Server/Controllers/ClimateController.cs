@@ -10,9 +10,9 @@ namespace ClimateControlSystem.Server.Controllers
     [ApiController]
     public class ClimateController : ControllerBase
     {
-        private readonly IMonitoringDataRepository _predictionRepository;
+        private readonly IClimateRepository _predictionRepository;
 
-        public ClimateController(IMonitoringDataRepository predictionRepository)
+        public ClimateController(IClimateRepository predictionRepository)
         {
             _predictionRepository = predictionRepository;
         }

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Domain.Services;
 using ClimateControlSystem.Server.Hubs;
-using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Services.MediatR.Commands;
 using ClimateControlSystem.Server.Services.MediatR.Queries;
 using ClimateControlSystem.Shared;
@@ -28,9 +27,9 @@ namespace ClimateControlSystem.Server.Services
             _monitoringHub = monitoringHub;
         }
 
-        public Task<PredictionResult> Predict(IncomingMonitoringData newClimateData)
+        public Task<PredictionData> Predict(MonitoringData newClimateData)
         {
-            PredictionResult predictionResult = _predictionEngine.Predict(newClimateData);
+            PredictionData predictionResult = _predictionEngine.Predict(newClimateData);
 
             MonitoringData monitoringData = _mapper.Map<MonitoringData>(newClimateData);
 
@@ -41,14 +40,11 @@ namespace ClimateControlSystem.Server.Services
             return Task.FromResult(predictionResult);
         }
 
-        private Task CreateClimateRecord(MonitoringData monitoringData, PredictionResult predictedData)
+        private Task CreateClimateRecord(MonitoringData monitoringData, PredictionData predictedData)
         {
             CalculateLastPredictionAccuracy(monitoringData).Wait();
 
-            monitoringData.PredictedTemperature = predictedData.PredictedTemperature;
-            monitoringData.PredictedHumidity = predictedData.PredictedHumidity;
-
-            _mediator.Send(new SavePredictionCommand() { Data = monitoringData });
+            _mediator.Send(new AddPredictionCommand() { Data = predictedData });
 
              return Task.CompletedTask;
         }
@@ -63,10 +59,10 @@ namespace ClimateControlSystem.Server.Services
             var predictedTemperature = lastRecord.PredictedTemperature;
             var predictedHumidity = lastRecord.PredictedHumidity;
 
-            lastRecord.PredictedTemperatureAccuracy = 100f - Math.Abs(predictedTemperature - actualTemperature) / actualTemperature;
-            lastRecord.PredictedHumidityAccuracy =  100f - Math.Abs(predictedHumidity - actualHumidity) / actualHumidity;
+            //lastRecord.PredictedTemperatureAccuracy = 100f - Math.Abs(predictedTemperature - actualTemperature) / actualTemperature;
+            //lastRecord.PredictedHumidityAccuracy =  100f - Math.Abs(predictedHumidity - actualHumidity) / actualHumidity;
 
-            _mediator.Send(new UpdatePredictionAccuraciesCommand() { Data = lastRecord }).Wait();
+            //_mediator.Send(new AddAccuracyCommand() { Data = lastRecord }).Wait();
 
             return Task.CompletedTask;
         }
