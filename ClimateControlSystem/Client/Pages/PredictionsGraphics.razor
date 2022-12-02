@@ -18,8 +18,8 @@
             {
                 <Line Data="ActualAndPredictedTemperature" Config="TemperatureDataLineConfig"/>
                 <Line Data="ActualAndPredictedHumidity" Config="HumidityDataLineConfig"/>
-                <Line Data="Accuracy" Config="AccuracyLineConfig"/>
-            }
+@*                <Line Data="Accuracy" Config="AccuracyLineConfig"/>
+*@            }
             else
             {
                 <p><em>Sorry, no data to show...</em></p>
@@ -32,7 +32,7 @@
 </AuthorizeView>
 
 @code{
-    List<MonitoringData> Monitorings;
+    List<Prediction> Monitorings;
 
     bool HasData = false;
 
@@ -40,13 +40,13 @@
     LineConfig HumidityDataLineConfig;
     LineConfig AccuracyLineConfig;
 
-    List<GraphicData> ActualAndPredictedTemperature;
-    List<GraphicData> ActualAndPredictedHumidity;
-    List<GraphicData> Accuracy;
+    List<GraphicData<string, float>> ActualAndPredictedTemperature;
+    List<GraphicData<string, float>> ActualAndPredictedHumidity;
+    //List<GraphicData<string, float>> Accuracy;
 
     protected override async Task OnInitializedAsync()
     {
-        Monitorings = await ClimateService.GetClimateRecordsAsync(25);
+        Monitorings = await ClimateService.GetClimatePredictionsAsync(25);
 
         HasData = Monitorings.Count >= 2;
 
@@ -57,91 +57,78 @@
 
         ActualAndPredictedTemperature = GetTemperatureData(Monitorings);
         ActualAndPredictedHumidity = GetHumidityData(Monitorings);
-        Accuracy = GetAccuracyData(Monitorings);
+        //Accuracy = GetAccuracyData(Monitorings);
 
         TemperatureDataLineConfig = GetTemperatureLineConfig();
         HumidityDataLineConfig = GetHumidityDataConfig();
-        AccuracyLineConfig = GetAccuracyConfig();
+        //AccuracyLineConfig = GetAccuracyConfig();
     }
 
-    private List<GraphicData> GetTemperatureData(List<MonitoringData> monitorings)
+    private List<GraphicData<string, float>> GetTemperatureData(List<Prediction> monitorings)
     {
-        List<GraphicData> temperatureData = new List<GraphicData>();
+        List<GraphicData<string, float>> temperatureData = new List<GraphicData<string, float>>();
 
         for (int i = 0; i < Monitorings.Count; i++)
         {
-            if (i == 0)
-            {
-                temperatureData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    24f, "Limit"));
-            }
-
-            if (i < Monitorings.Count - 1)
-            {
-                temperatureData.Add(new GraphicData(Monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    Monitorings[i].PredictedTemperature, "Predicted"));
-                temperatureData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    24f, "Limit"));
-            }
+            temperatureData.Add(new GraphicData<string, float>(Monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                Monitorings[i].PredictedTemperature, "Predicted"));
+            temperatureData.Add(new GraphicData<string, float>(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                24f, "Limit"));
 
             if (i > 0)
             {
-                temperatureData.Add(new GraphicData(Monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    Monitorings[i].PreviousTemperature, "Measured"));
+                temperatureData.Add(new GraphicData<string, float>(Monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                    Monitorings[i].RealTemperature.Value, "Measured"));
             }
         }
 
         return temperatureData;
     }
 
-    private List<GraphicData> GetHumidityData(List<MonitoringData> monitorings)
+    private List<GraphicData<string, float>> GetHumidityData(List<Prediction> monitorings)
     {
-        List<GraphicData> humidityData = new List<GraphicData>();
+        List<GraphicData<string, float>> humidityData = new List<GraphicData<string, float>>();
 
         for (int i = 0; i < monitorings.Count; i++)
         {
-
-            if (i < monitorings.Count - 1)
-            {
-                humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    monitorings[i].PredictedHumidity, "Predicted"));
-                humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    21f, "Limit"));
-            }
+            humidityData.Add(new GraphicData<string, float>(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                monitorings[i].PredictedHumidity, "Predicted"));
+            humidityData.Add(new GraphicData<string, float>(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                21f, "Limit"));
 
             if (i > 0)
             {
-                humidityData.Add(new GraphicData(monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    monitorings[i].PreviousHumidity, "Measured"));
+                humidityData.Add(new GraphicData<string, float>(monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                    monitorings[i].RealHumidity.Value, "Measured"));
             }
         }
 
         return humidityData;
     }
 
-    private List<GraphicData> GetAccuracyData(List<MonitoringData> monitorings)
-    {
-        List<GraphicData> temperatureAccuracy = new List<GraphicData>();
+    //private List<GraphicData<string, float>> GetAccuracyData(List<Prediction> monitorings)
+    //{
+    //    List<GraphicData<string, float>> temperatureAccuracy = new List<GraphicData<string, float>>();
 
-        for (int i = 0; i < monitorings.Count; i++)
-        {
-            if (monitorings[i].PredictedHumidityAccuracy.HasValue is false || monitorings[i].PredictedTemperatureAccuracy.HasValue is false)
-            {
-                continue;
-            }
+    //    for (int i = 0; i < monitorings.Count; i++)
+    //    {
+    //        if (monitorings[i].PredictedHumidityAccuracy.HasValue is false || monitorings[i].PredictedTemperatureAccuracy.HasValue is false)
+    //        {
+    //            continue;
+    //        }
 
-            temperatureAccuracy.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                monitorings[i].PredictedTemperatureAccuracy.Value, "Temperature"));
+    //        temperatureAccuracy.Add(new GraphicData<string, float>(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+    //            monitorings[i].PredictedTemperatureAccuracy, "Temperature"));
 
-            temperatureAccuracy.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                monitorings[i].PredictedHumidityAccuracy.Value, "Humidity"));
+    //        temperatureAccuracy.Add(new GraphicData<string, float>(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+    //            monitorings[i].PredictedHumidityAccuracy.Value, "Humidity"));
 
-            temperatureAccuracy.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                100f, "Limit"));
-        }
+    //        temperatureAccuracy.Add(new GraphicData<string, float>(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+    //            100f, "Limit"));
+    //    }
 
-        return temperatureAccuracy;
-    }
+    //    return temperatureAccuracy;
+    //}
 
     private LineConfig GetTemperatureLineConfig()
     {
@@ -149,8 +136,8 @@
 
         config.Title.Text = "Действительная и спрогнозированная температуры";
         config.YAxis.Title.Text = "Градусы °C";
-        var min = ActualAndPredictedTemperature.Min(item => item.value);
-        var max = ActualAndPredictedTemperature.Max(item => item.value);
+        var min = ActualAndPredictedTemperature.Min(item => item.Y);
+        var max = ActualAndPredictedTemperature.Max(item => item.Y);
         var delta = max - min;
         config.YAxis.Max = max + delta / 10;
         config.YAxis.Min = min - delta / 10;
@@ -164,8 +151,8 @@
 
         config.Title.Text = "Действительная и спрогнозированная влажности";
         config.YAxis.Title.Text = "Показатели влажности %";
-        var min = ActualAndPredictedHumidity.Min(item => item.value);
-        var max = ActualAndPredictedHumidity.Max(item => item.value);
+        var min = ActualAndPredictedHumidity.Min(item => item.Y);
+        var max = ActualAndPredictedHumidity.Max(item => item.Y);
         var delta = max - min;
         config.YAxis.Max = max + delta / 10;
         config.YAxis.Min = min - delta / 10;
@@ -174,21 +161,21 @@
         return config;
     }
 
-    private LineConfig GetAccuracyConfig()
-    {
-        var config = GetBaseLineConfig();
+    //private LineConfig GetAccuracyConfig()
+    //{
+    //    var config = GetBaseLineConfig();
 
-        config.Title.Text = "Точность прогноза температуры";
-        config.YAxis.Title.Text = "Точнсть прогноза %";
-        var min = Accuracy.Min(item => item.value);
-        var max = Accuracy.Max(item => item.value);
-        var delta = max - min;
-        config.YAxis.Max = max + delta / 10;
-        config.YAxis.Min = min - delta / 10;
-        config.Point.Shape = "square";
+    //    config.Title.Text = "Точность прогноза температуры";
+    //    config.YAxis.Title.Text = "Точнсть прогноза %";
+    //    var min = Accuracy.Min(item => item.Y);
+    //    var max = Accuracy.Max(item => item.Y);
+    //    var delta = max - min;
+    //    config.YAxis.Max = max + delta / 10;
+    //    config.YAxis.Min = min - delta / 10;
+    //    config.Point.Shape = "square";
 
-        return config;
-    }
+    //    return config;
+    //}
 
     private LineConfig GetBaseLineConfig()
     {

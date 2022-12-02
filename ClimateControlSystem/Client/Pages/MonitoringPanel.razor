@@ -34,10 +34,10 @@
     private LineConfig _temperatureDataLineConfig;
     private LineConfig _humidityDataLineConfig;
 
-    private List<GraphicData> _actualAndPredictedTemperature;
-    private List<GraphicData> _actualAndPredictedHumidity;
+    private List<GraphicData<string, float>> _actualAndPredictedTemperature;
+    private List<GraphicData<string, float>> _actualAndPredictedHumidity;
 
-    private List<MonitoringData> _monitorings;
+    private List<Prediction> _monitorings;
 
     private HubConnection? _hubConnection;
 
@@ -50,7 +50,7 @@
 
         if (authState.User.Identity.IsAuthenticated)
         {
-            _monitorings = await ClimateService.GetClimateRecordsAsync(15);
+            _monitorings = await ClimateService.GetClimatePredictionsAsync(15);
             _monitorings.Capacity = 15;
 
             _actualAndPredictedTemperature = GetTemperatureData(_monitorings);
@@ -70,12 +70,12 @@
             .WithAutomaticReconnect()
             .Build();
 
-        _hubConnection.On<MonitoringData>("GetMonitoringData", (newData) => MonitoringDataArrived(newData));
+        _hubConnection.On<Prediction>("GetMonitoringData", (newData) => MonitoringDataArrived(newData));
 
         await _hubConnection.StartAsync();
     }
 
-    private async Task MonitoringDataArrived(MonitoringData monitoringData)
+    private async Task MonitoringDataArrived(Prediction monitoringData)
     {
         if (_monitorings is null)
         {
@@ -109,42 +109,42 @@
         }
     }
 
-    private List<GraphicData> GetTemperatureData(List<MonitoringData> monitorings)
+    private List<GraphicData<string, float>> GetTemperatureData(List<Prediction> monitorings)
     {
-        List<GraphicData> temperatureData = new List<GraphicData>();
+        List<GraphicData<string, float>> temperatureData = new List<GraphicData<string, float>>();
 
         for (int i = 0; i < monitorings.Count; i++)
         {
-            temperatureData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+            temperatureData.Add(new GraphicData<string, float>(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
                 monitorings[i].PredictedTemperature, "Predicted"));
-            temperatureData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+            temperatureData.Add(new GraphicData<string, float>(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
                 24f, "Limit"));
 
             if (i > 0)
             {
-                temperatureData.Add(new GraphicData(monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    monitorings[i - 1].PreviousTemperature, "Measured"));
+                temperatureData.Add(new GraphicData<string, float>(monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                    monitorings[i - 1].RealTemperature.Value, "Measured"));
             }
         }
 
         return temperatureData;
     }
 
-    private List<GraphicData> GetHumidityData(List<MonitoringData> monitorings)
+    private List<GraphicData<string, float>> GetHumidityData(List<Prediction> monitorings)
     {
-        List<GraphicData> humidityData = new List<GraphicData>();
+        List<GraphicData<string, float>> humidityData = new List<GraphicData<string, float>>();
 
         for (int i = 0; i < monitorings.Count; i++)
         {
-            humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+            humidityData.Add(new GraphicData<string, float>(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
                 monitorings[i].PredictedHumidity, "Predicted"));
-            humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+            humidityData.Add(new GraphicData<string, float>(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
                 21f, "Limit"));
 
             if (i > 0)
             {
-                humidityData.Add(new GraphicData(monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    monitorings[i - 1].PreviousHumidity, "Measured"));
+                humidityData.Add(new GraphicData<string, float>(monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                    monitorings[i - 1].RealHumidity.Value, "Measured"));
             }
         }
 
@@ -157,8 +157,8 @@
 
         config.Title.Text = "Действительная и спрогнозированная температуры";
         config.YAxis.Title.Text = "Градусы °C";
-        var min = _actualAndPredictedTemperature.Min(item => item.value);
-        var max = _actualAndPredictedTemperature.Max(item => item.value);
+        var min = _actualAndPredictedTemperature.Min(item => item.Y);
+        var max = _actualAndPredictedTemperature.Max(item => item.Y);
         var delta = max - min;
         config.YAxis.Max = max + delta / 10;
         config.YAxis.Min = min - delta / 10;
@@ -172,8 +172,8 @@
 
         config.Title.Text = "Действительная и спрогнозированная влажности";
         config.YAxis.Title.Text = "Показатели влажности %";
-        var min = _actualAndPredictedHumidity.Min(item => item.value);
-        var max = _actualAndPredictedHumidity.Max(item => item.value);
+        var min = _actualAndPredictedHumidity.Min(item => item.Y);
+        var max = _actualAndPredictedHumidity.Max(item => item.Y);
         var delta = max - min;
         config.YAxis.Max = max + delta / 10;
         config.YAxis.Min = min - delta / 10;

@@ -11,15 +11,13 @@ namespace ClimateControlSystem.Client.Services.ClimateService
         private readonly HttpClient _httpClient;
         private readonly IAuthenticationService _authService;
 
-        public List<MonitoringData> ClimateRecords { get; set; } = new List<MonitoringData>();
-
         public ClimateService(HttpClient httpClient, IAuthenticationService authService)
         {
             _httpClient = httpClient;
             _authService = authService;
         }
 
-        public async Task<List<MonitoringData>> GetClimateRecordsAsync(int countRecords)
+        public async Task<List<Prediction>> GetClimatePredictionsAsync(int countRecords)
         {
             if (countRecords > RecordsCount)
             {
@@ -28,7 +26,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
 
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<MonitoringData>>($"api/climate/{countRecords}") ?? new List<MonitoringData>();
+                var result = await _httpClient.GetFromJsonAsync<List<Prediction>>($"api/climate/{countRecords}") ?? new List<Prediction>();
                 return result;
             }
             catch (HttpRequestException e)
@@ -39,7 +37,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
             
-            return new List<MonitoringData>();
+            return new List<Prediction>();
         }
     }
 }

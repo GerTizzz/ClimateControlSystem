@@ -4,16 +4,16 @@ using MediatR;
 
 namespace ClimateControlSystem.Server.Services.MediatR.Handlers
 {
-    public class SavePredictionHandler : IRequestHandler<SavePredictionCommand, bool>
+    public class AddPredictionHandler : IRequestHandler<AddPredictionCommand, bool>
     {
-        private readonly IMonitoringDataRepository _predictionRepository;
+        private readonly IClimateRepository _predictionRepository;
 
-        public SavePredictionHandler(IMonitoringDataRepository predictionRepository)
+        public AddPredictionHandler(IClimateRepository predictionRepository)
         {
             _predictionRepository = predictionRepository;
         }
 
-        public async Task<bool> Handle(SavePredictionCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(AddPredictionCommand request, CancellationToken cancellationToken)
         {
             return await _predictionRepository.AddPredictionAsync(request.Data);
         }

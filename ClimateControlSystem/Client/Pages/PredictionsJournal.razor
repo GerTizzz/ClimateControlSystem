@@ -41,7 +41,7 @@
                     {
                         <tr>
                             <td style="font-size:small">@record.MeasurementTime.ToString("HH:mm:ss")<br/>@record.MeasurementTime.ToString("dd:MM:yyyy")</td>
-                            <td>@record.ClusterLoad</td>
+@*                            <td>@record.ClusterLoad</td>
                             <td>@record.CpuUsage</td>
                             <td>@record.ClusterTemperature</td>
                             <td>@record.PreviousTemperature</td>
@@ -52,11 +52,11 @@
                             <td>@record.WindSpeed</td>
                             <td>@record.WindDirection</td>
                             <td>@record.WindEnthalpy</td>
-                            <td>@record.MeanCoolingValue</td>
+                            <td>@record.MeanCoolingValue</td>*@
                             <td>@record.PredictedTemperature</td>
                             <td>@record.PredictedHumidity</td>
-                            <td>@record.PredictedTemperatureAccuracy</td>
-                            <td>@record.PredictedHumidityAccuracy</td>
+@*                            <td>@record.PredictedTemperatureAccuracy</td>
+                            <td>@record.PredictedHumidityAccuracy</td>*@
                         </tr>
                     }
                 </tbody>
@@ -69,10 +69,10 @@
 </AuthorizeView>
 
 @code {
-    private List<MonitoringData> Monitorings;
+    private List<Prediction> Monitorings;
 
     protected override async Task OnInitializedAsync()
     {
-        Monitorings = await ClimateService.GetClimateRecordsAsync(25);
+        Monitorings = await ClimateService.GetClimatePredictionsAsync(25);
     }
 }

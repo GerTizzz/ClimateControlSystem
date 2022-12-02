@@ -15,9 +15,5 @@
         public float WindDirection { get; set; }
         public float WindEnthalpy { get; set; }
         public float MeanCoolingValue { get; set; }
-        public float PredictedTemperature { get; set; }
-        public float PredictedHumidity { get; set; }
-        public float? PredictedTemperatureAccuracy { get; set; }
-        public float? PredictedHumidityAccuracy { get; set; }
     }
 }

@@ -1,18 +1,18 @@
 ﻿namespace ClimateControlSystem.Client.Resources
 {
-    public record GraphicData
+    public record GraphicData<T,K>
     {
-        public string time { get; }
+        public T X { get; }
 
-        public float value { get; }
+        public K Y { get; }
 
-        public string type { get; }
+        public string Type { get; }
 
-        public GraphicData(string time, float value, string type)
+        public GraphicData(T x, K y, string type)
         {
-            this.time = time;
-            this.value = value;
-            this.type = type;
+            X = x;
+            Y = y;
+            Type = type;
         }
     }
 }

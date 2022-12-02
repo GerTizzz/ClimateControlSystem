@@ -1,5 +1,4 @@
-﻿using ClimateControlSystem.Server.Resources.Common;
-using ClimateControlSystem.Server.Resources.RepositoryResources;
+﻿using ClimateControlSystem.Server.Resources.RepositoryResources;
 using ClimateControlSystem.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -11,7 +10,7 @@ namespace ClimateControlSystem.Server.Persistence.Context
         public DbSet<MonitoringRecord> Monitorings { get; set; }
         public DbSet<UserRecord> Users { get; set; }
         public DbSet<AccuracyRecord> Accuracies { get; set; }
-        public DbSet<ClimateEventRecord> ClimateEvents { get; set; }
+        public DbSet<ClimateEventTypeRecord> ClimateEvents { get; set; }
         public DbSet<PredictionRecord> Predictions { get; set; }
         public DbSet<ConfigRecord> Configs { get; set; }
         public PredictionsDbContext(DbContextOptions options) : base(options)
@@ -20,38 +19,70 @@ namespace ClimateControlSystem.Server.Persistence.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<MonitoringRecord>().HasData(
-                new MonitoringRecord()
+            var firstMonitoringRecord = new MonitoringRecord()
+            {
+                Id = 1,
+                MeasurementTime = DateTimeOffset.Now,
+                ClusterLoad = 50.8f,
+                CpuUsage = 5945.632f,
+                ClusterTemperature = 56f,
+                PreviousTemperature = 23.48f,
+                PreviousHumidity = 19.71f,
+                AirHumidityOutside = 91f,
+                AirDryTemperatureOutside = -3f,
+                AirWetTemperatureOutside = -3.91f,
+                WindSpeed = 3f,
+                WindDirection = 225f,
+                WindEnthalpy = -4.06f,
+                MeanCoolingValue = 17.7f
+            };
+            var firstPredictionRecord = new PredictionRecord()
+            {
+                Id = 1,
+                PredictedTemperature = 23.32f,
+                PredictedHumidity = 18.77f,
+                MonitoringDataId = firstMonitoringRecord.Id,
+                AccuracyId = null,
+                ClimateEvents = new List<ClimateEventTypeRecord>()
+            };
+            var climateEventTypes = new List<ClimateEventTypeRecord>()
+            {
+                new ClimateEventTypeRecord()
                 {
                     Id = 1,
-                    MeasurementTime = DateTimeOffset.Now,
-                    ClusterLoad = 50.8f,
-                    CpuUsage = 5945.632f,
-                    ClusterTemperature = 56f,
-                    PreviousTemperature = 23.48f,
-                    PreviousHumidity = 19.71f,
-                    AirHumidityOutside = 91f,
-                    AirDryTemperatureOutside = -3f,
-                    AirWetTemperatureOutside = -3.91f,
-                    WindSpeed = 3f,
-                    WindDirection = 225f,
-                    WindEnthalpy = -4.06f,
-                    MeanCoolingValue = 17.7f
-                });
-
-            modelBuilder.Entity<PredictionRecord>().HasData(
-                new PredictionRecord()
+                    EventType = ClimateEventType.Normal
+                },
+                new ClimateEventTypeRecord()
                 {
-                    Id = 1,
-                    PredictedTemperature = 23.32f,
-                    PredictedHumidity = 18.77f
-                });
+                    Id = 2,
+                    EventType = ClimateEventType.PredictedTemperatureWarning
+                },
+                new ClimateEventTypeRecord()
+                {
+                    Id = 3,
+                    EventType = ClimateEventType.PredictedHumidityWarning
+                },
+                new ClimateEventTypeRecord()
+                {
+                    Id = 4,
+                    EventType = ClimateEventType.RealTemperatureCritical
+                },
+                new ClimateEventTypeRecord()
+                {
+                    Id = 5,
+                    EventType = ClimateEventType.RealHumidityCritical
+                }
+            };
 
-
-
-            modelBuilder.Entity<ClimateEventRecord>()
+            modelBuilder.Entity<ClimateEventTypeRecord>()
                 .Property(climateEvent => climateEvent.EventType)
-                .HasConversion(new EnumToStringConverter<ClimateEventType>());
+                .HasConversion<int>();
+
+            modelBuilder.Entity<ClimateEventTypeRecord>().HasData(climateEventTypes);
+
+            modelBuilder.Entity<MonitoringRecord>().HasData(firstMonitoringRecord);
+
+            modelBuilder.Entity<PredictionRecord>().HasData(firstPredictionRecord);
 
             modelBuilder.Entity<UserRecord>()
                 .Property(user => user.Role)

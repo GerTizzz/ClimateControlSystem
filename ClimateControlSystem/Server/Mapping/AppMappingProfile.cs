@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Protos;
-using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Resources.RepositoryResources;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
 using ClimateControlSystem.Shared;
@@ -13,7 +12,7 @@ namespace ClimateControlSystem.Server.Mapping
         {
             #region gRPC communication
 
-            CreateMap<ClimateMonitoringRequest, IncomingMonitoringData>()
+            CreateMap<ClimateMonitoringRequest, MonitoringData>()
                 .ForMember(data => data.MeasurementTime, request => request
                     .MapFrom(requestSrc => requestSrc.MeasurementTime.ToDateTimeOffset().ToLocalTime()));
 
@@ -21,7 +20,7 @@ namespace ClimateControlSystem.Server.Mapping
 
             #region PredictEngine
 
-            CreateMap<IncomingMonitoringData, TensorPredictionRequest>()
+            CreateMap<MonitoringData, TensorPredictionRequest>()
                 .ForMember(tensor => tensor.serving_default_input_1, opt => opt
                     .MapFrom(property => new float[]
                     {
@@ -39,17 +38,11 @@ namespace ClimateControlSystem.Server.Mapping
                         property.MeanCoolingValue
                     }));
 
-            CreateMap<TensorPredictionResult, PredictionResult>()
+            CreateMap<TensorPredictionResult, PredictionData>()
                 .ForMember(result => result.PredictedTemperature, tensor => tensor
                     .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[0]))
                 .ForMember(result => result.PredictedHumidity, tensor => tensor
                     .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[1]));
-
-            #endregion
-
-            #region PredictionService
-
-            CreateMap<IncomingMonitoringData, MonitoringData>();
 
             #endregion
             
@@ -59,9 +52,9 @@ namespace ClimateControlSystem.Server.Mapping
 
             CreateMap<MonitoringRecord, MonitoringData>();
 
-            CreateMap<MonitoringRecord, PredictionResult>();
-
             #endregion
+
+            #region Authentication
 
             CreateMap<UserRecord, UserDtoModel>()
                 .ForMember(dto => dto.Name, auth => auth
@@ -76,6 +69,8 @@ namespace ClimateControlSystem.Server.Mapping
                     .MapFrom(dtoSrc => dtoSrc.Name))
                 .ForMember(auth => auth.Role, dto => dto
                     .MapFrom(dtoSrc => dtoSrc.Role));
+
+            #endregion
         }
     }
 }
