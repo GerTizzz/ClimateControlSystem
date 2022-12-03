@@ -16,8 +16,8 @@ message ClimateMonitoringRequest {
 	float cluster_load = 2;
 	float cpu_usage = 3;
 	float cluster_temperature = 4;
-	float previous_temperature = 5;
-	float previous_humidity = 6;
+	float current_real_temperature = 5;
+	float current_real_humidity = 6;
 	float air_humidity_outside = 7;
 	float air_dry_temperature_outside = 8;
 	float air_wet_temperature_outside = 9;

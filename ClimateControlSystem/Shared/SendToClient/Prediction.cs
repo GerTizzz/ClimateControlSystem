@@ -3,9 +3,11 @@
     public sealed class Prediction
     {
         public DateTimeOffset MeasurementTime { get; init; }
-        public float PredictedTemperature { get; init; }
-        public float PredictedHumidity { get; init; }
-        public float? RealTemperature { get; init; }
-        public float? RealHumidity { get; init; }
+        public float PredictedFutureTemperature { get; init; }
+        public float PredictedFutureHumidity { get; init; }
+        public float? CurrentRealTemperature { get; init; }
+        public float? CurrentRealHumidity { get; init; }      
+        public float? PredictedTemperatureAccuracy { get; init; }
+        public float? PredictedHumidityAccuracy { get; init; }
     }
 }

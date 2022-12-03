@@ -1,9 +1,10 @@
-﻿using ClimateControlSystem.Shared;
+﻿using ClimateControlSystem.Server.Resources.Common;
+using ClimateControlSystem.Shared;
 
 namespace ClimateControlSystem.Server.Domain.Services
 {
     public interface IPredictionEngineService
     {
-        PredictionData Predict(MonitoringData inputData);
+        Task<PredictionResult> Predict(MonitoringData inputData);
     }
 }

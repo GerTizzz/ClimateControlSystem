@@ -17,11 +17,11 @@ namespace ClimateControlSystem.Server.Controllers
             _predictionRepository = predictionRepository;
         }
 
-        [HttpGet]
-        [Route("{amountOfRecordsNeeeded:int:range(1, 25)}")]
-        public async Task<ActionResult<List<MonitoringData>>> GetClimateRecords(int amountOfRecordsNeeeded)
+        [HttpGet()]
+        [Route("{recordsCount:int:range(1, 25)}")]
+        public async Task<ActionResult<List<Prediction>>> GetPredictions(int recordsCount)
         {
-            var records = await _predictionRepository.GetClimateRecordsAsync(amountOfRecordsNeeeded);
+            var records = await _predictionRepository.GetPredictionsWithAccuraciesAsync(recordsCount);
 
             return Ok(records);
         }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Protos;
+using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Resources.RepositoryResources;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
 using ClimateControlSystem.Shared;
@@ -27,8 +28,8 @@ namespace ClimateControlSystem.Server.Mapping
                         property.ClusterLoad,
                         property.CpuUsage,
                         property.ClusterTemperature,
-                        property.PreviousTemperature,
-                        property.PreviousHumidity,
+                        property.CurrentRealTemperature,
+                        property.CurrentRealHumidity,
                         property.AirHumidityOutside,
                         property.AirDryTemperatureOutside,
                         property.AirWetTemperatureOutside,
@@ -38,7 +39,7 @@ namespace ClimateControlSystem.Server.Mapping
                         property.MeanCoolingValue
                     }));
 
-            CreateMap<TensorPredictionResult, PredictionData>()
+            CreateMap<TensorPredictionResult, PredictionResult>()
                 .ForMember(result => result.PredictedTemperature, tensor => tensor
                     .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[0]))
                 .ForMember(result => result.PredictedHumidity, tensor => tensor
@@ -51,6 +52,14 @@ namespace ClimateControlSystem.Server.Mapping
             CreateMap<MonitoringData, MonitoringRecord>();
 
             CreateMap<MonitoringRecord, MonitoringData>();
+
+            CreateMap<AccuracyRecord, AccuracyData>();
+
+            CreateMap<AccuracyData, AccuracyRecord>();
+
+            CreateMap<PredictionRecord, PredictionResult>();
+
+            CreateMap<PredictionResult, PredictionRecord>();
 
             #endregion
 

@@ -60,8 +60,8 @@ namespace ClimateControlSystem.Server.Migrations
                     ClusterLoad = table.Column<float>(type: "real", nullable: false),
                     CpuUsage = table.Column<float>(type: "real", nullable: false),
                     ClusterTemperature = table.Column<float>(type: "real", nullable: false),
-                    PreviousTemperature = table.Column<float>(type: "real", nullable: false),
-                    PreviousHumidity = table.Column<float>(type: "real", nullable: false),
+                    CurrentRealTemperature = table.Column<float>(type: "real", nullable: false),
+                    CurrentRealHumidity = table.Column<float>(type: "real", nullable: false),
                     AirHumidityOutside = table.Column<float>(type: "real", nullable: false),
                     AirDryTemperatureOutside = table.Column<float>(type: "real", nullable: false),
                     AirWetTemperatureOutside = table.Column<float>(type: "real", nullable: false),
@@ -156,8 +156,8 @@ namespace ClimateControlSystem.Server.Migrations
 
             migrationBuilder.InsertData(
                 table: "Monitorings",
-                columns: new[] { "Id", "AirDryTemperatureOutside", "AirHumidityOutside", "AirWetTemperatureOutside", "ClusterLoad", "ClusterTemperature", "CpuUsage", "MeanCoolingValue", "MeasurementTime", "PreviousHumidity", "PreviousTemperature", "WindDirection", "WindEnthalpy", "WindSpeed" },
-                values: new object[] { 1, -3f, 91f, -3.91f, 50.8f, 56f, 5945.632f, 17.7f, new DateTimeOffset(new DateTime(2022, 12, 2, 15, 55, 24, 465, DateTimeKind.Unspecified).AddTicks(9391), new TimeSpan(0, 5, 0, 0, 0)), 19.71f, 23.48f, 225f, -4.06f, 3f });
+                columns: new[] { "Id", "AirDryTemperatureOutside", "AirHumidityOutside", "AirWetTemperatureOutside", "ClusterLoad", "ClusterTemperature", "CpuUsage", "CurrentRealHumidity", "CurrentRealTemperature", "MeanCoolingValue", "MeasurementTime", "WindDirection", "WindEnthalpy", "WindSpeed" },
+                values: new object[] { 1, -3f, 91f, -3.91f, 50.8f, 56f, 5945.632f, 19.71f, 23.48f, 17.7f, new DateTimeOffset(new DateTime(2022, 12, 3, 22, 6, 0, 110, DateTimeKind.Unspecified).AddTicks(2797), new TimeSpan(0, 5, 0, 0, 0)), 225f, -4.06f, 3f });
 
             migrationBuilder.InsertData(
                 table: "Users",

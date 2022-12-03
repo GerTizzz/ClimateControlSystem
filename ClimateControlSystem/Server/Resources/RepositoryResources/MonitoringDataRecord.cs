@@ -10,8 +10,8 @@ namespace ClimateControlSystem.Server.Resources.RepositoryResources
         public float ClusterLoad { get; set; }
         public float CpuUsage { get; set; }
         public float ClusterTemperature { get; set; }
-        public float PreviousTemperature { get; set; }
-        public float PreviousHumidity { get; set; }
+        public float CurrentRealTemperature { get; set; }
+        public float CurrentRealHumidity { get; set; }
         public float AirHumidityOutside { get; set; }
         public float AirDryTemperatureOutside { get; set; }
         public float AirWetTemperatureOutside { get; set; }

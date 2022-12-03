@@ -1,11 +1,11 @@
 ﻿using ClimateControlSystem.Server.Domain.Repositories;
+using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Services.MediatR.Queries;
-using ClimateControlSystem.Shared;
 using MediatR;
 
 namespace ClimateControlSystem.Server.Services.MediatR.Handlers
 {
-    public class GetLastPredictionHandler : IRequestHandler<GetLastPredictionQuery, PredictionData>
+    public class GetLastPredictionHandler : IRequestHandler<GetLastPredictionQuery, PredictionResult>
     {
         private readonly IClimateRepository _predictionRepository;
 
@@ -14,7 +14,7 @@ namespace ClimateControlSystem.Server.Services.MediatR.Handlers
             _predictionRepository = predictionRepository;
         }
 
-        public async Task<PredictionData> Handle(GetLastPredictionQuery request, CancellationToken cancellationToken)
+        public async Task<PredictionResult> Handle(GetLastPredictionQuery request, CancellationToken cancellationToken)
         {
             return await _predictionRepository.GetLastPredictionAsync();
         }
