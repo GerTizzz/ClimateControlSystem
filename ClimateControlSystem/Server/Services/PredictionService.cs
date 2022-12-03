@@ -1,6 +1,6 @@
-﻿using AutoMapper;
-using ClimateControlSystem.Server.Domain.Services;
+﻿using ClimateControlSystem.Server.Domain.Services;
 using ClimateControlSystem.Server.Hubs;
+using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Services.MediatR.Commands;
 using ClimateControlSystem.Server.Services.MediatR.Queries;
 using ClimateControlSystem.Shared;
@@ -12,64 +12,72 @@ namespace ClimateControlSystem.Server.Services
     public class PredictionService : IPredictionService
     {
         private readonly IPredictionEngineService _predictionEngine;
-        private readonly IMapper _mapper;
         private readonly IMediator _mediator;
         private readonly IHubContext<MonitoringHub> _monitoringHub;
 
         public PredictionService(IPredictionEngineService predictionEngine,
-                                 IMapper mapper,
                                  IMediator mediator,
                                  IHubContext<MonitoringHub> monitoringHub)
         {
-            _mapper = mapper;
             _mediator = mediator;
             _predictionEngine = predictionEngine;
             _monitoringHub = monitoringHub;
         }
 
-        public Task<PredictionData> Predict(MonitoringData newClimateData)
+        public async Task<PredictionResult> Predict(MonitoringData climateData)
         {
-            PredictionData predictionResult = _predictionEngine.Predict(newClimateData);
+            PredictionResult prediction = await _predictionEngine.Predict(climateData);
 
-            MonitoringData monitoringData = _mapper.Map<MonitoringData>(newClimateData);
+            await CreateClimateRecord(climateData, prediction);
 
-            _ = CreateClimateRecord(monitoringData, predictionResult);
+            Prediction predictionToSendToClient = new Prediction()
+            {
+                MeasurementTime = climateData.MeasurementTime,
+                PredictedFutureTemperature = prediction.PredictedTemperature,
+                PredictedFutureHumidity = prediction.PredictedHumidity,
+                CurrentRealTemperature = climateData.CurrentRealTemperature,
+                CurrentRealHumidity = climateData.CurrentRealHumidity
+            };
 
-            _ = SendNewMonitoringDataToWebClients(monitoringData);
+            _ = SendNewMonitoringDataToWebClients(predictionToSendToClient);
 
-            return Task.FromResult(predictionResult);
+            return prediction;
         }
 
-        private Task CreateClimateRecord(MonitoringData monitoringData, PredictionData predictedData)
+        private async Task CreateClimateRecord(MonitoringData monitoring, PredictionResult prediction)
         {
-            CalculateLastPredictionAccuracy(monitoringData).Wait();
+            var accuracy = await CalculateLastPredictionAccuracy(monitoring);
 
-            _mediator.Send(new AddPredictionCommand() { Data = predictedData });
-
-             return Task.CompletedTask;
+            await _mediator.Send(new AddPredictionCommand()
+            {
+                Prediction = prediction, 
+                Accuracy = accuracy, 
+                Monitoring = monitoring 
+            });
         }
 
-        private Task CalculateLastPredictionAccuracy(MonitoringData monitoringData)
+        private async Task<AccuracyData> CalculateLastPredictionAccuracy(MonitoringData monitoringData)
         {
-            var actualTemperature = monitoringData.PreviousTemperature;
-            var actualHumidity = monitoringData.PreviousHumidity;
+            var actualTemperature = monitoringData.CurrentRealTemperature;
+            var actualHumidity = monitoringData.CurrentRealHumidity;
 
-            var lastRecord = _mediator.Send(new GetLastPredictionQuery()).Result;
+            PredictionResult lastRecord = await _mediator.Send(new GetLastPredictionQuery());
 
             var predictedTemperature = lastRecord.PredictedTemperature;
             var predictedHumidity = lastRecord.PredictedHumidity;
 
-            //lastRecord.PredictedTemperatureAccuracy = 100f - Math.Abs(predictedTemperature - actualTemperature) / actualTemperature;
-            //lastRecord.PredictedHumidityAccuracy =  100f - Math.Abs(predictedHumidity - actualHumidity) / actualHumidity;
+            AccuracyData accuracy = new AccuracyData()
+            {
+                PredictedTemperatureAccuracy = 100f - Math.Abs(predictedTemperature - actualTemperature) * 100 / actualTemperature,
+                PredictedHumidityAccuracy = 100f - Math.Abs(predictedHumidity - actualHumidity) * 100 / actualHumidity
+            };
 
-            //_mediator.Send(new AddAccuracyCommand() { Data = lastRecord }).Wait();
-
-            return Task.CompletedTask;
+            return accuracy;
         }
 
-        private async Task SendNewMonitoringDataToWebClients(MonitoringData monitoringData)
+        private async Task SendNewMonitoringDataToWebClients(Prediction prediction)
         {
-            await _monitoringHub.Clients.All.SendAsync("GetMonitoringData", monitoringData);
+            await _monitoringHub.Clients.All.SendAsync("GetMonitoringData", prediction);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Protos;
+using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Services.Queries;
 using ClimateControlSystem.Shared;
 using Grpc.Core;
@@ -25,7 +26,7 @@ namespace ClimateControlSystem.Server.Services.gRPC
             try
             {
                 MonitoringData predictionRequest = _mapper.Map<MonitoringData>(grpcRequest);
-                PredictionData predictionResult = await _mediatr.Send(new PredictQuery() { Data = predictionRequest });
+                PredictionResult predictionResult = await _mediatr.Send(new PredictQuery() { Data = predictionRequest });
                 reply.Reply = $"[Status: Success][Time: {DateTime.Now.ToString("HH:mm:ss dd:MM:yyyy")}][Data: {predictionResult.PredictedTemperature}, {predictionResult.PredictedHumidity}]";
             }
             catch
@@ -47,7 +48,7 @@ namespace ClimateControlSystem.Server.Services.gRPC
                     try
                     {
                         MonitoringData predictionRequest = _mapper.Map<MonitoringData>(request);
-                        PredictionData predictionResult = await _mediatr.Send(new PredictQuery() { Data = predictionRequest });
+                        PredictionResult predictionResult = await _mediatr.Send(new PredictQuery() { Data = predictionRequest });
                         reply.Reply = $"[Status: Success][Time: {DateTime.Now.ToString("HH:mm:ss dd:MM:yyyy")}][Data: {predictionResult.PredictedTemperature}, {predictionResult.PredictedHumidity}]";
                     }
                     catch

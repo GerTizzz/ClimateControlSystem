@@ -129,17 +129,17 @@ namespace ClimateControlSystem.Server.Migrations
                     b.Property<float>("CpuUsage")
                         .HasColumnType("real");
 
+                    b.Property<float>("CurrentRealHumidity")
+                        .HasColumnType("real");
+
+                    b.Property<float>("CurrentRealTemperature")
+                        .HasColumnType("real");
+
                     b.Property<float>("MeanCoolingValue")
                         .HasColumnType("real");
 
                     b.Property<DateTimeOffset>("MeasurementTime")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<float>("PreviousHumidity")
-                        .HasColumnType("real");
-
-                    b.Property<float>("PreviousTemperature")
-                        .HasColumnType("real");
 
                     b.Property<float>("WindDirection")
                         .HasColumnType("real");
@@ -164,10 +164,10 @@ namespace ClimateControlSystem.Server.Migrations
                             ClusterLoad = 50.8f,
                             ClusterTemperature = 56f,
                             CpuUsage = 5945.632f,
+                            CurrentRealHumidity = 19.71f,
+                            CurrentRealTemperature = 23.48f,
                             MeanCoolingValue = 17.7f,
-                            MeasurementTime = new DateTimeOffset(new DateTime(2022, 12, 2, 15, 55, 24, 465, DateTimeKind.Unspecified).AddTicks(9391), new TimeSpan(0, 5, 0, 0, 0)),
-                            PreviousHumidity = 19.71f,
-                            PreviousTemperature = 23.48f,
+                            MeasurementTime = new DateTimeOffset(new DateTime(2022, 12, 3, 22, 6, 0, 110, DateTimeKind.Unspecified).AddTicks(2797), new TimeSpan(0, 5, 0, 0, 0)),
                             WindDirection = 225f,
                             WindEnthalpy = -4.06f,
                             WindSpeed = 3f
