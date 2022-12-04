@@ -1,4 +1,4 @@
-﻿namespace ClimateControlSystem.Shared
+﻿namespace ClimateControlSystem.Server.Resources.Common
 {
     public sealed class UserModel
     {

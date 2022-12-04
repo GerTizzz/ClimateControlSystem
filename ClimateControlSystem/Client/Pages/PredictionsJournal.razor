@@ -17,23 +17,23 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th style="word-wrap:break-word">Measuring time</th>
-                        <th style="word-wrap:break-word">Cluster load</th>
-                        <th style="word-wrap:break-word">CPU usage</th>
-                        <th style="word-wrap:break-word">Cluster T</th>
-                        <th style="word-wrap:break-word">Current T</th>
-                        <th style="word-wrap:break-word">Current H</th>
-                        <th style="word-wrap:break-word">Outside H</th>
-                        <th style="word-wrap:break-word">Dry T outside</th>
-                        <th style="word-wrap:break-word">Wet T outside</th>
-                        <th style="word-wrap:break-word">Wind speed outside</th>
-                        <th style="word-wrap:break-word">Wind direction</th>
-                        <th style="word-wrap:break-word">Air enthalpy</th>
-                        <th style="word-wrap:break-word">Cooling mean</th>
-                        <th style="word-wrap:break-word">Predicted T</th>
-                        <th style="word-wrap:break-word">Predicted H</th>
-                        <th style="word-wrap:break-word">T accuracy</th>
-                        <th style="word-wrap:break-word">H accuracy</th>
+                        <th style="word-wrap:break-word; font-size:small">Время измерения</th>
+                        <th style="word-wrap:break-word; font-size:small">Загрузка кластера</th>
+                        <th style="word-wrap:break-word; font-size:small">Использование ЦПУ</th>
+                        <th style="word-wrap:break-word; font-size:small">Температура кластера</th>
+                        <th style="word-wrap:break-word; font-size:small">Текущая температура</th>
+                        <th style="word-wrap:break-word; font-size:small">Текущая влажность</th>
+                        <th style="word-wrap:break-word; font-size:small">Влажность снаружи</th>
+                        <th style="word-wrap:break-word; font-size:small">Сухая температура снаружи</th>
+                        <th style="word-wrap:break-word; font-size:small">Влажная температура снаружи</th>
+                        <th style="word-wrap:break-word; font-size:small">Скорость ветра снаружи</th>
+                        <th style="word-wrap:break-word; font-size:small">Направления ветра снаружи</th>
+                        <th style="word-wrap:break-word; font-size:small">Энтальпия воздуха снаружи</th>
+                        <th style="word-wrap:break-word; font-size:small">Температура охлаждения</th>
+                        <th style="word-wrap:break-word; font-size:small">Спрогнозированная температура</th>
+                        <th style="word-wrap:break-word; font-size:small">Спрогнозированная влажность</th>
+                        <th style="word-wrap:break-word; font-size:small">Точность прогноза температуры</th>
+                        <th style="word-wrap:break-word; font-size:small">Точность прогноза влажности</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -73,6 +73,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Monitorings = await ClimateService.GetClimatePredictionsAsync(25);
+        Monitorings = await ClimateService.GetPredictionsAsync(25);
     }
 }

@@ -3,7 +3,7 @@ using ClimateControlSystem.Server.Protos;
 using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Resources.RepositoryResources;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
-using ClimateControlSystem.Shared;
+using ClimateControlSystem.Shared.Common;
 
 namespace ClimateControlSystem.Server.Mapping
 {
@@ -60,6 +60,14 @@ namespace ClimateControlSystem.Server.Mapping
             CreateMap<PredictionRecord, PredictionResult>();
 
             CreateMap<PredictionResult, PredictionRecord>();
+
+            CreateMap<Config, ConfigRecord>();
+
+            CreateMap<ConfigRecord, Config>();
+
+            CreateMap<ClimateEventData, ClimateEventRecord>();
+
+            CreateMap<ClimateEventRecord, ClimateEventData>();
 
             #endregion
 

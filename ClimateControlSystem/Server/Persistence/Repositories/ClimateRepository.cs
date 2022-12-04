@@ -4,6 +4,7 @@ using ClimateControlSystem.Server.Persistence.Context;
 using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Resources.RepositoryResources;
 using ClimateControlSystem.Shared;
+using ClimateControlSystem.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClimateControlSystem.Server.Persistence.Repositories
@@ -65,7 +66,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
         }
 
-        public async Task<bool> AddPredictionAsync(PredictionResult prediction, MonitoringData monitoring, AccuracyData accuracy)
+        public async Task<bool> AddPredictionAsync(PredictionResult prediction, MonitoringData monitoring, AccuracyData accuracy, ClimateEventType eventType)
         {
             try
             {
@@ -73,8 +74,10 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
 
                 var predictionRecord = _mapper.Map<PredictionRecord>(prediction);
                 var monitoringRecord = _mapper.Map<MonitoringRecord>(monitoring);
+                var climateEventRecord = await GetClimateEventRecordByItsType(eventType);
 
                 predictionRecord.MonitoringData = monitoringRecord;
+                predictionRecord.ClimateEvent = climateEventRecord;
 
                 await _context.Monitorings.AddAsync(monitoringRecord);
                 await _context.Predictions.AddAsync(predictionRecord);
@@ -86,6 +89,11 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
 
             return true;
+        }
+
+        private async Task<ClimateEventRecord> GetClimateEventRecordByItsType(ClimateEventType eventType)
+        {
+            return await _context.ClimateEvents.OrderBy(record => record.Id).FirstOrDefaultAsync(record => record.EventType == eventType);
         }
 
         private async Task<bool> UpdatePredictionAccuracy(AccuracyData accuracy)

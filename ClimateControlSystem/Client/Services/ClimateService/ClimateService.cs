@@ -17,7 +17,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             _authService = authService;
         }
 
-        public async Task<List<Prediction>> GetClimatePredictionsAsync(int countRecords)
+        public async Task<List<Prediction>> GetPredictionsAsync(int countRecords)
         {
             if (countRecords > RecordsCount)
             {
@@ -37,6 +37,29 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
             
+            return new List<Prediction>();
+        }
+
+        public async Task<List<Prediction>> GetClimateDataAsync(int countRecords)
+        {
+            if (countRecords > RecordsCount)
+            {
+                countRecords = RecordsCount;
+            }
+
+            try
+            {
+                var result = await _httpClient.GetFromJsonAsync<List<Prediction>>($"api/climate/{countRecords}") ?? new List<Prediction>();
+                return result;
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode.HasValue && e.StatusCode.Value == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await _authService.Logout();
+                }
+            }
+
             return new List<Prediction>();
         }
     }

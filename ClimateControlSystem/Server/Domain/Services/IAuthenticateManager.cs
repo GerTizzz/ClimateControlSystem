@@ -1,4 +1,4 @@
-﻿using ClimateControlSystem.Shared;
+﻿using ClimateControlSystem.Shared.Common;
 
 namespace ClimateControlSystem.Server.Domain.Services
 {

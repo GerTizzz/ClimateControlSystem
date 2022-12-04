@@ -1,5 +1,5 @@
 ﻿using ClimateControlSystem.Server.Resources.RepositoryResources;
-using ClimateControlSystem.Shared;
+using ClimateControlSystem.Shared.Common;
 
 namespace ClimateControlSystem.Server.Domain.Services
 {

@@ -3,16 +3,16 @@ using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Domain.Services;
 using ClimateControlSystem.Server.Resources.Authentication;
 using ClimateControlSystem.Server.Resources.RepositoryResources;
-using ClimateControlSystem.Shared;
+using ClimateControlSystem.Shared.Common;
 
 namespace ClimateControlSystem.Server.Services
 {
     public sealed class UserManager : IUserManager
     {
-        private readonly IUsersRepository _userRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
-        public UserManager(IUsersRepository userRepository, IMapper mapper)
+        public UserManager(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _mapper = mapper;

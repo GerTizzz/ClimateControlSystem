@@ -6,7 +6,7 @@ namespace ClimateControlSystem.Server.Resources.RepositoryResources
     {
         [Key]
         public int Id { get; set; }
-        public double TemperatureLimit { get; set; }
-        public double HumidityLimit { get; set; }
+        public float TemperatureLimit { get; set; }
+        public float HumidityLimit { get; set; }
     }
 }

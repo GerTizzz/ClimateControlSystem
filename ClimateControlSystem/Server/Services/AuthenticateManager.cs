@@ -1,6 +1,7 @@
 ﻿using ClimateControlSystem.Server.Domain.Services;
 using ClimateControlSystem.Server.Resources.RepositoryResources;
-using ClimateControlSystem.Shared;
+using ClimateControlSystem.Shared.Common;
+using ClimateControlSystem.Shared.Enums;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

@@ -1,6 +1,7 @@
 ﻿@page "/predictionsgraphics"
 @using ClimateControlSystem.Client.Resources
 @inject IClimateService ClimateService
+@inject IConfigService ConfigService
 
 <PageTitle>Predictions Journal</PageTitle>
 
@@ -8,18 +9,18 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (Monitorings == null)
+        @if (_predictions == null)
         {
             <p><em>Loading...</em></p>
         }
         else
         {
-            if (HasData)
+            if (_hasData)
             {
-                <Line Data="ActualAndPredictedTemperature" Config="TemperatureDataLineConfig"/>
-                <Line Data="ActualAndPredictedHumidity" Config="HumidityDataLineConfig"/>
-@*                <Line Data="Accuracy" Config="AccuracyLineConfig"/>
-*@            }
+                <Line Data="_actualAndPredictedTemperature" Config="_temperatureDataLineConfig"/>
+                <Line Data="_actualAndPredictedHumidity" Config="_humidityDataLineConfig"/>
+                <Line Data="_accuracy" Config="_accuracyLineConfig" />
+            }
             else
             {
                 <p><em>Sorry, no data to show...</em></p>
@@ -32,248 +33,39 @@
 </AuthorizeView>
 
 @code{
-    List<Prediction> Monitorings;
+    private Config _config;
 
-    bool HasData = false;
+    List<Prediction> _predictions;
 
-    LineConfig TemperatureDataLineConfig;
-    LineConfig HumidityDataLineConfig;
-    LineConfig AccuracyLineConfig;
+    bool _hasData = false;
 
-    List<GraphicData> ActualAndPredictedTemperature;
-    List<GraphicData> ActualAndPredictedHumidity;
-    //List<GraphicData> Accuracy;
+    LineConfig _temperatureDataLineConfig;
+    LineConfig _humidityDataLineConfig;
+    LineConfig _accuracyLineConfig;
+
+    List<GraphicData> _actualAndPredictedTemperature;
+    List<GraphicData> _actualAndPredictedHumidity;
+    List<GraphicData> _accuracy;
 
     protected override async Task OnInitializedAsync()
     {
-        Monitorings = await ClimateService.GetClimatePredictionsAsync(25);
+        _config = await ConfigService.GetConfigAsync();
 
-        HasData = Monitorings.Count >= 2;
+        _predictions = await ClimateService.GetPredictionsAsync(25);
 
-        if (HasData is false)
+        _hasData = _predictions.Count >= 2;
+
+        if (_hasData is false)
         {
             return;    
         }
 
-        ActualAndPredictedTemperature = GetTemperatureData(Monitorings);
-        ActualAndPredictedHumidity = GetHumidityData(Monitorings);
-        //Accuracy = GetAccuracyData(Monitorings);
+        _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_predictions, _config.TemperatureLimit);
+        _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_predictions, _config.HumidityLimit);
+        _accuracy = AntChartHelper.GetAccuracyData(_predictions);
 
-        TemperatureDataLineConfig = GetTemperatureLineConfig();
-        HumidityDataLineConfig = GetHumidityDataConfig();
-        //AccuracyLineConfig = GetAccuracyConfig();
-    }
-
-    private List<GraphicData> GetTemperatureData(List<Prediction> monitorings)
-    {
-        List<GraphicData> temperatureData = new List<GraphicData>();
-
-        for (int i = 0; i < Monitorings.Count; i++)
-        {
-            temperatureData.Add(new GraphicData(Monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                Monitorings[i].PredictedFutureTemperature, "Predicted"));
-            temperatureData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                24f, "Limit"));
-
-            if (i > 0)
-            {
-                temperatureData.Add(new GraphicData(Monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    Monitorings[i].CurrentRealTemperature.Value, "Measured"));
-            }
-        }
-
-        return temperatureData;
-    }
-
-    private List<GraphicData> GetHumidityData(List<Prediction> monitorings)
-    {
-        List<GraphicData> humidityData = new List<GraphicData>();
-
-        for (int i = 0; i < monitorings.Count; i++)
-        {
-            humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                monitorings[i].PredictedFutureHumidity, "Predicted"));
-            humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                21f, "Limit"));
-
-            if (i > 0)
-            {
-                humidityData.Add(new GraphicData(monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    monitorings[i].CurrentRealHumidity.Value, "Measured"));
-            }
-        }
-
-        return humidityData;
-    }
-
-    //private List<GraphicData> GetAccuracyData(List<Prediction> monitorings)
-    //{
-    //    List<GraphicData> temperatureAccuracy = new List<GraphicData>();
-
-    //    for (int i = 0; i < monitorings.Count; i++)
-    //    {
-    //        if (monitorings[i].PredictedHumidityAccuracy.HasValue is false || monitorings[i].PredictedTemperatureAccuracy.HasValue is false)
-    //        {
-    //            continue;
-    //        }
-
-    //        temperatureAccuracy.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-    //            monitorings[i].PredictedTemperatureAccuracy, "Temperature"));
-
-    //        temperatureAccuracy.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-    //            monitorings[i].PredictedHumidityAccuracy.Value, "Humidity"));
-
-    //        temperatureAccuracy.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-    //            100f, "Limit"));
-    //    }
-
-    //    return temperatureAccuracy;
-    //}
-
-    private LineConfig GetTemperatureLineConfig()
-    {
-        var config = GetBaseLineConfig();
-
-        config.Title.Text = "Действительная и спрогнозированная температуры";
-        config.YAxis.Title.Text = "Градусы °C";
-        var min = ActualAndPredictedTemperature.Min(item => item.Y);
-        var max = ActualAndPredictedTemperature.Max(item => item.Y);
-        var delta = max - min;
-        config.YAxis.Max = max + delta / 10;
-        config.YAxis.Min = min - delta / 10;
-
-        return config;
-    }
-
-    private LineConfig GetHumidityDataConfig()
-    {
-        var config = GetBaseLineConfig();
-
-        config.Title.Text = "Действительная и спрогнозированная влажности";
-        config.YAxis.Title.Text = "Показатели влажности %";
-        var min = ActualAndPredictedHumidity.Min(item => item.Y);
-        var max = ActualAndPredictedHumidity.Max(item => item.Y);
-        var delta = max - min;
-        config.YAxis.Max = max + delta / 10;
-        config.YAxis.Min = min - delta / 10;
-        config.Point.Shape = "circle";
-
-        return config;
-    }
-
-    //private LineConfig GetAccuracyConfig()
-    //{
-    //    var config = GetBaseLineConfig();
-
-    //    config.Title.Text = "Точность прогноза температуры";
-    //    config.YAxis.Title.Text = "Точнсть прогноза %";
-    //    var min = Accuracy.Min(item => item.Y);
-    //    var max = Accuracy.Max(item => item.Y);
-    //    var delta = max - min;
-    //    config.YAxis.Max = max + delta / 10;
-    //    config.YAxis.Min = min - delta / 10;
-    //    config.Point.Shape = "square";
-
-    //    return config;
-    //}
-
-    private LineConfig GetBaseLineConfig()
-    {
-        return new LineConfig()
-        {
-            Title = new Title()
-            {
-                Visible = true,
-                Style = new TextStyle()
-                {
-                    Fill = "#000",
-                    FontSize = 20
-                }
-            },
-            Padding = "auto",
-            ForceFit = true,
-            XField = "time",
-            YField = "value",
-            SeriesField = "type",
-            Point = new LineViewConfigPoint()
-            {
-                Style = new GraphicStyle() { LineWidth = 3, FillOpacity = 5 },
-                Size = 7,
-                Visible = true,
-                Shape = "diamond"
-            },
-            LineStyle = new LineStyle()
-            {
-                LineWidth = 5
-            },
-            Legend = new Legend()
-            {
-                Position = "top-right",
-                Text = new LegendText()
-                {
-                    Style = new TextStyle()
-                    {
-                        Fill = "#000",
-                        FontSize = 20
-                    }
-                }
-            },
-            XAxis = new ValueCatTimeAxis()
-            {
-                Title = new BaseAxisTitle()
-                {
-                    Text = "Время",
-                    Style = new TextStyle()
-                    {
-                        FontSize = 16
-                    },
-                    Visible = true
-                },
-                Visible = true,
-                TickLine = new BaseAxisTickLine()
-                {
-                    Visible = true,
-                    Style = new LineStyle()
-                    {
-                        LineWidth = 2,
-                        Stroke = "#aaa"
-                    },
-                },
-                Line = new BaseAxisLine()
-                {
-                    Visible = true,
-                    Style = new LineStyle()
-                    {
-                        Stroke = "#aaa"
-                    }
-                },
-                Grid = new BaseAxisGrid()
-                {
-                    Visible = true,
-                    Line = new BaseAxisGridLine()
-                    {
-                        Type = "",
-                        Style = new LineStyle()
-                        {
-                            Stroke = "#ddd",
-                            LineDash = new int[] { 4, 2 }
-                        }
-                    }
-                }
-            },
-            YAxis = new ValueAxis()
-            {
-                Title = new BaseAxisTitle()
-                {
-                    Style = new TextStyle()
-                    {
-                        FontSize = 16,
-                    },
-                    AutoRotate = true,
-                    Visible = true
-                },
-                Visible = true
-            },
-        };
+        _temperatureDataLineConfig = AntChartHelper.GetTemperatureLineConfig(_actualAndPredictedTemperature);
+        _humidityDataLineConfig = AntChartHelper.GetHumidityLineConfig(_actualAndPredictedHumidity);
+        _accuracyLineConfig = AntChartHelper.GetAccuracyConfig(_accuracy);
     }
 }

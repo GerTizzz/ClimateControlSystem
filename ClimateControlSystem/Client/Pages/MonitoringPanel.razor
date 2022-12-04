@@ -3,6 +3,7 @@
 @using ClimateControlSystem.Client.Resources
 @inject NavigationManager NavigationManager
 @inject IClimateService ClimateService
+@inject IConfigService ConfigService
 @implements IAsyncDisposable
 
 <PageTitle>Monitoring Panel</PageTitle>
@@ -28,6 +29,8 @@
 </AuthorizeView>
 
 @code {
+    private Config _config;
+
     private Line _temperatureChart;
     private Line _humidityChart;
 
@@ -50,14 +53,12 @@
 
         if (authState.User.Identity.IsAuthenticated)
         {
-            _predictions = await ClimateService.GetClimatePredictionsAsync(15);
+            _config = await ConfigService.GetConfigAsync();
+
+            _predictions = await ClimateService.GetPredictionsAsync(15);
             _predictions.Capacity = 15;
 
-            _actualAndPredictedTemperature = GetTemperatureData(_predictions);
-            _actualAndPredictedHumidity = GetHumidityData(_predictions);
-
-            _temperatureDataLineConfig = GetTemperatureLineConfig();
-            _humidityDataLineConfig = GetHumidityLineConfig();
+            await UpdateConfigsAndData();
 
             await Connect();
         }
@@ -89,11 +90,7 @@
 
         _predictions.Add(prediction);
 
-        _actualAndPredictedTemperature = GetTemperatureData(_predictions);
-        _actualAndPredictedHumidity = GetHumidityData(_predictions);
-
-        _temperatureDataLineConfig = GetTemperatureLineConfig();
-        _humidityDataLineConfig = GetHumidityLineConfig();
+        await UpdateConfigsAndData();
 
         await _temperatureChart.UpdateChart(csData: _actualAndPredictedTemperature, csConfig: _temperatureDataLineConfig);
         await _humidityChart.UpdateChart(csData: _actualAndPredictedHumidity, csConfig: _humidityDataLineConfig);
@@ -109,177 +106,14 @@
         }
     }
 
-    private List<GraphicData> GetTemperatureData(List<Prediction> monitorings)
+    private Task UpdateConfigsAndData()
     {
-        List<GraphicData> temperatureData = new List<GraphicData>();
+        _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_predictions, _config.TemperatureLimit);
+        _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_predictions, _config.HumidityLimit);
 
-        for (int i = 0; i < monitorings.Count; i++)
-        {
-            temperatureData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                monitorings[i].PredictedFutureTemperature, "Predicted"));
-            temperatureData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                24f, "Limit"));
+        _temperatureDataLineConfig = AntChartHelper.GetTemperatureLineConfig(_actualAndPredictedTemperature);
+        _humidityDataLineConfig = AntChartHelper.GetHumidityLineConfig(_actualAndPredictedHumidity);
 
-            if (i > 0)
-            {
-                temperatureData.Add(new GraphicData(monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    monitorings[i - 1].CurrentRealTemperature.Value, "Measured"));
-            }
-        }
-
-        return temperatureData;
+        return Task.CompletedTask;
     }
-
-    private List<GraphicData> GetHumidityData(List<Prediction> monitorings)
-    {
-        List<GraphicData> humidityData = new List<GraphicData>();
-
-        for (int i = 0; i < monitorings.Count; i++)
-        {
-            humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                monitorings[i].PredictedFutureHumidity, "Predicted"));
-            humidityData.Add(new GraphicData(monitorings[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                21f, "Limit"));
-
-            if (i > 0)
-            {
-                humidityData.Add(new GraphicData(monitorings[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    monitorings[i - 1].CurrentRealHumidity.Value, "Measured"));
-            }
-        }
-
-        return humidityData;
-    }
-
-    private LineConfig GetTemperatureLineConfig()
-    {
-        var config = GetBaseLineConfig();
-
-        config.Title.Text = "Действительная и спрогнозированная температуры";
-        config.YAxis.Title.Text = "Градусы °C";
-        var min = _actualAndPredictedTemperature.Min(item => item.Y);
-        var max = _actualAndPredictedTemperature.Max(item => item.Y);
-        var delta = max - min;
-        config.YAxis.Max = max + delta / 10;
-        config.YAxis.Min = min - delta / 10;
-
-        return config;
-    }
-
-    private LineConfig GetHumidityLineConfig()
-    {
-        var config = GetBaseLineConfig();
-
-        config.Title.Text = "Действительная и спрогнозированная влажности";
-        config.YAxis.Title.Text = "Показатели влажности %";
-        var min = _actualAndPredictedHumidity.Min(item => item.Y);
-        var max = _actualAndPredictedHumidity.Max(item => item.Y);
-        var delta = max - min;
-        config.YAxis.Max = max + delta / 10;
-        config.YAxis.Min = min - delta / 10;
-        config.Point.Shape = "circle";
-
-        return config;
-    }
-
-    private LineConfig GetBaseLineConfig()
-    {
-        return new LineConfig()
-        {
-            Title = new Title()
-            {
-                Visible = true,
-                Style = new TextStyle()
-                {
-                    Fill = "#000",
-                    FontSize = 20
-                }
-            },
-            Padding = "auto",
-            ForceFit = true,
-            XField = "X",
-            YField = "Y",
-            SeriesField = "Type",
-            Point = new LineViewConfigPoint()
-            {
-                Style = new GraphicStyle() { LineWidth = 3, FillOpacity = 5 },
-                Size = 7,
-                Visible = true,
-                Shape = "diamond"
-            },
-            LineStyle = new LineStyle()
-            {
-                LineWidth = 5
-            },
-            Legend = new Legend()
-            {
-                Position = "top-right",
-                Text = new LegendText()
-                {
-                    Style = new TextStyle()
-                    {
-                        Fill = "#000",
-                        FontSize = 20
-                    }
-                }
-            },
-            XAxis = new ValueCatTimeAxis()
-            {
-                Title = new BaseAxisTitle()
-                {
-                    Text = "Время",
-                    Style = new TextStyle()
-                    {
-                        FontSize = 16
-                    },
-                    Visible = true
-                },
-                Visible = true,
-                TickLine = new BaseAxisTickLine()
-                {
-                    Visible = true,
-                    Style = new LineStyle()
-                    {
-                        LineWidth = 2,
-                        Stroke = "#aaa"
-                    },
-                },
-                Line = new BaseAxisLine()
-                {
-                    Visible = true,
-                    Style = new LineStyle()
-                    {
-                        Stroke = "#aaa"
-                    }
-                },
-                Grid = new BaseAxisGrid()
-                {
-                    Visible = true,
-                    Line = new BaseAxisGridLine()
-                    {
-                        Type = "",
-                        Style = new LineStyle()
-                        {
-                            Stroke = "#ddd",
-                            LineDash = new int[] { 4, 2 }
-                        }
-                    }
-                }
-            },
-            YAxis = new ValueAxis()
-            {
-                Title = new BaseAxisTitle()
-                {
-                    Style = new TextStyle()
-                    {
-                        FontSize = 16,
-                    },
-                    AutoRotate = true,
-                    Visible = true
-                },
-                Visible = true
-            },
-        };
-    }
-
 }

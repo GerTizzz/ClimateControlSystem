@@ -1,4 +1,6 @@
-﻿namespace ClimateControlSystem.Shared
+﻿using ClimateControlSystem.Shared.Enums;
+
+namespace ClimateControlSystem.Shared.Common
 {
     public sealed class UserDtoModel
     {

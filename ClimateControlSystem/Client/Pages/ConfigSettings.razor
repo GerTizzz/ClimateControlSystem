@@ -1,0 +1,43 @@
+﻿@page "/configsettings"
+@using ClimateControlSystem.Shared.Common;
+@using ClimateControlSystem.Client.Resources
+@attribute [Authorize(Roles = "Admin")]
+@inject IConfigService ConfigService
+
+<PageTitle>Config Settings</PageTitle>
+
+<h3>Настройки конфигурации</h3>
+
+<EditForm Model="_config" OnSubmit="HandleSubmit">
+    <div>
+        <label for="tempLim">Лимит температуры</label>
+        <InputNumber id="tempLim" @bind-Value="_config.TemperatureLimit"/>
+    </div>
+    <div>
+        <label for="humLim">Лимит влажности</label>
+        <InputNumber id="humLim" @bind-Value="_config.HumidityLimit"/>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</EditForm>
+
+@code {
+    Config _config = new Config();
+
+    string gg = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _config = await ConfigService.GetConfigAsync();
+    }
+
+    async Task HandleSubmit()
+    {
+        bool isUpdated = await ConfigService.UpdateConfigAsync(_config);
+
+        if (isUpdated is false)
+        {
+            _config = await ConfigService.GetConfigAsync();
+        }
+    }
+}
