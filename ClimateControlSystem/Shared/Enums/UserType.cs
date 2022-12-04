@@ -1,4 +1,4 @@
-﻿namespace ClimateControlSystem.Shared
+﻿namespace ClimateControlSystem.Shared.Enums
 {
     public enum UserType
     {

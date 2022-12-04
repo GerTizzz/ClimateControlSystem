@@ -42,8 +42,8 @@ namespace ClimateControlSystem.Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TemperatureLimit = table.Column<double>(type: "float", nullable: false),
-                    HumidityLimit = table.Column<double>(type: "float", nullable: false)
+                    TemperatureLimit = table.Column<float>(type: "real", nullable: false),
+                    HumidityLimit = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -100,7 +100,8 @@ namespace ClimateControlSystem.Server.Migrations
                     PredictedTemperature = table.Column<float>(type: "real", nullable: false),
                     PredictedHumidity = table.Column<float>(type: "real", nullable: false),
                     MonitoringDataId = table.Column<int>(type: "int", nullable: false),
-                    AccuracyId = table.Column<int>(type: "int", nullable: true)
+                    AccuracyId = table.Column<int>(type: "int", nullable: true),
+                    ClimateEventId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -111,33 +112,15 @@ namespace ClimateControlSystem.Server.Migrations
                         principalTable: "Accuracies",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Predictions_Monitorings_MonitoringDataId",
-                        column: x => x.MonitoringDataId,
-                        principalTable: "Monitorings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ClimateEventTypeRecordPredictionRecord",
-                columns: table => new
-                {
-                    ClimateEventsId = table.Column<int>(type: "int", nullable: false),
-                    PredictionsId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ClimateEventTypeRecordPredictionRecord", x => new { x.ClimateEventsId, x.PredictionsId });
-                    table.ForeignKey(
-                        name: "FK_ClimateEventTypeRecordPredictionRecord_ClimateEvents_ClimateEventsId",
-                        column: x => x.ClimateEventsId,
+                        name: "FK_Predictions_ClimateEvents_ClimateEventId",
+                        column: x => x.ClimateEventId,
                         principalTable: "ClimateEvents",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ClimateEventTypeRecordPredictionRecord_Predictions_PredictionsId",
-                        column: x => x.PredictionsId,
-                        principalTable: "Predictions",
+                        name: "FK_Predictions_Monitorings_MonitoringDataId",
+                        column: x => x.MonitoringDataId,
+                        principalTable: "Monitorings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -150,14 +133,18 @@ namespace ClimateControlSystem.Server.Migrations
                     { 1, 0 },
                     { 2, 1 },
                     { 3, 2 },
-                    { 4, 3 },
-                    { 5, 4 }
+                    { 4, 3 }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Configs",
+                columns: new[] { "Id", "HumidityLimit", "TemperatureLimit" },
+                values: new object[] { 1, 21f, 24f });
 
             migrationBuilder.InsertData(
                 table: "Monitorings",
                 columns: new[] { "Id", "AirDryTemperatureOutside", "AirHumidityOutside", "AirWetTemperatureOutside", "ClusterLoad", "ClusterTemperature", "CpuUsage", "CurrentRealHumidity", "CurrentRealTemperature", "MeanCoolingValue", "MeasurementTime", "WindDirection", "WindEnthalpy", "WindSpeed" },
-                values: new object[] { 1, -3f, 91f, -3.91f, 50.8f, 56f, 5945.632f, 19.71f, 23.48f, 17.7f, new DateTimeOffset(new DateTime(2022, 12, 3, 22, 6, 0, 110, DateTimeKind.Unspecified).AddTicks(2797), new TimeSpan(0, 5, 0, 0, 0)), 225f, -4.06f, 3f });
+                values: new object[] { 1, -3f, 91f, -3.91f, 50.8f, 56f, 5945.632f, 19.71f, 23.48f, 17.7f, new DateTimeOffset(new DateTime(2022, 12, 4, 17, 22, 26, 203, DateTimeKind.Unspecified).AddTicks(2209), new TimeSpan(0, 5, 0, 0, 0)), 225f, -4.06f, 3f });
 
             migrationBuilder.InsertData(
                 table: "Users",
@@ -166,18 +153,18 @@ namespace ClimateControlSystem.Server.Migrations
 
             migrationBuilder.InsertData(
                 table: "Predictions",
-                columns: new[] { "Id", "AccuracyId", "MonitoringDataId", "PredictedHumidity", "PredictedTemperature" },
-                values: new object[] { 1, null, 1, 18.77f, 23.32f });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ClimateEventTypeRecordPredictionRecord_PredictionsId",
-                table: "ClimateEventTypeRecordPredictionRecord",
-                column: "PredictionsId");
+                columns: new[] { "Id", "AccuracyId", "ClimateEventId", "MonitoringDataId", "PredictedHumidity", "PredictedTemperature" },
+                values: new object[] { 1, null, 1, 1, 18.77f, 23.32f });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Predictions_AccuracyId",
                 table: "Predictions",
                 column: "AccuracyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Predictions_ClimateEventId",
+                table: "Predictions",
+                column: "ClimateEventId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Predictions_MonitoringDataId",
@@ -188,22 +175,19 @@ namespace ClimateControlSystem.Server.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ClimateEventTypeRecordPredictionRecord");
-
-            migrationBuilder.DropTable(
                 name: "Configs");
-
-            migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "ClimateEvents");
 
             migrationBuilder.DropTable(
                 name: "Predictions");
 
             migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
                 name: "Accuracies");
+
+            migrationBuilder.DropTable(
+                name: "ClimateEvents");
 
             migrationBuilder.DropTable(
                 name: "Monitorings");

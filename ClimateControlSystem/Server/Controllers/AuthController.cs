@@ -1,5 +1,5 @@
 ﻿using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Shared;
+using ClimateControlSystem.Shared.Common;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClimateControlSystem.Server.Controllers

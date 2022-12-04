@@ -1,9 +1,9 @@
-﻿using ClimateControlSystem.Shared;
+﻿using ClimateControlSystem.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace ClimateControlSystem.Server.Resources.RepositoryResources
 {
-    public sealed class ClimateEventTypeRecord
+    public sealed class ClimateEventRecord
     {
         [Key]
         public int Id { get; set; }

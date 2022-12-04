@@ -2,7 +2,7 @@
 
 namespace ClimateControlSystem.Server.Domain.Repositories
 {
-    public interface IUsersRepository
+    public interface IUserRepository
     {
         Task<List<UserRecord>> GetUsers();
 

@@ -2,22 +2,22 @@
 {
     public record GraphicData
     {
-        public string X { get; }
+        public string time { get; }
 
-        public float Y { get; }
+        public float value { get; }
 
-        public string Type { get; }
+        public string type { get; }
 
-        public GraphicData(string x, float y, string type)
+        public GraphicData(string x, float y, string fieldType)
         {
-            X = x;
-            Y = y;
-            Type = type;
+            time = x;
+            value = y;
+            type = fieldType;
         }
 
         public override string ToString()
         {
-            return $"X: {X} Y: {Y} Type: {Type}";
+            return $"X: {time} Y: {value} Type: {type}";
         }
     }
 }

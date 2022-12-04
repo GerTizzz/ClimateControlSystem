@@ -1,4 +1,4 @@
-﻿using ClimateControlSystem.Shared;
+﻿using ClimateControlSystem.Shared.Common;
 using Microsoft.AspNetCore.Components;
 using System.Net.Http.Json;
 
@@ -24,14 +24,11 @@ namespace ClimateControlSystem.Client.Services.UsersService
             return result;
         }
 
-        public async Task GetUsers()
+        public async Task<List<UserDtoModel>> GetUsers()
         {
             var result = await _httpClient.GetFromJsonAsync<List<UserDtoModel>>("api/user");
             
-            if (result is not null)
-            {
-                Users = result;
-            }
+            return result;
         }
 
         public async Task CreateUser(UserDtoModel user)

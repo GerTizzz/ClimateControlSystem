@@ -1,6 +1,6 @@
-﻿namespace ClimateControlSystem.Shared
+﻿namespace ClimateControlSystem.Shared.SendToClient
 {
-    public sealed class MonitoringData
+    public sealed class ClimateData
     {
         public DateTimeOffset MeasurementTime { get; set; }
         public float ClusterLoad { get; set; }
@@ -15,5 +15,9 @@
         public float WindDirection { get; set; }
         public float WindEnthalpy { get; set; }
         public float MeanCoolingValue { get; set; }
+        public float PredictedFutureTemperature { get; init; }
+        public float PredictedFutureHumidity { get; init; }
+        public float? PredictedTemperatureAccuracy { get; init; }
+        public float? PredictedHumidityAccuracy { get; init; }
     }
 }

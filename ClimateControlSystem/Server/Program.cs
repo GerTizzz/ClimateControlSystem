@@ -22,12 +22,14 @@ string _modelLocation = Directory.GetCurrentDirectory() + "\\" + builder.Configu
 string _predictionDbConnectionString = builder.Configuration.GetConnectionString("PredictionsDbConnection");
 
 builder.Services.AddScoped<IClimateRepository, ClimateRepository>();
-builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IConfigRepository, ConfigRepository>();
 builder.Services.AddScoped<IPredictionService, PredictionService>();
 builder.Services.AddSingleton<IPredictionEngineService>(sp => 
     new PredictionEngineService(sp.GetService<IMapper>(), _modelLocation));
 builder.Services.AddScoped<IAuthenticateManager, AuthenticateManager>();
 builder.Services.AddScoped<IUserManager, UserManager>();
+builder.Services.AddScoped<IConfigManager, ConfigManager>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

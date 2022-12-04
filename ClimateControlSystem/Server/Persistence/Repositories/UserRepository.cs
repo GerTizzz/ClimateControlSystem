@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClimateControlSystem.Server.Persistence.Repositories
 {
-    public class UsersRepository : IUsersRepository
+    public class UserRepository : IUserRepository
     {
         private readonly PredictionsDbContext _context;
 
-        public UsersRepository(PredictionsDbContext context)
+        public UserRepository(PredictionsDbContext context)
         {
             _context = context;
         }

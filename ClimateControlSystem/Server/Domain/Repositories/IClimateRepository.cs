@@ -1,5 +1,6 @@
 ﻿using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Shared;
+using ClimateControlSystem.Shared.Enums;
 
 namespace ClimateControlSystem.Server.Domain.Repositories
 {
@@ -7,7 +8,7 @@ namespace ClimateControlSystem.Server.Domain.Repositories
     {
         Task<PredictionResult> GetLastPredictionAsync();
 
-        Task<bool> AddPredictionAsync(PredictionResult prediction, MonitoringData monitoring, AccuracyData accuracy);
+        Task<bool> AddPredictionAsync(PredictionResult prediction, MonitoringData monitoring, AccuracyData accuracy, ClimateEventType eventType);
 
         Task<List<Prediction>> GetPredictionsWithAccuraciesAsync(int amountOfRecords);
     }

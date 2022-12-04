@@ -1,5 +1,6 @@
 ﻿@page "/user"
 @page "/user/{id:int}"
+@using ClimateControlSystem.Shared.Common;
 @attribute [Authorize(Roles = "Admin")]
 @inject IUsersService UsersService
 
