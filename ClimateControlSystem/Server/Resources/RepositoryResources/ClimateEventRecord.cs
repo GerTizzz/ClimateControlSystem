@@ -8,6 +8,6 @@ namespace ClimateControlSystem.Server.Resources.RepositoryResources
         [Key]
         public int Id { get; set; }
         public ClimateEventType EventType { get; set; }
-        public List<PredictionRecord> Predictions { get; set; }
+        public List<ClimateRecord> Predictions { get; set; }
     }
 }

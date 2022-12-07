@@ -76,6 +76,20 @@ namespace ClimateControlSystem.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Predictions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PredictedTemperature = table.Column<float>(type: "real", nullable: false),
+                    PredictedHumidity = table.Column<float>(type: "real", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Predictions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -92,35 +106,47 @@ namespace ClimateControlSystem.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Predictions",
+                name: "Climates",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PredictedTemperature = table.Column<float>(type: "real", nullable: false),
-                    PredictedHumidity = table.Column<float>(type: "real", nullable: false),
+                    PredictionId = table.Column<int>(type: "int", nullable: false),
+                    ConfigId = table.Column<int>(type: "int", nullable: false),
                     MonitoringDataId = table.Column<int>(type: "int", nullable: false),
                     AccuracyId = table.Column<int>(type: "int", nullable: true),
                     ClimateEventId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Predictions", x => x.Id);
+                    table.PrimaryKey("PK_Climates", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Predictions_Accuracies_AccuracyId",
+                        name: "FK_Climates_Accuracies_AccuracyId",
                         column: x => x.AccuracyId,
                         principalTable: "Accuracies",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Predictions_ClimateEvents_ClimateEventId",
+                        name: "FK_Climates_ClimateEvents_ClimateEventId",
                         column: x => x.ClimateEventId,
                         principalTable: "ClimateEvents",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Predictions_Monitorings_MonitoringDataId",
+                        name: "FK_Climates_Configs_ConfigId",
+                        column: x => x.ConfigId,
+                        principalTable: "Configs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Climates_Monitorings_MonitoringDataId",
                         column: x => x.MonitoringDataId,
                         principalTable: "Monitorings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Climates_Predictions_PredictionId",
+                        column: x => x.PredictionId,
+                        principalTable: "Predictions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -144,7 +170,12 @@ namespace ClimateControlSystem.Server.Migrations
             migrationBuilder.InsertData(
                 table: "Monitorings",
                 columns: new[] { "Id", "AirDryTemperatureOutside", "AirHumidityOutside", "AirWetTemperatureOutside", "ClusterLoad", "ClusterTemperature", "CpuUsage", "CurrentRealHumidity", "CurrentRealTemperature", "MeanCoolingValue", "MeasurementTime", "WindDirection", "WindEnthalpy", "WindSpeed" },
-                values: new object[] { 1, -3f, 91f, -3.91f, 50.8f, 56f, 5945.632f, 19.71f, 23.48f, 17.7f, new DateTimeOffset(new DateTime(2022, 12, 4, 17, 22, 26, 203, DateTimeKind.Unspecified).AddTicks(2209), new TimeSpan(0, 5, 0, 0, 0)), 225f, -4.06f, 3f });
+                values: new object[] { 1, -3f, 91f, -3.91f, 50.8f, 56f, 5945.632f, 19.71f, 23.48f, 17.7f, new DateTimeOffset(new DateTime(2022, 12, 7, 22, 28, 11, 9, DateTimeKind.Unspecified).AddTicks(9925), new TimeSpan(0, 5, 0, 0, 0)), 225f, -4.06f, 3f });
+
+            migrationBuilder.InsertData(
+                table: "Predictions",
+                columns: new[] { "Id", "PredictedHumidity", "PredictedTemperature" },
+                values: new object[] { 1, 18.77f, 23.32f });
 
             migrationBuilder.InsertData(
                 table: "Users",
@@ -152,33 +183,40 @@ namespace ClimateControlSystem.Server.Migrations
                 values: new object[] { 1, "admin", new byte[] { 234, 67, 146, 201, 134, 164, 86, 202, 125, 217, 174, 99, 230, 69, 196, 32, 223, 130, 86, 2, 110, 245, 35, 7, 159, 20, 84, 62, 49, 84, 81, 28, 175, 203, 198, 202, 128, 63, 128, 15, 96, 135, 210, 4, 252, 15, 252, 17, 150, 160, 104, 243, 99, 40, 181, 210, 193, 226, 14, 26, 229, 165, 150, 197 }, new byte[] { 29, 90, 245, 35, 83, 27, 162, 74, 226, 234, 171, 134, 93, 187, 246, 80, 193, 193, 90, 50, 37, 118, 116, 254, 107, 30, 200, 72, 10, 31, 43, 139, 58, 135, 118, 189, 5, 99, 211, 203, 0, 84, 81, 146, 28, 164, 132, 63, 61, 143, 124, 25, 66, 231, 99, 189, 203, 55, 91, 105, 23, 169, 254, 10, 20, 179, 147, 58, 198, 70, 204, 60, 221, 77, 160, 128, 50, 190, 189, 205, 83, 48, 107, 183, 51, 48, 173, 248, 28, 230, 153, 194, 13, 108, 51, 123, 87, 228, 62, 31, 167, 11, 30, 180, 130, 172, 254, 241, 22, 7, 150, 212, 195, 48, 144, 92, 52, 199, 221, 202, 91, 200, 83, 109, 66, 70, 223, 200 }, "Admin" });
 
             migrationBuilder.InsertData(
-                table: "Predictions",
-                columns: new[] { "Id", "AccuracyId", "ClimateEventId", "MonitoringDataId", "PredictedHumidity", "PredictedTemperature" },
-                values: new object[] { 1, null, 1, 1, 18.77f, 23.32f });
+                table: "Climates",
+                columns: new[] { "Id", "AccuracyId", "ClimateEventId", "ConfigId", "MonitoringDataId", "PredictionId" },
+                values: new object[] { 1, null, 1, 1, 1, 1 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Predictions_AccuracyId",
-                table: "Predictions",
+                name: "IX_Climates_AccuracyId",
+                table: "Climates",
                 column: "AccuracyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Predictions_ClimateEventId",
-                table: "Predictions",
+                name: "IX_Climates_ClimateEventId",
+                table: "Climates",
                 column: "ClimateEventId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Predictions_MonitoringDataId",
-                table: "Predictions",
+                name: "IX_Climates_ConfigId",
+                table: "Climates",
+                column: "ConfigId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Climates_MonitoringDataId",
+                table: "Climates",
                 column: "MonitoringDataId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Climates_PredictionId",
+                table: "Climates",
+                column: "PredictionId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Configs");
-
-            migrationBuilder.DropTable(
-                name: "Predictions");
+                name: "Climates");
 
             migrationBuilder.DropTable(
                 name: "Users");
@@ -190,7 +228,13 @@ namespace ClimateControlSystem.Server.Migrations
                 name: "ClimateEvents");
 
             migrationBuilder.DropTable(
+                name: "Configs");
+
+            migrationBuilder.DropTable(
                 name: "Monitorings");
+
+            migrationBuilder.DropTable(
+                name: "Predictions");
         }
     }
 }
