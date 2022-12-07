@@ -7,11 +7,13 @@ namespace ClimateControlSystem.Server.Persistence.Context
 {
     public class PredictionsDbContext : DbContext
     {
-        public DbSet<MonitoringRecord> Monitorings { get; set; }
         public DbSet<UserRecord> Users { get; set; }
+
+        public DbSet<ClimateRecord> Climates { get; set; }
+        public DbSet<MonitoringRecord> Monitorings { get; set; }
         public DbSet<AccuracyRecord> Accuracies { get; set; }
-        public DbSet<ClimateEventRecord> ClimateEvents { get; set; }
         public DbSet<PredictionRecord> Predictions { get; set; }
+        public DbSet<ClimateEventRecord> ClimateEvents { get; set; }
         public DbSet<ConfigRecord> Configs { get; set; }
         public PredictionsDbContext(DbContextOptions options) : base(options)
         {
@@ -61,13 +63,27 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 }
             };
 
+            var initializedConfig = new ConfigRecord()
+            {
+                Id = 1,
+                TemperatureLimit = 24f,
+                HumidityLimit = 21f
+            };
+
             var initializedPrediction = new PredictionRecord()
             {
                 Id = 1,
                 PredictedTemperature = 23.32f,
-                PredictedHumidity = 18.77f,
+                PredictedHumidity = 18.77f
+            };
+
+            var initializedClimate = new ClimateRecord()
+            {
+                Id = 1,
+                PredictionId = initializedPrediction.Id,
                 MonitoringDataId = initializedMonitoring.Id,
                 AccuracyId = null,
+                ConfigId = initializedConfig.Id,
                 ClimateEventId = 1
             };
 
@@ -80,13 +96,6 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 Role = UserType.Admin
             };
 
-            var initializedConfig = new ConfigRecord()
-            {
-                Id = 1,
-                TemperatureLimit = 24f,
-                HumidityLimit = 21f
-            };
-
             modelBuilder.Entity<ClimateEventRecord>()
                 .Property(climateEvent => climateEvent.EventType)
                 .HasConversion<int>();
@@ -94,6 +103,8 @@ namespace ClimateControlSystem.Server.Persistence.Context
             modelBuilder.Entity<ClimateEventRecord>().HasData(initializedClimateEventTypes);
 
             modelBuilder.Entity<MonitoringRecord>().HasData(initializedMonitoring);
+
+            modelBuilder.Entity<ClimateRecord>().HasData(initializedClimate);
 
             modelBuilder.Entity<PredictionRecord>().HasData(initializedPrediction);
 
