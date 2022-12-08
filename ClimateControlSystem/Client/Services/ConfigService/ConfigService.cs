@@ -60,8 +60,14 @@ namespace ClimateControlSystem.Client.Services.ConfigService
         {
             return new Config()
             {
-                TemperatureLimit = 24,
-                HumidityLimit = 21
+                UpperTemperatureWarningLimit = 24f,
+                LowerTemperatureWarningLimit = 16f,
+                UpperTemperatureCriticalLimit = 25f,
+                LowerTemperatureCriticalLimit = 15f,
+                UpperHumidityWarningLimit = 21f,
+                LowerHumidityWarningLimit = 10f,
+                UpperHumidityCriticalLimit = 22f,
+                LowerHumidityCriticalLimit = 9f
             };
         }
     }

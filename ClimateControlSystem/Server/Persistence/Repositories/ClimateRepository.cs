@@ -66,7 +66,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
         }
 
-        public async Task<bool> AddPredictionAsync(PredictionResult prediction, MonitoringData monitoring, AccuracyData accuracy, ClimateEventType eventType)
+        public async Task<bool> AddPredictionAsync(PredictionResult prediction, MonitoringData monitoring, AccuracyData accuracy, List<ClimateEventType> eventTypes)
         {
             try
             {
@@ -74,10 +74,10 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
 
                 var predictionRecord = _mapper.Map<ClimateRecord>(prediction);
                 var monitoringRecord = _mapper.Map<MonitoringRecord>(monitoring);
-                var climateEventRecord = await GetClimateEventRecordByItsType(eventType);
+                var climateEventRecord = await GetClimateEventRecordByItsType(eventTypes);
 
                 predictionRecord.MonitoringData = monitoringRecord;
-                predictionRecord.ClimateEvent = climateEventRecord;
+                predictionRecord.Events = (await Task.WhenAll(climateEventRecord)).ToList();
 
                 await _context.Monitorings.AddAsync(monitoringRecord);
                 await _context.Climates.AddAsync(predictionRecord);
@@ -91,9 +91,12 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             return true;
         }
 
-        private async Task<ClimateEventRecord> GetClimateEventRecordByItsType(ClimateEventType eventType)
+        private async Task<List<Task<EventTypeRecord>>> GetClimateEventRecordByItsType(List<ClimateEventType> eventTypes)
         {
-            return await _context.ClimateEvents.OrderBy(record => record.Id).FirstOrDefaultAsync(record => record.EventType == eventType);
+            var climateEvents = _context.EventsTypes.OrderBy(record => record.Id);
+            var result = eventTypes.Select(eventType =>
+                climateEvents.FirstAsync(record => record.EventType == eventType)).ToList();
+            return result;
         }
 
         private async Task<bool> UpdatePredictionAccuracy(AccuracyData accuracy)

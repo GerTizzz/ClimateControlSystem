@@ -31,6 +31,8 @@
 @code {
     private Config _config;
 
+    private const int _recordsCount = 15;
+
     private Line _temperatureChart;
     private Line _humidityChart;
 
@@ -54,9 +56,8 @@
         if (authState.User.Identity.IsAuthenticated)
         {
             _config = await ConfigService.GetConfigAsync();
-
-            _predictions = await ClimateService.GetPredictionsAsync(15);
-            _predictions.Capacity = 15;
+            _predictions = await ClimateService.GetPredictionsAsync(_recordsCount);
+            _predictions.Capacity = _recordsCount;
 
             await UpdateConfigsAndData();
 
@@ -108,8 +109,8 @@
 
     private Task UpdateConfigsAndData()
     {
-        _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_predictions, _config.TemperatureLimit);
-        _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_predictions, _config.HumidityLimit);
+        _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_predictions, _config.UpperTemperatureWarningLimit);
+        _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_predictions, _config.UpperHumidityWarningLimit);
 
         _temperatureDataLineConfig = AntChartHelper.GetTemperatureLineConfig(_actualAndPredictedTemperature);
         _humidityDataLineConfig = AntChartHelper.GetHumidityLineConfig(_actualAndPredictedHumidity);

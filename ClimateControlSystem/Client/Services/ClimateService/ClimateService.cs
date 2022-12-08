@@ -26,7 +26,8 @@ namespace ClimateControlSystem.Client.Services.ClimateService
 
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<Prediction>>($"api/climate/{countRecords}") ?? new List<Prediction>();
+                string urlRequest = $"api/climate/predictions/{countRecords}";
+                var result = await _httpClient.GetFromJsonAsync<List<Prediction>>(urlRequest);
                 return result;
             }
             catch (HttpRequestException e)
@@ -40,7 +41,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             return new List<Prediction>();
         }
 
-        public async Task<List<Prediction>> GetClimateDataAsync(int countRecords)
+        public async Task<List<Prediction>> GetMonitoringsAsync(int countRecords)
         {
             if (countRecords > RecordsCount)
             {
@@ -49,7 +50,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
 
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<Prediction>>($"api/climate/{countRecords}") ?? new List<Prediction>();
+                var result = await _httpClient.GetFromJsonAsync<List<Prediction>>($"api/climate/monitorings/{countRecords}") ?? new List<Prediction>();
                 return result;
             }
             catch (HttpRequestException e)
