@@ -65,9 +65,9 @@ namespace ClimateControlSystem.Server.Mapping
 
             CreateMap<ConfigRecord, Config>();
 
-            CreateMap<ClimateEventData, ClimateEventRecord>();
+            CreateMap<ClimateEventData, EventTypeRecord>();
 
-            CreateMap<ClimateEventRecord, ClimateEventData>();
+            CreateMap<EventTypeRecord, ClimateEventData>();
 
             #endregion
 

@@ -9,6 +9,6 @@ namespace ClimateControlSystem.Server.Services.MediatR.Commands
         public PredictionResult Prediction { get; init; }
         public AccuracyData Accuracy { get; init; }
         public MonitoringData Monitoring { get; init; }
-        public ClimateEventType ClimateEventType { get; init; }
+        public List<ClimateEventType> ClimateEventType { get; init; }
     }
 }

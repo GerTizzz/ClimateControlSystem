@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClimateControlSystem.Server.Migrations
 {
     [DbContext(typeof(PredictionsDbContext))]
-    [Migration("20221207172811_InitializeDb")]
+    [Migration("20221208062452_InitializeDb")]
     partial class InitializeDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,44 +43,6 @@ namespace ClimateControlSystem.Server.Migrations
                     b.ToTable("Accuracies");
                 });
 
-            modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.ClimateEventRecord", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("EventType")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ClimateEvents");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            EventType = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            EventType = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            EventType = 2
-                        },
-                        new
-                        {
-                            Id = 4,
-                            EventType = 3
-                        });
-                });
-
             modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.ClimateRecord", b =>
                 {
                     b.Property<int>("Id")
@@ -90,9 +52,6 @@ namespace ClimateControlSystem.Server.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int?>("AccuracyId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ClimateEventId")
                         .HasColumnType("int");
 
                     b.Property<int>("ConfigId")
@@ -108,8 +67,6 @@ namespace ClimateControlSystem.Server.Migrations
 
                     b.HasIndex("AccuracyId");
 
-                    b.HasIndex("ClimateEventId");
-
                     b.HasIndex("ConfigId");
 
                     b.HasIndex("MonitoringDataId");
@@ -117,16 +74,6 @@ namespace ClimateControlSystem.Server.Migrations
                     b.HasIndex("PredictionId");
 
                     b.ToTable("Climates");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ClimateEventId = 1,
-                            ConfigId = 1,
-                            MonitoringDataId = 1,
-                            PredictionId = 1
-                        });
                 });
 
             modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.ConfigRecord", b =>
@@ -137,23 +84,50 @@ namespace ClimateControlSystem.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<float>("HumidityLimit")
+                    b.Property<float>("LowerHumidityCriticalLimit")
                         .HasColumnType("real");
 
-                    b.Property<float>("TemperatureLimit")
+                    b.Property<float>("LowerHumidityWarningLimit")
+                        .HasColumnType("real");
+
+                    b.Property<float>("LowerTemperatureCriticalLimit")
+                        .HasColumnType("real");
+
+                    b.Property<float>("LowerTemperatureWarningLimit")
+                        .HasColumnType("real");
+
+                    b.Property<float>("UpperHumidityCriticalLimit")
+                        .HasColumnType("real");
+
+                    b.Property<float>("UpperHumidityWarningLimit")
+                        .HasColumnType("real");
+
+                    b.Property<float>("UpperTemperatureCriticalLimit")
+                        .HasColumnType("real");
+
+                    b.Property<float>("UpperTemperatureWarningLimit")
                         .HasColumnType("real");
 
                     b.HasKey("Id");
 
                     b.ToTable("Configs");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            HumidityLimit = 21f,
-                            TemperatureLimit = 24f
-                        });
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.EventTypeRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EventsTypes");
                 });
 
             modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.MonitoringRecord", b =>
@@ -206,25 +180,6 @@ namespace ClimateControlSystem.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Monitorings");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AirDryTemperatureOutside = -3f,
-                            AirHumidityOutside = 91f,
-                            AirWetTemperatureOutside = -3.91f,
-                            ClusterLoad = 50.8f,
-                            ClusterTemperature = 56f,
-                            CpuUsage = 5945.632f,
-                            CurrentRealHumidity = 19.71f,
-                            CurrentRealTemperature = 23.48f,
-                            MeanCoolingValue = 17.7f,
-                            MeasurementTime = new DateTimeOffset(new DateTime(2022, 12, 7, 22, 28, 11, 9, DateTimeKind.Unspecified).AddTicks(9925), new TimeSpan(0, 5, 0, 0, 0)),
-                            WindDirection = 225f,
-                            WindEnthalpy = -4.06f,
-                            WindSpeed = 3f
-                        });
                 });
 
             modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.PredictionRecord", b =>
@@ -244,14 +199,6 @@ namespace ClimateControlSystem.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Predictions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            PredictedHumidity = 18.77f,
-                            PredictedTemperature = 23.32f
-                        });
                 });
 
             modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.UserRecord", b =>
@@ -293,17 +240,26 @@ namespace ClimateControlSystem.Server.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ClimateRecordEventTypeRecord", b =>
+                {
+                    b.Property<int>("ClimatesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EventsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ClimatesId", "EventsId");
+
+                    b.HasIndex("EventsId");
+
+                    b.ToTable("ClimateRecordEventTypeRecord");
+                });
+
             modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.ClimateRecord", b =>
                 {
                     b.HasOne("ClimateControlSystem.Server.Resources.RepositoryResources.AccuracyRecord", "Accuracy")
                         .WithMany()
                         .HasForeignKey("AccuracyId");
-
-                    b.HasOne("ClimateControlSystem.Server.Resources.RepositoryResources.ClimateEventRecord", "ClimateEvent")
-                        .WithMany("Predictions")
-                        .HasForeignKey("ClimateEventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.HasOne("ClimateControlSystem.Server.Resources.RepositoryResources.ConfigRecord", "Config")
                         .WithMany()
@@ -325,8 +281,6 @@ namespace ClimateControlSystem.Server.Migrations
 
                     b.Navigation("Accuracy");
 
-                    b.Navigation("ClimateEvent");
-
                     b.Navigation("Config");
 
                     b.Navigation("MonitoringData");
@@ -334,9 +288,19 @@ namespace ClimateControlSystem.Server.Migrations
                     b.Navigation("Prediction");
                 });
 
-            modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.ClimateEventRecord", b =>
+            modelBuilder.Entity("ClimateRecordEventTypeRecord", b =>
                 {
-                    b.Navigation("Predictions");
+                    b.HasOne("ClimateControlSystem.Server.Resources.RepositoryResources.ClimateRecord", null)
+                        .WithMany()
+                        .HasForeignKey("ClimatesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ClimateControlSystem.Server.Resources.RepositoryResources.EventTypeRecord", null)
+                        .WithMany()
+                        .HasForeignKey("EventsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

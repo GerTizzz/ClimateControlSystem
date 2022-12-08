@@ -60,8 +60,8 @@
             return;    
         }
 
-        _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_predictions, _config.TemperatureLimit);
-        _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_predictions, _config.HumidityLimit);
+        _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_predictions, _config.UpperTemperatureWarningLimit);
+        _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_predictions, _config.UpperHumidityWarningLimit);
         _accuracy = AntChartHelper.GetAccuracyData(_predictions);
 
         _temperatureDataLineConfig = AntChartHelper.GetTemperatureLineConfig(_actualAndPredictedTemperature);

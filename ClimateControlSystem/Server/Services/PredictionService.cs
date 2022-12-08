@@ -88,25 +88,37 @@ namespace ClimateControlSystem.Server.Services
             await _monitoringHub.Clients.All.SendAsync("GetMonitoringData", prediction);
         }
 
-        private Task<ClimateEventType> GetClimateEventData(PredictionResult prediction)
+        private Task<List<ClimateEventType>> GetClimateEventData(PredictionResult prediction)
         {
-            ClimateEventType eventType = ClimateEventType.Normal;
+            List<ClimateEventType> eventTypes = new List<ClimateEventType>();
 
-            if (prediction.PredictedTemperature > _configManager.TemperatureLimit &&
-                prediction.PredictedHumidity > _configManager.HumidityLimit)
+            if (prediction.PredictedTemperature >= _configManager.UpperTemperatureCriticalLimit ||
+                prediction.PredictedTemperature <= _configManager.LowerTemperatureCriticalLimit)
             {
-                eventType = ClimateEventType.Critical;
+                eventTypes.Add(ClimateEventType.PredictedTemperatureCritical);
             }
-            else if (prediction.PredictedTemperature > _configManager.TemperatureLimit)
+            else if (prediction.PredictedTemperature < _configManager.UpperTemperatureCriticalLimit &&
+                prediction.PredictedTemperature >= _configManager.UpperTemperatureWarningLimit ||
+                prediction.PredictedTemperature > _configManager.LowerTemperatureCriticalLimit &&
+                prediction.PredictedTemperature <= _configManager.LowerTemperatureWarningLimit)
             {
-                eventType = ClimateEventType.PredictedTemperatureWarning;
-            }
-            else if (prediction.PredictedHumidity > _configManager.HumidityLimit)
-            {
-                eventType = ClimateEventType.PredictedHumidityWarning;
+                eventTypes.Add(ClimateEventType.PredictedTemperatureWarning);
             }
 
-            return Task.FromResult(eventType);
+            if (prediction.PredictedHumidity >= _configManager.UpperHumidityCriticalLimit ||
+                prediction.PredictedHumidity <= _configManager.LowerHumidityCriticalLimit)
+            {
+                eventTypes.Add(ClimateEventType.PredictedHumidityCritical);
+            }
+            else if (prediction.PredictedHumidity < _configManager.UpperHumidityCriticalLimit &&
+                prediction.PredictedHumidity >= _configManager.UpperHumidityWarningLimit ||
+                prediction.PredictedHumidity > _configManager.LowerHumidityCriticalLimit &&
+                prediction.PredictedHumidity <= _configManager.LowerHumidityWarningLimit)
+            {
+                eventTypes.Add(ClimateEventType.PredictedHumidityWarning);
+            }
+
+            return Task.FromResult(eventTypes);
         }
     }
 }

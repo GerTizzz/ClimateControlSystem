@@ -8,7 +8,7 @@ namespace ClimateControlSystem.Server.Domain.Repositories
     {
         Task<PredictionResult> GetLastPredictionAsync();
 
-        Task<bool> AddPredictionAsync(PredictionResult prediction, MonitoringData monitoring, AccuracyData accuracy, ClimateEventType eventType);
+        Task<bool> AddPredictionAsync(PredictionResult prediction, MonitoringData monitoring, AccuracyData accuracy, List<ClimateEventType> eventType);
 
         Task<List<Prediction>> GetPredictionsWithAccuraciesAsync(int amountOfRecords);
     }

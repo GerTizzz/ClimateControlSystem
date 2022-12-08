@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <SupportedPlatform Include="browser" />
+    <Compile Remove="SendToServer\**" />
+    <EmbeddedResource Remove="SendToServer\**" />
+    <None Remove="SendToServer\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="SendToServer\" />
+    <SupportedPlatform Include="browser" />
   </ItemGroup>
 </Project>

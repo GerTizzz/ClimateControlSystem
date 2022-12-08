@@ -8,7 +8,7 @@ namespace ClimateControlSystem.Shared.Common
 
         public string Name { get; set; } = string.Empty;
 
-        public UserType Role { get; set; } = UserType.Operator;
+        public UserType Role { get; set; } = UserType.Undefined;
 
         public string Password { get; set; } = string.Empty;
     }

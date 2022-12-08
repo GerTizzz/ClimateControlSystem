@@ -10,12 +10,37 @@
 
 <EditForm Model="_config" OnSubmit="HandleSubmit">
     <div>
-        <label for="tempLim">Лимит температуры</label>
-        <InputNumber id="tempLim" @bind-Value="_config.TemperatureLimit"/>
+        <label for="uppTempWarn">Верхний тревожный предел температуры, C</label>
+        <InputNumber id="uppTempWarn" @bind-Value="_config.UpperTemperatureWarningLimit" />
     </div>
     <div>
-        <label for="humLim">Лимит влажности</label>
-        <InputNumber id="humLim" @bind-Value="_config.HumidityLimit"/>
+        <label for="lowTempWarn">Нижний тревожный предел температуры, C</label>
+        <InputNumber id="lowTempWarn" @bind-Value="_config.LowerTemperatureWarningLimit" />
+    </div>
+    <div>
+        <label for="uppTempCrit">Верхний критический предел температуры, C</label>
+        <InputNumber id="uppTempCrit" @bind-Value="_config.UpperTemperatureCriticalLimit" />
+    </div>
+    <div>
+        <label for="lowTempCrit">Нижний критический предел температуры, C</label>
+        <InputNumber id="lowTempCrit" @bind-Value="_config.LowerTemperatureCriticalLimit" />
+    </div>
+
+    <div>
+        <label for="uppHumWarn">Верхний тревожный предел абсолютной влажности, г/м^3</label>
+        <InputNumber id="uppHumWarn" @bind-Value="_config.UpperHumidityWarningLimit" />
+    </div>
+    <div>
+        <label for="lowHumWarn">Нижний тревожный предел абсолютной влажности, г/м^3</label>
+        <InputNumber id="lowHumWarn" @bind-Value="_config.LowerHumidityWarningLimit" />
+    </div>
+    <div>
+        <label for="uppHumCrit">Верхний критический предел абсолютной влажности, г/м^3</label>
+        <InputNumber id="uppHumCrit" @bind-Value="_config.UpperHumidityCriticalLimit" />
+    </div>
+    <div>
+        <label for="lowHumCrit">Нижний критический предел абсолютной влажности, г/м^3</label>
+        <InputNumber id="lowHumCrit" @bind-Value="_config.LowerHumidityCriticalLimit" />
     </div>
     <br />
     <button type="submit" class="btn btn-primary">Сохранить</button>

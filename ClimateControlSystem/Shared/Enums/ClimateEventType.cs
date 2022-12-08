@@ -1,10 +1,11 @@
 ﻿namespace ClimateControlSystem.Shared.Enums
 {
-    public enum ClimateEventType : int
+    public enum ClimateEventType
     {
-        Normal = 0,
-        PredictedTemperatureWarning = 1,
-        PredictedHumidityWarning = 2,
-        Critical = 3
+        Normal,
+        PredictedTemperatureWarning,
+        PredictedHumidityWarning,
+        PredictedTemperatureCritical,
+        PredictedHumidityCritical
     }
 }
