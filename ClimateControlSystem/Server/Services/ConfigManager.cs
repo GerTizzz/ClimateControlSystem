@@ -10,6 +10,8 @@ namespace ClimateControlSystem.Server.Services
 
         private Config _config;
 
+        public Config Config => _config;
+
         public float UpperTemperatureWarningLimit => _config.UpperTemperatureWarningLimit;
         public float LowerTemperatureWarningLimit => _config.LowerTemperatureWarningLimit;
         public float UpperTemperatureCriticalLimit => _config.UpperTemperatureCriticalLimit;
