@@ -10,10 +10,6 @@ namespace ClimateControlSystem.Server.Services
 
         private Config _config;
 
-        public float TemperatureLimit => _config.TemperatureLimit;
-        public float HumidityLimit => _config.HumidityLimit;
-
-
         public float UpperTemperatureWarningLimit => _config.UpperTemperatureWarningLimit;
         public float LowerTemperatureWarningLimit => _config.LowerTemperatureWarningLimit;
         public float UpperTemperatureCriticalLimit => _config.UpperTemperatureCriticalLimit;
@@ -28,7 +24,11 @@ namespace ClimateControlSystem.Server.Services
         {
             _configRepository = configRepository;
 
-            _config = _configRepository.GetConfig().Result;
+            var conf = _configRepository.GetConfig();
+
+            Task.WaitAll(conf);
+
+            _config = conf.Result;
         }
 
         public Task<Config> GetConfigAsync()

@@ -14,6 +14,6 @@ namespace ClimateControlSystem.Server.Resources.RepositoryResources
         public MonitoringRecord MonitoringData { get; set; }
         public int? AccuracyId { get; set; }
         public AccuracyRecord? Accuracy { get; set; }
-        public List<EventTypeRecord> Events { get; set; } = new();
+        public List<EventTypeRecord> Events { get; set; }
     }
 }

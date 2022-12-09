@@ -7,7 +7,6 @@ using ClimateControlSystem.Shared;
 using ClimateControlSystem.Shared.Enums;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
-using Tensorflow;
 
 namespace ClimateControlSystem.Server.Services
 {

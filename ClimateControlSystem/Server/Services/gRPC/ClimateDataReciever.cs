@@ -2,7 +2,6 @@
 using ClimateControlSystem.Server.Protos;
 using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Services.Queries;
-using ClimateControlSystem.Shared;
 using Grpc.Core;
 using MediatR;
 

@@ -2,6 +2,7 @@
 using ClimateControlSystem.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Extensions.Hosting;
 
 namespace ClimateControlSystem.Server.Persistence.Context
 {
@@ -18,6 +19,8 @@ namespace ClimateControlSystem.Server.Persistence.Context
 
         public PredictionsDbContext(DbContextOptions options) : base(options)
         {
+            //Database.EnsureDeleted();
+            //Database.EnsureCreated();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,117 +34,125 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 Role = UserType.Admin
             };
 
-            //MonitoringRecord initializedMonitoring = new()
-            //{
-            //    Id = 1,
-            //    MeasurementTime = DateTimeOffset.Now,
-            //    ClusterLoad = 50.8f,
-            //    CpuUsage = 5945.632f,
-            //    ClusterTemperature = 56f,
-            //    CurrentRealTemperature = 23.48f,
-            //    CurrentRealHumidity = 19.71f,
-            //    AirHumidityOutside = 91f,
-            //    AirDryTemperatureOutside = -3f,
-            //    AirWetTemperatureOutside = -3.91f,
-            //    WindSpeed = 3f,
-            //    WindDirection = 225f,
-            //    WindEnthalpy = -4.06f,
-            //    MeanCoolingValue = 17.7f
-            //};
+            MonitoringRecord initializedMonitoring = new()
+            {
+                Id = 1,
+                MeasurementTime = DateTimeOffset.Now,
+                ClusterLoad = 50.8f,
+                CpuUsage = 5945.632f,
+                ClusterTemperature = 56f,
+                CurrentRealTemperature = 23.48f,
+                CurrentRealHumidity = 19.71f,
+                AirHumidityOutside = 91f,
+                AirDryTemperatureOutside = -3f,
+                AirWetTemperatureOutside = -3.91f,
+                WindSpeed = 3f,
+                WindDirection = 225f,
+                WindEnthalpy = -4.06f,
+                MeanCoolingValue = 17.7f
+            };
 
-            //ConfigRecord initializedConfig = new()
-            //{
-            //    Id = 1,
-            //    UpperTemperatureWarningLimit = 24f,
-            //    LowerTemperatureWarningLimit = 16f,
-            //    UpperTemperatureCriticalLimit = 25f,
-            //    LowerTemperatureCriticalLimit = 15f,
-            //    UpperHumidityWarningLimit = 21f,
-            //    LowerHumidityWarningLimit = 10f,
-            //    UpperHumidityCriticalLimit = 22f,
-            //    LowerHumidityCriticalLimit = 9f
-            //};
+            ConfigRecord initializedConfig = new()
+            {
+                Id = 1,
+                UpperTemperatureWarningLimit = 24f,
+                LowerTemperatureWarningLimit = 16f,
+                UpperTemperatureCriticalLimit = 25f,
+                LowerTemperatureCriticalLimit = 15f,
+                UpperHumidityWarningLimit = 21f,
+                LowerHumidityWarningLimit = 10f,
+                UpperHumidityCriticalLimit = 22f,
+                LowerHumidityCriticalLimit = 9f
+            };
 
-            //PredictionRecord initializedPrediction = new()
-            //{
-            //    Id = 1,
-            //    PredictedTemperature = 23.32f,
-            //    PredictedHumidity = 18.77f
-            //};
+            PredictionRecord initializedPrediction = new()
+            {
+                Id = 1,
+                PredictedTemperature = 23.32f,
+                PredictedHumidity = 18.77f
+            };
 
-            //ClimateRecord initializedClimate = new()
-            //{
-            //    Id = 1,
-            //    PredictionId = initializedPrediction.Id,
-            //    MonitoringDataId = initializedMonitoring.Id,
-            //    AccuracyId = null,
-            //    ConfigId = 1,
-            //    Events = new()
-            //};
+            ClimateRecord initializedClimate = new()
+            {
+                Id = 1,
+                PredictionId = initializedPrediction.Id,
+                MonitoringDataId = initializedMonitoring.Id,
+                AccuracyId = null,
+                ConfigId = 1,
+                Events = new()
+            };
 
-            //EventTypeRecord normalClimateEvent = new()
-            //{
-            //    Id = 1,
-            //    EventType = ClimateEventType.Normal
-            //};
+            List<EventTypeRecord> initializedClimateEventTypes = new()
+            {
+                new EventTypeRecord()
+                {
+                    Id = 1,
+                    EventType = ClimateEventType.Normal
+                },
+                new EventTypeRecord()
+                {
+                    Id = 2,
+                    EventType = ClimateEventType.PredictedTemperatureWarning
+                },
+                new EventTypeRecord()
+                {
+                    Id = 3,
+                    EventType = ClimateEventType.PredictedHumidityWarning
+                },
+                new EventTypeRecord()
+                {
+                    Id = 4,
+                    EventType = ClimateEventType.PredictedTemperatureCritical
+                },
+                new EventTypeRecord()
+                {
+                    Id = 5,
+                    EventType = ClimateEventType.PredictedHumidityCritical
+                }
+            };
 
-            //List<EventTypeRecord> initializedClimateEventTypes = new()
-            //{
-            //    normalClimateEvent,
-            //    new EventTypeRecord()
-            //    {
-            //        Id = 2,
-            //        EventType = ClimateEventType.PredictedTemperatureWarning
-            //    },
-            //    new EventTypeRecord()
-            //    {
-            //        Id = 3,
-            //        EventType = ClimateEventType.PredictedHumidityWarning
-            //    },
-            //    new EventTypeRecord()
-            //    {
-            //        Id = 4,
-            //        EventType = ClimateEventType.PredictedTemperatureCritical
-            //    },
-            //    new EventTypeRecord()
-            //    {
-            //        Id = 5,
-            //        EventType = ClimateEventType.PredictedHumidityCritical
-            //    }
-            //};
-
-            //normalClimateEvent.Climates = new()
-            //{
-            //    initializedClimate
-            //};
-
-            //initializedClimate.Events = new()
-            //{
-            //    normalClimateEvent
-            //};
-
+            modelBuilder.Entity<ClimateRecord>()
+                .HasMany(c => c.Events)
+                .WithMany(e => e.Climates)
+                .UsingEntity<Dictionary<string, object>>(
+                    "ClimateEvents",
+                    r => r.HasOne<EventTypeRecord>().WithMany().HasForeignKey("EventId"),
+                    l => l.HasOne<ClimateRecord>().WithMany().HasForeignKey("ClimateId"),
+                    je =>
+                    {
+                        je.HasKey("ClimateId", "EventId");
+                        je.HasData(
+                            new 
+                            { 
+                                ClimateId = 1, EventId = 1
+                            });
+                    });
 
             modelBuilder.Entity<EventTypeRecord>()
                 .Property(climateEvent => climateEvent.EventType)
                 .HasConversion(new EnumToStringConverter<ClimateEventType>());
 
-            //modelBuilder.Entity<EventTypeRecord>().HasData(initializedClimateEventTypes);
+            modelBuilder.Entity<EventTypeRecord>()
+                .HasData(initializedClimateEventTypes);
 
-            //modelBuilder.Entity<MonitoringRecord>().HasData(initializedMonitoring);
+            modelBuilder.Entity<MonitoringRecord>()
+                .HasData(initializedMonitoring);
 
-            //modelBuilder.Entity<PredictionRecord>().HasData(initializedPrediction);
+            modelBuilder.Entity<PredictionRecord>()
+                .HasData(initializedPrediction);
 
-            //modelBuilder.Entity<ConfigRecord>().HasData(initializedConfig);
+            modelBuilder.Entity<ConfigRecord>()
+                .HasData(initializedConfig);
 
-            //modelBuilder.Entity<ClimateRecord>().HasData(initializedClimate);
-
-
+            modelBuilder.Entity<ClimateRecord>()
+                .HasData(initializedClimate);
 
             modelBuilder.Entity<UserRecord>()
                 .Property(user => user.Role)
                 .HasConversion(new EnumToStringConverter<UserType>());
 
-            modelBuilder.Entity<UserRecord>().HasData(initializedAdminUser);
+            modelBuilder.Entity<UserRecord>()
+                .HasData(initializedAdminUser);
         }
     }
 }

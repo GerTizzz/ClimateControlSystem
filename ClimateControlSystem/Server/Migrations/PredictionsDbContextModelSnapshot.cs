@@ -72,6 +72,15 @@ namespace ClimateControlSystem.Server.Migrations
                     b.HasIndex("PredictionId");
 
                     b.ToTable("Climates");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ConfigId = 1,
+                            MonitoringDataId = 1,
+                            PredictionId = 1
+                        });
                 });
 
             modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.ConfigRecord", b =>
@@ -109,6 +118,20 @@ namespace ClimateControlSystem.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Configs");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            LowerHumidityCriticalLimit = 9f,
+                            LowerHumidityWarningLimit = 10f,
+                            LowerTemperatureCriticalLimit = 15f,
+                            LowerTemperatureWarningLimit = 16f,
+                            UpperHumidityCriticalLimit = 22f,
+                            UpperHumidityWarningLimit = 21f,
+                            UpperTemperatureCriticalLimit = 25f,
+                            UpperTemperatureWarningLimit = 24f
+                        });
                 });
 
             modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.EventTypeRecord", b =>
@@ -126,6 +149,33 @@ namespace ClimateControlSystem.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("EventsTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            EventType = "Normal"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            EventType = "PredictedTemperatureWarning"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            EventType = "PredictedHumidityWarning"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            EventType = "PredictedTemperatureCritical"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            EventType = "PredictedHumidityCritical"
+                        });
                 });
 
             modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.MonitoringRecord", b =>
@@ -178,6 +228,25 @@ namespace ClimateControlSystem.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Monitorings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AirDryTemperatureOutside = -3f,
+                            AirHumidityOutside = 91f,
+                            AirWetTemperatureOutside = -3.91f,
+                            ClusterLoad = 50.8f,
+                            ClusterTemperature = 56f,
+                            CpuUsage = 5945.632f,
+                            CurrentRealHumidity = 19.71f,
+                            CurrentRealTemperature = 23.48f,
+                            MeanCoolingValue = 17.7f,
+                            MeasurementTime = new DateTimeOffset(new DateTime(2022, 12, 9, 9, 46, 17, 870, DateTimeKind.Unspecified).AddTicks(4051), new TimeSpan(0, 5, 0, 0, 0)),
+                            WindDirection = 225f,
+                            WindEnthalpy = -4.06f,
+                            WindSpeed = 3f
+                        });
                 });
 
             modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.PredictionRecord", b =>
@@ -197,6 +266,14 @@ namespace ClimateControlSystem.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Predictions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            PredictedHumidity = 18.77f,
+                            PredictedTemperature = 23.32f
+                        });
                 });
 
             modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.UserRecord", b =>
@@ -238,19 +315,26 @@ namespace ClimateControlSystem.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ClimateRecordEventTypeRecord", b =>
+            modelBuilder.Entity("ClimateEvents", b =>
                 {
-                    b.Property<int>("ClimatesId")
+                    b.Property<int>("ClimateId")
                         .HasColumnType("int");
 
-                    b.Property<int>("EventsId")
+                    b.Property<int>("EventId")
                         .HasColumnType("int");
 
-                    b.HasKey("ClimatesId", "EventsId");
+                    b.HasKey("ClimateId", "EventId");
 
-                    b.HasIndex("EventsId");
+                    b.HasIndex("EventId");
 
-                    b.ToTable("ClimateRecordEventTypeRecord");
+                    b.ToTable("ClimateEvents");
+
+                    b.HasData(
+                        new
+                        {
+                            ClimateId = 1,
+                            EventId = 1
+                        });
                 });
 
             modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.ClimateRecord", b =>
@@ -286,17 +370,17 @@ namespace ClimateControlSystem.Server.Migrations
                     b.Navigation("Prediction");
                 });
 
-            modelBuilder.Entity("ClimateRecordEventTypeRecord", b =>
+            modelBuilder.Entity("ClimateEvents", b =>
                 {
                     b.HasOne("ClimateControlSystem.Server.Resources.RepositoryResources.ClimateRecord", null)
                         .WithMany()
-                        .HasForeignKey("ClimatesId")
+                        .HasForeignKey("ClimateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ClimateControlSystem.Server.Resources.RepositoryResources.EventTypeRecord", null)
                         .WithMany()
-                        .HasForeignKey("EventsId")
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
