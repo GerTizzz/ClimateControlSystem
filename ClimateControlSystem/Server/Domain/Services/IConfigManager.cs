@@ -4,10 +4,6 @@ namespace ClimateControlSystem.Server.Domain.Services
 {
     public interface IConfigManager
     {
-        float TemperatureLimit { get; }
-
-        float HumidityLimit { get; }
-
         float UpperTemperatureWarningLimit { get; }
         float LowerTemperatureWarningLimit { get; }
         float UpperTemperatureCriticalLimit { get; }
