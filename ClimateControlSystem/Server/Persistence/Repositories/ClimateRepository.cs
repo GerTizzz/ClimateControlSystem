@@ -4,6 +4,7 @@ using ClimateControlSystem.Server.Persistence.Context;
 using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Resources.RepositoryResources;
 using ClimateControlSystem.Shared;
+using ClimateControlSystem.Shared.Common;
 using ClimateControlSystem.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -66,21 +67,30 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
         }
 
-        public async Task<bool> AddPredictionAsync(PredictionResult prediction, MonitoringData monitoring, AccuracyData accuracy, List<ClimateEventType> eventTypes)
+        public async Task<bool> AddPredictionAsync(PredictionResult prediction, MonitoringData monitoring, AccuracyData accuracy, List<ClimateEventType> eventTypes, Config config)
         {
             try
             {
                 await UpdatePredictionAccuracy(accuracy);
 
-                var predictionRecord = _mapper.Map<ClimateRecord>(prediction);
-                var monitoringRecord = _mapper.Map<MonitoringRecord>(monitoring);
-                var climateEventRecord = await GetClimateEventRecordByItsType(eventTypes);
+                ClimateRecord climate = new ClimateRecord();
+                climate.MonitoringData = _mapper.Map<MonitoringRecord>(monitoring);
+                climate.Prediction = _mapper.Map<PredictionRecord>(prediction);
 
-                predictionRecord.MonitoringData = monitoringRecord;
-                predictionRecord.Events = (await Task.WhenAll(climateEventRecord)).ToList();
+                ConfigRecord configToSave = await TryFindExistingConfig(config);
 
-                await _context.Monitorings.AddAsync(monitoringRecord);
-                await _context.Climates.AddAsync(predictionRecord);
+                if (configToSave != null)
+                {
+                    climate.ConfigId = configToSave.Id;
+                }
+                else
+                {
+                    climate.Config = _mapper.Map<ConfigRecord>(config);
+                }
+                
+                climate.Events = await GetClimateEventRecordByItsType(eventTypes);
+
+                await _context.Climates.AddAsync(climate);
                 await _context.SaveChangesAsync();
             }
             catch
@@ -91,11 +101,31 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             return true;
         }
 
-        private async Task<List<Task<EventTypeRecord>>> GetClimateEventRecordByItsType(List<ClimateEventType> eventTypes)
+        private async Task<ConfigRecord?> TryFindExistingConfig(Config config)
+        {
+            return await _context.Configs.FirstOrDefaultAsync(conf =>
+            conf.UpperHumidityWarningLimit == config.UpperHumidityWarningLimit &&
+            conf.UpperTemperatureWarningLimit == config.UpperTemperatureWarningLimit &&
+            conf.LowerHumidityWarningLimit == config.LowerHumidityWarningLimit &&
+            conf.LowerTemperatureWarningLimit == config.LowerTemperatureWarningLimit &&
+            
+            conf.UpperHumidityCriticalLimit == config.UpperHumidityCriticalLimit &&
+            conf.UpperTemperatureCriticalLimit == config.UpperTemperatureCriticalLimit &&
+            conf.LowerHumidityCriticalLimit == config.LowerHumidityCriticalLimit &&
+            conf.LowerTemperatureCriticalLimit == config.LowerTemperatureCriticalLimit);
+        }
+
+        private async Task<List<EventTypeRecord>> GetClimateEventRecordByItsType(List<ClimateEventType> eventTypes)
         {
             var climateEvents = _context.EventsTypes.OrderBy(record => record.Id);
-            var result = eventTypes.Select(eventType =>
-                climateEvents.FirstAsync(record => record.EventType == eventType)).ToList();
+
+            List<EventTypeRecord> result = new List<EventTypeRecord>();
+
+            foreach (var eventType in eventTypes)
+            {
+                result.Add(await climateEvents.FirstAsync(record => record.EventType == eventType));
+            }
+
             return result;
         }
 

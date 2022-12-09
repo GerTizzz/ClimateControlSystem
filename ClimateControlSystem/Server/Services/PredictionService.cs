@@ -56,10 +56,11 @@ namespace ClimateControlSystem.Server.Services
 
             await _mediator.Send(new AddPredictionCommand()
             {
-                Prediction = prediction, 
-                Accuracy = accuracy, 
+                Prediction = prediction,
+                Accuracy = accuracy,
                 Monitoring = monitoring,
-                ClimateEventType = climateEvent
+                ClimateEventType = climateEvent,
+                Config = _configManager.Config
             });
         }
 
@@ -115,6 +116,11 @@ namespace ClimateControlSystem.Server.Services
                 prediction.PredictedHumidity <= _configManager.LowerHumidityWarningLimit)
             {
                 eventTypes.Add(ClimateEventType.PredictedHumidityWarning);
+            }
+
+            if (eventTypes.Count == 0)
+            {
+                eventTypes.Add(ClimateEventType.Normal);
             }
 
             return Task.FromResult(eventTypes);

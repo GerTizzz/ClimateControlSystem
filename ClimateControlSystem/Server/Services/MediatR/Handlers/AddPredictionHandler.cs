@@ -15,7 +15,7 @@ namespace ClimateControlSystem.Server.Services.MediatR.Handlers
 
         public async Task<bool> Handle(AddPredictionCommand request, CancellationToken cancellationToken)
         {
-            return await _predictionRepository.AddPredictionAsync(request.Prediction, request.Monitoring, request.Accuracy, request.ClimateEventType);
+            return await _predictionRepository.AddPredictionAsync(request.Prediction, request.Monitoring, request.Accuracy, request.ClimateEventType, request.Config);
         }
     }
 }
