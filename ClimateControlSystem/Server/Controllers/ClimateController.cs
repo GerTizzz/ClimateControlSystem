@@ -1,5 +1,6 @@
 ﻿using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Shared;
+using ClimateControlSystem.Shared.SendToClient;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,10 +26,10 @@ namespace ClimateControlSystem.Server.Controllers
             return Ok(records);
         }
 
-        [HttpGet("monitorings/{recordsCount:int:range(1, 25)}")]
-        public async Task<ActionResult<List<Prediction>>> GetMonitorings(int recordsCount)
+        [HttpGet("climatesdata/{recordsCount:int:range(1, 25)}")]
+        public async Task<ActionResult<List<ClimateData>>> GetMonitorings(int recordsCount)
         {
-            var records = await _predictionRepository.GetPredictionsWithAccuraciesAsync(recordsCount);
+            var records = await _predictionRepository.GetClimateData(recordsCount);
 
             return Ok(records);
         }

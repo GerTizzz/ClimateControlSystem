@@ -1,6 +1,7 @@
 ﻿using AntDesign.Charts;
 using ClimateControlSystem.Client.Resources;
 using ClimateControlSystem.Shared;
+using ClimateControlSystem.Shared.Common;
 
 namespace ClimateControlSystem.Client.Shared
 {
@@ -30,7 +31,7 @@ namespace ClimateControlSystem.Client.Shared
             return temperatureAccuracy;
         }
 
-        public static List<GraphicData> GetTemperatureData(List<Prediction> predictions, float limit)
+        public static List<GraphicData> GetTemperatureData(List<Prediction> predictions, Config config)
         {
             List<GraphicData> temperatureData = new List<GraphicData>();
 
@@ -39,7 +40,13 @@ namespace ClimateControlSystem.Client.Shared
                 temperatureData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
                     predictions[i].PredictedFutureTemperature, "Predicted"));
                 temperatureData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    limit, "Limit"));
+                    config.UpperTemperatureWarningLimit, "UpWarningLimit"));        
+                temperatureData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                    config.UpperTemperatureCriticalLimit, "UpCriticalLimit"));      
+                temperatureData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                    config.LowerTemperatureWarningLimit, "LowWarningLimit"));  
+                temperatureData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                    config.LowerTemperatureCriticalLimit, "LowCriticalLimit"));
 
                 if (i > 0)
                 {
@@ -51,7 +58,7 @@ namespace ClimateControlSystem.Client.Shared
             return temperatureData;
         }
 
-        public static List<GraphicData> GetHumidityData(List<Prediction> predictions, float limit)
+        public static List<GraphicData> GetHumidityData(List<Prediction> predictions, Config config)
         {
             List<GraphicData> humidityData = new List<GraphicData>();
 
@@ -60,7 +67,13 @@ namespace ClimateControlSystem.Client.Shared
                 humidityData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
                     predictions[i].PredictedFutureHumidity, "Predicted"));
                 humidityData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    limit, "Limit"));
+                    config.UpperHumidityWarningLimit, "UpWarningLimit"));
+                humidityData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                    config.UpperHumidityCriticalLimit, "UpCriticalLimit"));
+                humidityData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                    config.LowerHumidityWarningLimit, "LowWarningLimit"));
+                humidityData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
+                    config.LowerHumidityCriticalLimit, "LowCriticalLimit"));
 
                 if (i > 0)
                 {

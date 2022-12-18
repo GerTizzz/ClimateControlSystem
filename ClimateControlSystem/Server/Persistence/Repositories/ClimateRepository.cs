@@ -6,6 +6,7 @@ using ClimateControlSystem.Server.Resources.RepositoryResources;
 using ClimateControlSystem.Shared;
 using ClimateControlSystem.Shared.Common;
 using ClimateControlSystem.Shared.Enums;
+using ClimateControlSystem.Shared.SendToClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClimateControlSystem.Server.Persistence.Repositories
@@ -21,20 +22,22 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             _mapper = mapper;
         }
 
-        public async Task<List<Prediction>> GetPredictionsWithAccuraciesAsync(int amountOfRecords)
+        public async Task<IEnumerable<Prediction>> GetPredictionsWithAccuraciesAsync(int amountOfRecords)
         {
             try
             {
-                var result = from prediction in _context.Climates
-                             join monitoring in _context.Monitorings on prediction.MonitoringDataId equals monitoring.Id
-                             join accuracy in _context.Accuracies on prediction.AccuracyId equals accuracy.Id into fdt
-                             from accuracy in fdt.DefaultIfEmpty()
+                var result = from climate in _context.Climates
+                             join monitoring in _context.Monitorings on climate.MonitoringDataId equals monitoring.Id
+                             join accuracy in _context.Accuracies on climate.AccuracyId equals accuracy.Id
+                             join prediction in _context.Predictions on climate.PredictionId equals prediction.Id
+                             into fdt
+                             from prediction in fdt.DefaultIfEmpty()
                              orderby monitoring.MeasurementTime descending
                              select new Prediction()
                              {
                                  MeasurementTime = monitoring.MeasurementTime,
-                                 //PredictedFutureTemperature = prediction.PredictedTemperature,
-                                 //PredictedFutureHumidity = prediction.PredictedHumidity,
+                                 PredictedFutureTemperature = prediction.PredictedTemperature,
+                                 PredictedFutureHumidity = prediction.PredictedHumidity,
                                  CurrentRealTemperature = monitoring.CurrentRealTemperature,
                                  CurrentRealHumidity = monitoring.CurrentRealHumidity,
                                  PredictedTemperatureAccuracy = accuracy.PredictedTemperatureAccuracy,
@@ -53,13 +56,11 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
         {
             try
             {
-                ClimateRecord lastRecord = await _context.Climates
+                PredictionRecord lastRecord = await _context.Predictions
                     .OrderBy(record => record.Id)
                     .LastAsync();
 
-                var lastPrediction = _mapper.Map<PredictionResult>(lastRecord);
-
-                return lastPrediction;
+                return _mapper.Map<PredictionResult>(lastRecord);
             }
             catch (Exception exc)
             {
@@ -67,12 +68,10 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
         }
 
-        public async Task<bool> AddPredictionAsync(PredictionResult prediction, MonitoringData monitoring, AccuracyData accuracy, List<ClimateEventType> eventTypes, Config config)
+        public async Task<bool> AddClimateAsync(PredictionResult prediction, MonitoringData monitoring, IEnumerable<ClimateEventType> eventTypes, Config config)
         {
             try
             {
-                await UpdatePredictionAccuracy(accuracy);
-
                 ClimateRecord climate = new ClimateRecord();
                 climate.MonitoringData = _mapper.Map<MonitoringRecord>(monitoring);
                 climate.Prediction = _mapper.Map<PredictionRecord>(prediction);
@@ -88,7 +87,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                     climate.Config = _mapper.Map<ConfigRecord>(config);
                 }
                 
-                climate.Events = await GetClimateEventRecordByItsType(eventTypes);
+                climate.Events = (await GetClimateEventRecordByItsType(eventTypes)).ToList();
 
                 await _context.Climates.AddAsync(climate);
                 await _context.SaveChangesAsync();
@@ -99,6 +98,75 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
 
             return true;
+        }
+
+        public async Task<bool> AddAccuracyAsync(AccuracyData accuracyData)
+        {
+            try
+            {
+                AccuracyRecord accuracyRecord = _mapper.Map<AccuracyRecord>(accuracyData);
+
+                var lastPrediction = await _context.Climates
+                    .OrderBy(pred => pred.Id)
+                    .LastOrDefaultAsync();
+
+                if (lastPrediction != null)
+                {
+                    await _context.Accuracies.AddAsync(accuracyRecord);
+
+                    lastPrediction.Accuracy = accuracyRecord;
+
+                    await _context.SaveChangesAsync();
+
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<IEnumerable<ClimateData>> GetClimateData(int amountOfRecords)
+        {
+            try
+            {
+                var result = from climate in _context.Climates
+                             join monitoring in _context.Monitorings on climate.MonitoringDataId equals monitoring.Id
+                             join accuracy in _context.Accuracies on climate.AccuracyId equals accuracy.Id
+                             join prediction in _context.Predictions on climate.PredictionId equals prediction.Id
+                             into fdt
+                             from prediction in fdt.DefaultIfEmpty()
+                             orderby monitoring.MeasurementTime descending
+                             select new ClimateData()
+                             {
+                                 MeasurementTime = monitoring.MeasurementTime,
+                                 ClusterLoad = monitoring.ClusterLoad,
+                                 CpuUsage = monitoring.CpuUsage,
+                                 ClusterTemperature = monitoring.ClusterTemperature,
+                                 CurrentRealTemperature = monitoring.CurrentRealTemperature,
+                                 CurrentRealHumidity = monitoring.CurrentRealHumidity,
+                                 AirHumidityOutside = monitoring.AirHumidityOutside,
+                                 AirDryTemperatureOutside = monitoring.AirDryTemperatureOutside,
+                                 AirWetTemperatureOutside = monitoring.AirWetTemperatureOutside,
+                                 WindSpeed = monitoring.WindSpeed,
+                                 WindDirection = monitoring.WindDirection,
+                                 WindEnthalpy = monitoring.WindEnthalpy,
+                                 MeanCoolingValue = monitoring.MeanCoolingValue,
+                                 PredictedFutureTemperature = prediction.PredictedTemperature,
+                                 PredictedFutureHumidity = prediction.PredictedHumidity,
+                                 PredictedTemperatureAccuracy = accuracy.PredictedTemperatureAccuracy,
+                                 PredictedHumidityAccuracy = accuracy.PredictedHumidityAccuracy
+                             };
+
+                return await result.Take(amountOfRecords).ToListAsync();
+            }
+            catch (Exception exc)
+            {
+                return new List<ClimateData>();
+            }
         }
 
         private async Task<ConfigRecord?> TryFindExistingConfig(Config config)
@@ -115,7 +183,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             conf.LowerTemperatureCriticalLimit == config.LowerTemperatureCriticalLimit);
         }
 
-        private async Task<List<EventTypeRecord>> GetClimateEventRecordByItsType(List<ClimateEventType> eventTypes)
+        private async Task<IEnumerable<EventTypeRecord>> GetClimateEventRecordByItsType(IEnumerable<ClimateEventType> eventTypes)
         {
             var climateEvents = _context.EventsTypes.OrderBy(record => record.Id);
 
@@ -127,33 +195,6 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
 
             return result;
-        }
-
-        private async Task<bool> UpdatePredictionAccuracy(AccuracyData accuracy)
-        {
-            try
-            {
-                var accuracyRecord = _mapper.Map<AccuracyRecord>(accuracy);
-
-                await _context.Accuracies.AddAsync(accuracyRecord);
-
-                var lastPrediction = await _context.Climates
-                    .OrderBy(pred => pred.Id)
-                    .LastOrDefaultAsync();
-
-                if (lastPrediction != null)
-                {
-                    lastPrediction.Accuracy = accuracyRecord;
-                    await _context.SaveChangesAsync();
-                    return true;
-                }
-
-                return false;
-            }
-            catch
-            {
-                return false;
-            }
         }
     }
 }

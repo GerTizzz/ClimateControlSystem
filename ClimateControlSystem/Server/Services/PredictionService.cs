@@ -54,13 +54,17 @@ namespace ClimateControlSystem.Server.Services
 
             var climateEvent = await GetClimateEventData(prediction);
 
-            await _mediator.Send(new AddPredictionCommand()
+            await _mediator.Send(new AddClimateCommand()
             {
                 Prediction = prediction,
-                Accuracy = accuracy,
                 Monitoring = monitoring,
                 ClimateEventType = climateEvent,
                 Config = _configManager.Config
+            });
+
+            _ = _mediator.Send(new AddAccuracyCommand()
+            {
+                Accuracy = accuracy
             });
         }
 

@@ -1,4 +1,5 @@
 ﻿@page "/predictionsjournal"
+@using ClimateControlSystem.Shared.SendToClient;
 @inject IClimateService ClimateService
 
 <PageTitle>Predictions Journal</PageTitle>
@@ -8,7 +9,7 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (Monitorings == null)
+        @if (ClimatesData == null)
         {
             <p><em>Loading...</em></p>
         }
@@ -37,26 +38,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var record in Monitorings)
+                    @foreach (var record in ClimatesData)
                     {
                         <tr>
                             <td style="font-size:small">@record.MeasurementTime.ToString("HH:mm:ss")<br/>@record.MeasurementTime.ToString("dd:MM:yyyy")</td>
-@*                            <td>@record.ClusterLoad</td>
+                            <td>@record.ClusterLoad</td>
                             <td>@record.CpuUsage</td>
                             <td>@record.ClusterTemperature</td>
-                            <td>@record.PreviousTemperature</td>
-                            <td>@record.PreviousHumidity</td>
+                            <td>@record.CurrentRealTemperature</td>
+                            <td>@record.CurrentRealHumidity</td>
                             <td>@record.AirHumidityOutside</td>
                             <td>@record.AirDryTemperatureOutside</td>
                             <td>@record.AirWetTemperatureOutside</td>
                             <td>@record.WindSpeed</td>
                             <td>@record.WindDirection</td>
                             <td>@record.WindEnthalpy</td>
-                            <td>@record.MeanCoolingValue</td>*@
+                            <td>@record.MeanCoolingValue</td>
                             <td>@record.PredictedFutureTemperature</td>
                             <td>@record.PredictedFutureHumidity</td>
-@*                            <td>@record.PredictedTemperatureAccuracy</td>
-                            <td>@record.PredictedHumidityAccuracy</td>*@
+                            <td>@record.PredictedTemperatureAccuracy</td>
+                            <td>@record.PredictedHumidityAccuracy</td>
                         </tr>
                     }
                 </tbody>
@@ -69,10 +70,10 @@
 </AuthorizeView>
 
 @code {
-    private List<Prediction> Monitorings;
+    private List<ClimateData> ClimatesData;
 
     protected override async Task OnInitializedAsync()
     {
-        Monitorings = await ClimateService.GetPredictionsAsync(25);
+        ClimatesData = await ClimateService.GetClimatesDataAsync(25);
     }
 }
