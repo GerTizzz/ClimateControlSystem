@@ -1,5 +1,6 @@
 ﻿using ClimateControlSystem.Client.Services.AuthenticationService;
 using ClimateControlSystem.Shared;
+using ClimateControlSystem.Shared.SendToClient;
 using System.Net.Http.Json;
 
 namespace ClimateControlSystem.Client.Services.ClimateService
@@ -41,7 +42,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             return new List<Prediction>();
         }
 
-        public async Task<List<Prediction>> GetMonitoringsAsync(int countRecords)
+        public async Task<List<ClimateData>> GetClimatesDataAsync(int countRecords)
         {
             if (countRecords > RecordsCount)
             {
@@ -50,7 +51,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
 
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<Prediction>>($"api/climate/monitorings/{countRecords}") ?? new List<Prediction>();
+                var result = await _httpClient.GetFromJsonAsync<List<ClimateData>>($"api/climate/climatesdata/{countRecords}") ?? new List<ClimateData>();
                 return result;
             }
             catch (HttpRequestException e)
@@ -61,7 +62,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
 
-            return new List<Prediction>();
+            return new List<ClimateData>();
         }
     }
 }

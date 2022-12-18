@@ -59,7 +59,7 @@
             _predictions = await ClimateService.GetPredictionsAsync(_recordsCount);
             _predictions.Capacity = _recordsCount;
 
-            await UpdateConfigsAndData();
+            await UpdateLineChartsConfigsAndData();
 
             await Connect();
         }
@@ -79,24 +79,33 @@
 
     private async Task MonitoringDataArrived(Prediction prediction)
     {
-        if (_predictions is null)
+        try
         {
-            return;
+            if (_predictions is null)
+            {
+                return;
+            }
+
+            while (_predictions.Count >= _predictions.Capacity)
+            {
+                _predictions.RemoveAt(0);
+            }
+
+            _predictions.Add(prediction);
+
+            await UpdateLineChartsConfigsAndData();
+
+            await _temperatureChart.ChangeData(_actualAndPredictedTemperature);
+            await _humidityChart.ChangeData(_actualAndPredictedHumidity);
+
+            //await _temperatureChart.UpdateChart(csData: _actualAndPredictedTemperature, csConfig: _temperatureDataLineConfig);
+            //await _humidityChart.UpdateChart(csData: _actualAndPredictedHumidity, csConfig: _humidityDataLineConfig);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
         }
 
-        if (_predictions.Count == _predictions.Capacity)
-        {
-            _predictions.RemoveAt(0);
-        }
-
-        _predictions.Add(prediction);
-
-        await UpdateConfigsAndData();
-
-        await _temperatureChart.UpdateChart(csData: _actualAndPredictedTemperature, csConfig: _temperatureDataLineConfig);
-        await _humidityChart.UpdateChart(csData: _actualAndPredictedHumidity, csConfig: _humidityDataLineConfig);
-
-        await _temperatureChart.Render();
     }
 
     public async ValueTask DisposeAsync()
@@ -107,11 +116,12 @@
         }
     }
 
-    private Task UpdateConfigsAndData()
+    private Task UpdateLineChartsConfigsAndData()
     {
-        _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_predictions, _config.UpperTemperatureWarningLimit);
-        _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_predictions, _config.UpperHumidityWarningLimit);
+        _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_predictions, _config);
+        _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_predictions, _config);
 
+        // the min and max y-values change
         _temperatureDataLineConfig = AntChartHelper.GetTemperatureLineConfig(_actualAndPredictedTemperature);
         _humidityDataLineConfig = AntChartHelper.GetHumidityLineConfig(_actualAndPredictedHumidity);
 
