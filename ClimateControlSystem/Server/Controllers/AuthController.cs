@@ -15,19 +15,6 @@ namespace ClimateControlSystem.Server.Controllers
             _authManager = authManager;
         }
 
-        //[HttpPost("register")]
-        //public async Task<ActionResult<bool>> Register(UserDtoModel request)
-        //{
-        //    var isCreated = await _authManager.Create(request);
-
-        //    if (isCreated)
-        //    {
-        //        return Ok();
-        //    }
-
-        //    return BadRequest();
-        //}
-
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(UserDtoModel request)
         {
