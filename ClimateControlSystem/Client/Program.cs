@@ -19,7 +19,7 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-builder.Services.AddScoped<IClimateService, ClimateService>();
+builder.Services.AddScoped<IMicroclimateService, MicroclimateService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IConfigService, ConfigService>();
 

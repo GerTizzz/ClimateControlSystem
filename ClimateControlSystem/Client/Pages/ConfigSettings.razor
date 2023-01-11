@@ -17,14 +17,6 @@
         <label for="lowTempWarn">Нижний тревожный предел температуры, C</label>
         <InputNumber id="lowTempWarn" @bind-Value="_config.LowerTemperatureWarningLimit" />
     </div>
-    <div>
-        <label for="uppTempCrit">Верхний критический предел температуры, C</label>
-        <InputNumber id="uppTempCrit" @bind-Value="_config.UpperTemperatureCriticalLimit" />
-    </div>
-    <div>
-        <label for="lowTempCrit">Нижний критический предел температуры, C</label>
-        <InputNumber id="lowTempCrit" @bind-Value="_config.LowerTemperatureCriticalLimit" />
-    </div>
 
     <div>
         <label for="uppHumWarn">Верхний тревожный предел абсолютной влажности, г/м^3</label>
@@ -33,14 +25,6 @@
     <div>
         <label for="lowHumWarn">Нижний тревожный предел абсолютной влажности, г/м^3</label>
         <InputNumber id="lowHumWarn" @bind-Value="_config.LowerHumidityWarningLimit" />
-    </div>
-    <div>
-        <label for="uppHumCrit">Верхний критический предел абсолютной влажности, г/м^3</label>
-        <InputNumber id="uppHumCrit" @bind-Value="_config.UpperHumidityCriticalLimit" />
-    </div>
-    <div>
-        <label for="lowHumCrit">Нижний критический предел абсолютной влажности, г/м^3</label>
-        <InputNumber id="lowHumCrit" @bind-Value="_config.LowerHumidityCriticalLimit" />
     </div>
     <br />
     <button type="submit" class="btn btn-primary">Сохранить</button>

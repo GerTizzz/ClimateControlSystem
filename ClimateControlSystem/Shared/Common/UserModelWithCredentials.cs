@@ -2,7 +2,7 @@
 
 namespace ClimateControlSystem.Shared.Common
 {
-    public sealed class UserDtoModel
+    public sealed class UserModelWithCredentials
     {
         public int Id { get; set; }
 

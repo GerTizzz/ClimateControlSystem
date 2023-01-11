@@ -6,16 +6,16 @@ namespace ClimateControlSystem.Server.Services.MediatR.Handlers
 {
     public class AddPredictionHandler : IRequestHandler<AddClimateCommand, bool>
     {
-        private readonly IClimateRepository _predictionRepository;
+        private readonly IMicroclimateRepository _predictionRepository;
 
-        public AddPredictionHandler(IClimateRepository predictionRepository)
+        public AddPredictionHandler(IMicroclimateRepository predictionRepository)
         {
             _predictionRepository = predictionRepository;
         }
 
         public async Task<bool> Handle(AddClimateCommand request, CancellationToken cancellationToken)
         {
-            return await _predictionRepository.AddClimateAsync(request.Prediction, request.Monitoring, request.ClimateEventType, request.Config);
+            return await _predictionRepository.AddMicroclimateAsync(request.Prediction, request.SensorData, request.TemperatureEvent, request.HumidityEvent);
         }
     }
 }

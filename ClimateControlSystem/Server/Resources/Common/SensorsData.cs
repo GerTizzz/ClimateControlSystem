@@ -1,11 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ClimateControlSystem.Server.Resources.RepositoryResources
+﻿namespace ClimateControlSystem.Server.Resources.Common
 {
-    public sealed class MonitoringRecord
+    public sealed class SensorsData
     {
-        [Key]
-        public int Id { get; set; }
         public DateTimeOffset MeasurementTime { get; set; }
         public float ClusterLoad { get; set; }
         public float CpuUsage { get; set; }

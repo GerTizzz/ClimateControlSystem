@@ -1,6 +1,6 @@
 ﻿@page "/predictionsjournal"
 @using ClimateControlSystem.Shared.SendToClient;
-@inject IClimateService ClimateService
+@inject IMicroclimateService ClimateService
 
 <PageTitle>Predictions Journal</PageTitle>
 
@@ -70,10 +70,10 @@
 </AuthorizeView>
 
 @code {
-    private List<ClimateData> ClimatesData;
+    private List<MicroclimateData> ClimatesData;
 
     protected override async Task OnInitializedAsync()
     {
-        ClimatesData = await ClimateService.GetClimatesDataAsync(25);
+        ClimatesData = await ClimateService.GetMicroclimatesDataAsync(25);
     }
 }

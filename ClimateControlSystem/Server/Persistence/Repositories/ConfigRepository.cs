@@ -26,13 +26,9 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
 
                 existingConfig.UpperTemperatureWarningLimit = configToUpdate.UpperTemperatureWarningLimit;
                 existingConfig.LowerTemperatureWarningLimit = configToUpdate.LowerTemperatureWarningLimit;
-                existingConfig.UpperTemperatureCriticalLimit = configToUpdate.UpperTemperatureCriticalLimit;
-                existingConfig.LowerTemperatureCriticalLimit = configToUpdate.LowerTemperatureCriticalLimit;
 
                 existingConfig.UpperHumidityWarningLimit = configToUpdate.UpperHumidityWarningLimit;
                 existingConfig.LowerHumidityWarningLimit = configToUpdate.LowerHumidityWarningLimit;
-                existingConfig.UpperHumidityCriticalLimit = configToUpdate.UpperHumidityCriticalLimit;
-                existingConfig.LowerHumidityCriticalLimit = configToUpdate.LowerHumidityCriticalLimit;
 
                 await _context.SaveChangesAsync();
 

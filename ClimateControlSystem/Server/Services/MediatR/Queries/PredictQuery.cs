@@ -6,6 +6,6 @@ namespace ClimateControlSystem.Server.Services.Queries
 {
     public record PredictQuery() : IRequest<PredictionResult>
     {
-        public MonitoringData Data { get; init; }
+        public SensorsData Data { get; init; }
     }
 }

@@ -20,7 +20,7 @@ namespace ClimateControlSystem.Server.Services
             _configuration = configuration;
         }
 
-        public async Task<string> GetTokenForUser(UserDtoModel request)
+        public async Task<string> GetTokenForUser(UserModelWithCredentials request)
         {
             UserRecord user = await _userManager.GetUserByName(request.Name);
 
@@ -48,7 +48,7 @@ namespace ClimateControlSystem.Server.Services
             }
         }
 
-        private async Task<bool> IsUserVerifyed(UserDtoModel request, UserRecord user)
+        private async Task<bool> IsUserVerifyed(UserModelWithCredentials request, UserRecord user)
         {
             if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {

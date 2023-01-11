@@ -7,7 +7,7 @@ namespace ClimateControlSystem.Client.Shared
 {
     public static class AntChartHelper
     {
-        public static List<GraphicData> GetAccuracyData(List<Prediction> _predictions)
+        public static List<GraphicData> GetAccuracyData(List<Monitoring> _predictions)
         {
             List<GraphicData> temperatureAccuracy = new List<GraphicData>();
 
@@ -31,54 +31,46 @@ namespace ClimateControlSystem.Client.Shared
             return temperatureAccuracy;
         }
 
-        public static List<GraphicData> GetTemperatureData(List<Prediction> predictions, Config config)
+        public static List<GraphicData> GetTemperatureData(List<Monitoring> predictions, Config config)
         {
             List<GraphicData> temperatureData = new List<GraphicData>();
 
             for (int i = 0; i < predictions.Count; i++)
             {
                 temperatureData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    predictions[i].PredictedFutureTemperature, "Predicted"));
+                    predictions[i].PredictedFutureTemperature, "Спрогнозированная"));
                 temperatureData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    config.UpperTemperatureWarningLimit, "UpWarningLimit"));        
+                    config.UpperTemperatureWarningLimit, "Верхний лимит"));        
                 temperatureData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    config.UpperTemperatureCriticalLimit, "UpCriticalLimit"));      
-                temperatureData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    config.LowerTemperatureWarningLimit, "LowWarningLimit"));  
-                temperatureData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    config.LowerTemperatureCriticalLimit, "LowCriticalLimit"));
+                    config.LowerTemperatureWarningLimit, "Нижний лимит"));  
 
                 if (i > 0)
                 {
                     temperatureData.Add(new GraphicData(predictions[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                        predictions[i].CurrentRealTemperature.Value, "Measured"));
+                        predictions[i].CurrentRealTemperature.Value, "Действительная"));
                 }
             }
 
             return temperatureData;
         }
 
-        public static List<GraphicData> GetHumidityData(List<Prediction> predictions, Config config)
+        public static List<GraphicData> GetHumidityData(List<Monitoring> predictions, Config config)
         {
             List<GraphicData> humidityData = new List<GraphicData>();
 
             for (int i = 0; i < predictions.Count; i++)
             {
                 humidityData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    predictions[i].PredictedFutureHumidity, "Predicted"));
+                    predictions[i].PredictedFutureHumidity, "Спрогнозированная"));
                 humidityData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    config.UpperHumidityWarningLimit, "UpWarningLimit"));
+                    config.UpperHumidityWarningLimit, "Верхний лимит"));
                 humidityData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    config.UpperHumidityCriticalLimit, "UpCriticalLimit"));
-                humidityData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    config.LowerHumidityWarningLimit, "LowWarningLimit"));
-                humidityData.Add(new GraphicData(predictions[i].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                    config.LowerHumidityCriticalLimit, "LowCriticalLimit"));
+                    config.LowerHumidityWarningLimit, "Нижний лимит"));
 
                 if (i > 0)
                 {
                     humidityData.Add(new GraphicData(predictions[i - 1].MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy"),
-                        predictions[i].CurrentRealHumidity.Value, "Measured"));
+                        predictions[i].CurrentRealHumidity.Value, "Действительная"));
                 }
             }
 

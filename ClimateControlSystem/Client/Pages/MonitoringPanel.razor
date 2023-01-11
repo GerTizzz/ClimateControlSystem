@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using ClimateControlSystem.Client.Resources
 @inject NavigationManager NavigationManager
-@inject IClimateService ClimateService
+@inject IMicroclimateService ClimateService
 @inject IConfigService ConfigService
 @implements IAsyncDisposable
 
@@ -42,7 +42,7 @@
     private List<GraphicData> _actualAndPredictedTemperature;
     private List<GraphicData> _actualAndPredictedHumidity;
 
-    private List<Prediction> _predictions;
+    private List<Monitoring> _predictions;
 
     private HubConnection? _hubConnection;
 
@@ -56,7 +56,7 @@
         if (authState.User.Identity.IsAuthenticated)
         {
             _config = await ConfigService.GetConfigAsync();
-            _predictions = await ClimateService.GetPredictionsAsync(_recordsCount);
+            _predictions = await ClimateService.GetMonitoringsAsync(_recordsCount);
             _predictions.Capacity = _recordsCount;
 
             await UpdateLineChartsConfigsAndData();
@@ -72,12 +72,12 @@
             .WithAutomaticReconnect()
             .Build();
 
-        _hubConnection.On<Prediction>("GetMonitoringData", (newData) => MonitoringDataArrived(newData));
+        _hubConnection.On<Monitoring>("GetMonitoringData", (newData) => MonitoringDataArrived(newData));
 
         await _hubConnection.StartAsync();
     }
 
-    private async Task MonitoringDataArrived(Prediction prediction)
+    private async Task MonitoringDataArrived(Monitoring prediction)
     {
         try
         {

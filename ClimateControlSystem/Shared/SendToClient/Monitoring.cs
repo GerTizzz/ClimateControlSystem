@@ -1,6 +1,6 @@
 ﻿namespace ClimateControlSystem.Shared
 {
-    public sealed class Prediction
+    public sealed class Monitoring
     {
         public DateTimeOffset MeasurementTime { get; init; }
         public float PredictedFutureTemperature { get; init; }

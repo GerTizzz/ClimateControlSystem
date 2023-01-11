@@ -13,7 +13,7 @@ namespace ClimateControlSystem.Server.Mapping
         {
             #region gRPC communication
 
-            CreateMap<ClimateMonitoringRequest, MonitoringData>()
+            CreateMap<ClimateMonitoringRequest, SensorsData>()
                 .ForMember(data => data.MeasurementTime, request => request
                     .MapFrom(requestSrc => requestSrc.MeasurementTime.ToDateTimeOffset().ToLocalTime()));
 
@@ -21,7 +21,7 @@ namespace ClimateControlSystem.Server.Mapping
 
             #region PredictEngine
 
-            CreateMap<MonitoringData, TensorPredictionRequest>()
+            CreateMap<SensorsData, TensorPredictionRequest>()
                 .ForMember(tensor => tensor.serving_default_input_1, opt => opt
                     .MapFrom(property => new float[]
                     {
@@ -49,9 +49,9 @@ namespace ClimateControlSystem.Server.Mapping
             
             #region Repository
 
-            CreateMap<MonitoringData, MonitoringRecord>();
+            CreateMap<SensorsData, SensorsDataRecord>();
 
-            CreateMap<MonitoringRecord, MonitoringData>();
+            CreateMap<SensorsDataRecord, SensorsData>();
 
             CreateMap<AccuracyRecord, AccuracyData>();
 
@@ -65,15 +65,15 @@ namespace ClimateControlSystem.Server.Mapping
 
             CreateMap<ConfigRecord, Config>();
 
-            CreateMap<ClimateEventData, EventTypeRecord>();
+            CreateMap<TemperatureEventRecord, TemperatureEvent>();
 
-            CreateMap<EventTypeRecord, ClimateEventData>();
+            CreateMap<TemperatureEvent, TemperatureEventRecord>();
 
-            #endregion
+            CreateMap<HumidityEventRecord, HumidityEvent>();
 
-            #region Authentication
+            CreateMap<HumidityEvent, HumidityEventRecord>();
 
-            CreateMap<UserRecord, UserDtoModel>()
+            CreateMap<UserRecord, UserModelWithCredentials>()
                 .ForMember(dto => dto.Name, auth => auth
                     .MapFrom(authSrc => authSrc.Name))
                 .ForMember(dto => dto.Role, auth => auth
@@ -81,7 +81,7 @@ namespace ClimateControlSystem.Server.Mapping
                 .ForMember(dto => dto.Id, auth => auth
                     .MapFrom(authSrc => authSrc.Id));
 
-            CreateMap<UserDtoModel, UserRecord>()
+            CreateMap<UserModelWithCredentials, UserRecord>()
                 .ForMember(auth => auth.Name, dto => dto
                     .MapFrom(dtoSrc => dtoSrc.Name))
                 .ForMember(auth => auth.Role, dto => dto

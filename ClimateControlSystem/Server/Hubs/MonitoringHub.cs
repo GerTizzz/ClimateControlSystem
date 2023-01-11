@@ -5,7 +5,7 @@ namespace ClimateControlSystem.Server.Hubs
 {
     public class MonitoringHub : Hub
     {
-        public async Task SendMonitoringData(Prediction prediction)
+        public async Task SendMonitoringData(Monitoring prediction)
         {
             await Clients.All.SendAsync("GetMonitoringData", prediction);
         }

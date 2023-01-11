@@ -1,6 +1,6 @@
 ﻿namespace ClimateControlSystem.Shared.SendToClient
 {
-    public sealed class ClimateData
+    public sealed class MicroclimateData
     {
         public DateTimeOffset MeasurementTime { get; set; }
         public float ClusterLoad { get; set; }

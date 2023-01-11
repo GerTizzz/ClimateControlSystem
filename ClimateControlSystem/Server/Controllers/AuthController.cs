@@ -16,7 +16,7 @@ namespace ClimateControlSystem.Server.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(UserDtoModel request)
+        public async Task<ActionResult<string>> Login(UserModelWithCredentials request)
         {
             var token = await _authManager.GetTokenForUser(request);
 

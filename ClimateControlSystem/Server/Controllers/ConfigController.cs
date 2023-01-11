@@ -20,9 +20,7 @@ namespace ClimateControlSystem.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<Config>> GetConfig()
         {
-            var config = await _configManager.GetConfigAsync();
-
-            return Ok(config);
+            return Ok(_configManager.Config);
         }
 
         [HttpPut]

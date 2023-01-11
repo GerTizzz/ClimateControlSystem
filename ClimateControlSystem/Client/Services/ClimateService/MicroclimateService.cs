@@ -5,20 +5,20 @@ using System.Net.Http.Json;
 
 namespace ClimateControlSystem.Client.Services.ClimateService
 {
-    public class ClimateService : IClimateService
+    public class MicroclimateService : IMicroclimateService
     {
         private const int RecordsCount = 25;
 
         private readonly HttpClient _httpClient;
         private readonly IAuthenticationService _authService;
 
-        public ClimateService(HttpClient httpClient, IAuthenticationService authService)
+        public MicroclimateService(HttpClient httpClient, IAuthenticationService authService)
         {
             _httpClient = httpClient;
             _authService = authService;
         }
 
-        public async Task<List<Prediction>> GetPredictionsAsync(int countRecords)
+        public async Task<List<Monitoring>> GetMonitoringsAsync(int countRecords)
         {
             if (countRecords > RecordsCount)
             {
@@ -27,8 +27,8 @@ namespace ClimateControlSystem.Client.Services.ClimateService
 
             try
             {
-                string urlRequest = $"api/climate/predictions/{countRecords}";
-                var result = await _httpClient.GetFromJsonAsync<List<Prediction>>(urlRequest);
+                string urlRequest = $"api/microclimate/monitorings/{countRecords}";
+                var result = await _httpClient.GetFromJsonAsync<List<Monitoring>>(urlRequest);
                 return result;
             }
             catch (HttpRequestException e)
@@ -39,10 +39,10 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
             
-            return new List<Prediction>();
+            return new List<Monitoring>();
         }
 
-        public async Task<List<ClimateData>> GetClimatesDataAsync(int countRecords)
+        public async Task<List<MicroclimateData>> GetMicroclimatesDataAsync(int countRecords)
         {
             if (countRecords > RecordsCount)
             {
@@ -51,7 +51,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
 
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<ClimateData>>($"api/climate/climatesdata/{countRecords}") ?? new List<ClimateData>();
+                var result = await _httpClient.GetFromJsonAsync<List<MicroclimateData>>($"api/microclimate/microclimates/{countRecords}") ?? new List<MicroclimateData>();
                 return result;
             }
             catch (HttpRequestException e)
@@ -62,7 +62,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
 
-            return new List<ClimateData>();
+            return new List<MicroclimateData>();
         }
     }
 }

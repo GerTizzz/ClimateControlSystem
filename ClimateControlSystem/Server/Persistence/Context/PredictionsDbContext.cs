@@ -2,7 +2,6 @@
 using ClimateControlSystem.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Microsoft.Extensions.Hosting;
 
 namespace ClimateControlSystem.Server.Persistence.Context
 {
@@ -10,17 +9,18 @@ namespace ClimateControlSystem.Server.Persistence.Context
     {
         public DbSet<UserRecord> Users { get; set; }
 
-        public DbSet<ClimateRecord> Climates { get; set; }
-        public DbSet<MonitoringRecord> Monitorings { get; set; }
+        public DbSet<ConfigRecord> Configs { get; set; }
+
+        public DbSet<MicroclimateRecord> Microclimates { get; set; }
+        public DbSet<SensorsDataRecord> SensorsData { get; set; }
         public DbSet<AccuracyRecord> Accuracies { get; set; }
         public DbSet<PredictionRecord> Predictions { get; set; }
-        public DbSet<EventTypeRecord> EventsTypes { get; set; }
-        public DbSet<ConfigRecord> Configs { get; set; }
+        public DbSet<TemperatureEventRecord> TemperatureEvents { get; set; }
+        public DbSet<HumidityEventRecord> HumidityEvents { get; set; }
 
         public PredictionsDbContext(DbContextOptions options) : base(options)
         {
-            //Database.EnsureDeleted();
-            //Database.EnsureCreated();
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -34,7 +34,7 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 Role = UserType.Admin
             };
 
-            MonitoringRecord initializedMonitoring = new()
+            SensorsDataRecord initializedMonitoring = new()
             {
                 Id = 1,
                 MeasurementTime = DateTimeOffset.Now,
@@ -57,12 +57,9 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 Id = 1,
                 UpperTemperatureWarningLimit = 24f,
                 LowerTemperatureWarningLimit = 16f,
-                UpperTemperatureCriticalLimit = 25f,
-                LowerTemperatureCriticalLimit = 15f,
+
                 UpperHumidityWarningLimit = 21f,
-                LowerHumidityWarningLimit = 10f,
-                UpperHumidityCriticalLimit = 22f,
-                LowerHumidityCriticalLimit = 9f
+                LowerHumidityWarningLimit = 10f
             };
 
             PredictionRecord initializedPrediction = new()
@@ -72,70 +69,17 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 PredictedHumidity = 18.77f
             };
 
-            ClimateRecord initializedClimate = new()
+            MicroclimateRecord initializedClimate = new()
             {
                 Id = 1,
                 PredictionId = initializedPrediction.Id,
-                MonitoringDataId = initializedMonitoring.Id,
+                SensorDataId = initializedMonitoring.Id,
                 AccuracyId = null,
-                ConfigId = 1,
-                Events = new()
+                TemperatureEventId = null,
+                HumidityEventId = null
             };
 
-            List<EventTypeRecord> initializedClimateEventTypes = new()
-            {
-                new EventTypeRecord()
-                {
-                    Id = 1,
-                    EventType = ClimateEventType.Normal
-                },
-                new EventTypeRecord()
-                {
-                    Id = 2,
-                    EventType = ClimateEventType.PredictedTemperatureWarning
-                },
-                new EventTypeRecord()
-                {
-                    Id = 3,
-                    EventType = ClimateEventType.PredictedHumidityWarning
-                },
-                new EventTypeRecord()
-                {
-                    Id = 4,
-                    EventType = ClimateEventType.PredictedTemperatureCritical
-                },
-                new EventTypeRecord()
-                {
-                    Id = 5,
-                    EventType = ClimateEventType.PredictedHumidityCritical
-                }
-            };
-
-            modelBuilder.Entity<ClimateRecord>()
-                .HasMany(c => c.Events)
-                .WithMany(e => e.Climates)
-                .UsingEntity<Dictionary<string, object>>(
-                    "ClimateEvents",
-                    r => r.HasOne<EventTypeRecord>().WithMany().HasForeignKey("EventId"),
-                    l => l.HasOne<ClimateRecord>().WithMany().HasForeignKey("ClimateId"),
-                    je =>
-                    {
-                        je.HasKey("ClimateId", "EventId");
-                        je.HasData(
-                            new 
-                            { 
-                                ClimateId = 1, EventId = 1
-                            });
-                    });
-
-            modelBuilder.Entity<EventTypeRecord>()
-                .Property(climateEvent => climateEvent.EventType)
-                .HasConversion(new EnumToStringConverter<ClimateEventType>());
-
-            modelBuilder.Entity<EventTypeRecord>()
-                .HasData(initializedClimateEventTypes);
-
-            modelBuilder.Entity<MonitoringRecord>()
+            modelBuilder.Entity<SensorsDataRecord>()
                 .HasData(initializedMonitoring);
 
             modelBuilder.Entity<PredictionRecord>()
@@ -144,7 +88,7 @@ namespace ClimateControlSystem.Server.Persistence.Context
             modelBuilder.Entity<ConfigRecord>()
                 .HasData(initializedConfig);
 
-            modelBuilder.Entity<ClimateRecord>()
+            modelBuilder.Entity<MicroclimateRecord>()
                 .HasData(initializedClimate);
 
             modelBuilder.Entity<UserRecord>()

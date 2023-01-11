@@ -4,7 +4,7 @@ using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Services.MediatR.Commands;
 using ClimateControlSystem.Server.Services.MediatR.Queries;
 using ClimateControlSystem.Shared;
-using ClimateControlSystem.Shared.Enums;
+using ClimateControlSystem.Shared.Common;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 
@@ -28,13 +28,13 @@ namespace ClimateControlSystem.Server.Services
             _configManager = configManager;
         }
 
-        public async Task<PredictionResult> Predict(MonitoringData climateData)
+        public async Task<PredictionResult> Predict(SensorsData climateData)
         {
             PredictionResult prediction = await _predictionEngine.Predict(climateData);
 
             await CreateClimateRecord(climateData, prediction);
 
-            Prediction predictionToSendToClient = new Prediction()
+            Monitoring monitoring = new Monitoring()
             {
                 MeasurementTime = climateData.MeasurementTime,
                 PredictedFutureTemperature = prediction.PredictedTemperature,
@@ -43,23 +43,25 @@ namespace ClimateControlSystem.Server.Services
                 CurrentRealHumidity = climateData.CurrentRealHumidity
             };
 
-            _ = SendNewMonitoringDataToWebClients(predictionToSendToClient);
+            _ = SendNewMonitoringDataToWebClients(monitoring);
 
             return prediction;
         }
 
-        private async Task CreateClimateRecord(MonitoringData monitoring, PredictionResult prediction)
+        private async Task CreateClimateRecord(SensorsData sensorData, PredictionResult prediction)
         {
-            var accuracy = await CalculateLastPredictionAccuracy(monitoring);
+            var accuracy = await CalculateLastPredictionAccuracy(sensorData);
 
-            var climateEvent = await GetClimateEventData(prediction);
+            var temperatureEvent = await GetTemperatureEvent(prediction, _configManager.Config);
+
+            var humidityEvent = await GetHumidityEvent(prediction, _configManager.Config);
 
             await _mediator.Send(new AddClimateCommand()
             {
                 Prediction = prediction,
-                Monitoring = monitoring,
-                ClimateEventType = climateEvent,
-                Config = _configManager.Config
+                SensorData = sensorData,
+                TemperatureEvent = temperatureEvent,
+                HumidityEvent = humidityEvent
             });
 
             _ = _mediator.Send(new AddAccuracyCommand()
@@ -68,10 +70,10 @@ namespace ClimateControlSystem.Server.Services
             });
         }
 
-        private async Task<AccuracyData> CalculateLastPredictionAccuracy(MonitoringData monitoringData)
+        private async Task<AccuracyData> CalculateLastPredictionAccuracy(SensorsData sensorData)
         {
-            var actualTemperature = monitoringData.CurrentRealTemperature;
-            var actualHumidity = monitoringData.CurrentRealHumidity;
+            var actualTemperature = sensorData.CurrentRealTemperature;
+            var actualHumidity = sensorData.CurrentRealHumidity;
 
             PredictionResult lastRecord = await _mediator.Send(new GetLastPredictionQuery());
 
@@ -87,47 +89,57 @@ namespace ClimateControlSystem.Server.Services
             return accuracy;
         }
 
-        private async Task SendNewMonitoringDataToWebClients(Prediction prediction)
+        private async Task SendNewMonitoringDataToWebClients(Monitoring monitoring)
         {
-            await _monitoringHub.Clients.All.SendAsync("GetMonitoringData", prediction);
+            await _monitoringHub.Clients.All.SendAsync("GetMonitoringData", monitoring);
         }
 
-        private Task<List<ClimateEventType>> GetClimateEventData(PredictionResult prediction)
+        private Task<TemperatureEvent> GetTemperatureEvent(PredictionResult prediction, Config config)
         {
-            List<ClimateEventType> eventTypes = new List<ClimateEventType>();
+            TemperatureEvent temperatureEvent = null;
 
-            if (prediction.PredictedTemperature >= _configManager.UpperTemperatureCriticalLimit ||
-                prediction.PredictedTemperature <= _configManager.LowerTemperatureCriticalLimit)
+            if (prediction.PredictedTemperature >= config.UpperTemperatureWarningLimit)
             {
-                eventTypes.Add(ClimateEventType.PredictedTemperatureCritical);
+                temperatureEvent = new TemperatureEvent()
+                {
+                    Value = prediction.PredictedHumidity - config.UpperTemperatureWarningLimit,
+                    Message = "Был превышен верхний лимит температуры!"
+                };
             }
-            else if (prediction.PredictedTemperature < _configManager.UpperTemperatureCriticalLimit &&
-                prediction.PredictedTemperature >= _configManager.UpperTemperatureWarningLimit ||
-                prediction.PredictedTemperature > _configManager.LowerTemperatureCriticalLimit &&
-                prediction.PredictedTemperature <= _configManager.LowerTemperatureWarningLimit)
+            else if (prediction.PredictedHumidity <= config.LowerTemperatureWarningLimit)
             {
-                eventTypes.Add(ClimateEventType.PredictedTemperatureWarning);
-            }
-
-            if (prediction.PredictedHumidity >= _configManager.UpperHumidityCriticalLimit ||
-                prediction.PredictedHumidity <= _configManager.LowerHumidityCriticalLimit)
-            {
-                eventTypes.Add(ClimateEventType.PredictedHumidityCritical);
-            }
-            else if (prediction.PredictedHumidity < _configManager.UpperHumidityCriticalLimit &&
-                prediction.PredictedHumidity >= _configManager.UpperHumidityWarningLimit ||
-                prediction.PredictedHumidity > _configManager.LowerHumidityCriticalLimit &&
-                prediction.PredictedHumidity <= _configManager.LowerHumidityWarningLimit)
-            {
-                eventTypes.Add(ClimateEventType.PredictedHumidityWarning);
+                temperatureEvent = new TemperatureEvent()
+                {
+                    Value = prediction.PredictedHumidity - config.LowerTemperatureWarningLimit,
+                    Message = "Был превышен нижний лимит температуры!"
+                };
             }
 
-            if (eventTypes.Count == 0)
+            return Task.FromResult(temperatureEvent);
+        }
+
+        private Task<HumidityEvent> GetHumidityEvent(PredictionResult prediction, Config config)
+        {
+            HumidityEvent humidityEvent = null;
+
+            if (prediction.PredictedHumidity >= config.UpperHumidityWarningLimit)
             {
-                eventTypes.Add(ClimateEventType.Normal);
+                humidityEvent = new HumidityEvent()
+                {
+                    Value = prediction.PredictedHumidity - config.UpperHumidityWarningLimit,
+                    Message = "Был превышен верхний лимит влажности!"
+                };
+            }
+            else if (prediction.PredictedHumidity <= config.LowerHumidityWarningLimit)
+            {
+                humidityEvent = new HumidityEvent()
+                {
+                    Value = prediction.PredictedHumidity - config.LowerHumidityWarningLimit,
+                    Message = "Был превышен нижний лимит влажности!"
+                };
             }
 
-            return Task.FromResult(eventTypes);
+            return Task.FromResult(humidityEvent);
         }
     }
 }

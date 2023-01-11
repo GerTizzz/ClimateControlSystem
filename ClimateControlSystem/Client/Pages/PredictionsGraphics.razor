@@ -1,6 +1,6 @@
 ﻿@page "/predictionsgraphics"
 @using ClimateControlSystem.Client.Resources
-@inject IClimateService ClimateService
+@inject IMicroclimateService ClimateService
 @inject IConfigService ConfigService
 
 <PageTitle>Predictions Journal</PageTitle>
@@ -35,7 +35,7 @@
 @code{
     private Config _config;
 
-    List<Prediction> _predictions;
+    List<Monitoring> _predictions;
 
     bool _hasData = false;
 
@@ -51,7 +51,7 @@
     {
         _config = await ConfigService.GetConfigAsync();
 
-        _predictions = await ClimateService.GetPredictionsAsync(25);
+        _predictions = await ClimateService.GetMonitoringsAsync(25);
 
         _hasData = _predictions.Count >= 2;
 

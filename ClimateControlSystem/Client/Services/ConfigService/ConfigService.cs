@@ -62,12 +62,8 @@ namespace ClimateControlSystem.Client.Services.ConfigService
             {
                 UpperTemperatureWarningLimit = 24f,
                 LowerTemperatureWarningLimit = 16f,
-                UpperTemperatureCriticalLimit = 25f,
-                LowerTemperatureCriticalLimit = 15f,
                 UpperHumidityWarningLimit = 21f,
-                LowerHumidityWarningLimit = 10f,
-                UpperHumidityCriticalLimit = 22f,
-                LowerHumidityCriticalLimit = 9f
+                LowerHumidityWarningLimit = 10f
             };
         }
     }
