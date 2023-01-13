@@ -6,7 +6,7 @@
 @inject IConfigService ConfigService
 @implements IAsyncDisposable
 
-<PageTitle>Monitoring Panel</PageTitle>
+<PageTitle>Monitoring Page</PageTitle>
 
 <h3>Панель мониторинга</h3>
 
@@ -42,7 +42,7 @@
     private List<GraphicData> _actualAndPredictedTemperature;
     private List<GraphicData> _actualAndPredictedHumidity;
 
-    private List<Monitoring> _predictions;
+    private List<MonitoringResponse> _predictions;
 
     private HubConnection? _hubConnection;
 
@@ -56,7 +56,7 @@
         if (authState.User.Identity.IsAuthenticated)
         {
             _config = await ConfigService.GetConfigAsync();
-            _predictions = await ClimateService.GetMonitoringsAsync(_recordsCount);
+            _predictions = (await ClimateService.GetMonitoringsDataAsync(0, _recordsCount)).ToList();
             _predictions.Capacity = _recordsCount;
 
             await UpdateLineChartsConfigsAndData();
@@ -72,12 +72,12 @@
             .WithAutomaticReconnect()
             .Build();
 
-        _hubConnection.On<Monitoring>("GetMonitoringData", (newData) => MonitoringDataArrived(newData));
+        _hubConnection.On<MonitoringResponse>("GetMonitoringData", (newData) => MonitoringDataArrived(newData));
 
         await _hubConnection.StartAsync();
     }
 
-    private async Task MonitoringDataArrived(Monitoring prediction)
+    private async Task MonitoringDataArrived(MonitoringResponse prediction)
     {
         try
         {

@@ -1,6 +1,6 @@
 ﻿namespace ClimateControlSystem.Shared
 {
-    public sealed class Monitoring
+    public readonly struct MonitoringResponse
     {
         public DateTimeOffset MeasurementTime { get; init; }
         public float PredictedFutureTemperature { get; init; }

@@ -7,7 +7,7 @@ namespace ClimateControlSystem.Client.Shared
 {
     public static class AntChartHelper
     {
-        public static List<GraphicData> GetAccuracyData(List<Monitoring> _predictions)
+        public static List<GraphicData> GetAccuracyData(List<MonitoringResponse> _predictions)
         {
             List<GraphicData> temperatureAccuracy = new List<GraphicData>();
 
@@ -31,7 +31,7 @@ namespace ClimateControlSystem.Client.Shared
             return temperatureAccuracy;
         }
 
-        public static List<GraphicData> GetTemperatureData(List<Monitoring> predictions, Config config)
+        public static List<GraphicData> GetTemperatureData(List<MonitoringResponse> predictions, Config config)
         {
             List<GraphicData> temperatureData = new List<GraphicData>();
 
@@ -54,7 +54,7 @@ namespace ClimateControlSystem.Client.Shared
             return temperatureData;
         }
 
-        public static List<GraphicData> GetHumidityData(List<Monitoring> predictions, Config config)
+        public static List<GraphicData> GetHumidityData(List<MonitoringResponse> predictions, Config config)
         {
             List<GraphicData> humidityData = new List<GraphicData>();
 
@@ -97,8 +97,8 @@ namespace ClimateControlSystem.Client.Shared
         {
             var config = GetBaseLineConfig();
 
-            config.Title.Text = "Действительная и спрогнозированная температуры";
-            config.YAxis.Title.Text = "Градусы °C";
+            config.Title.Text = "Температура";
+            config.YAxis.Title.Text = "Градусы, °C";
             var min = actualAndPredictedTemperature.Min(item => item.value);
             var max = actualAndPredictedTemperature.Max(item => item.value);
             var delta = max - min;
@@ -112,8 +112,8 @@ namespace ClimateControlSystem.Client.Shared
         {
             var config = GetBaseLineConfig();
 
-            config.Title.Text = "Действительная и спрогнозированная влажности";
-            config.YAxis.Title.Text = "Показатели влажности %";
+            config.Title.Text = "Относительная влажность";
+            config.YAxis.Title.Text = "Процент влажности, %";
             var min = actualAndPredictedHumidity.Min(item => item.value);
             var max = actualAndPredictedHumidity.Max(item => item.value);
             var delta = max - min;

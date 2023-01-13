@@ -20,13 +20,13 @@ namespace ClimateControlSystem.Server.Services
             _predictionEgine = CreatePredictionEgine(modelLocation);
         }
 
-        public Task<PredictionResult> Predict(SensorsData incomingRequest)
+        public Task<PredictionResultData> Predict(SensorsData incomingRequest)
         {
             TensorPredictionRequest features = _mapper.Map<TensorPredictionRequest>(incomingRequest);
 
             TensorPredictionResult prediction = _predictionEgine.Predict(features);
 
-            PredictionResult predictionResult = _mapper.Map<PredictionResult>(prediction);
+            PredictionResultData predictionResult = _mapper.Map<PredictionResultData>(prediction);
 
             return Task.FromResult(predictionResult);
         }

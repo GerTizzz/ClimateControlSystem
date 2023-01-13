@@ -6,9 +6,9 @@ namespace ClimateControlSystem.Server.Services.MediatR.Commands
 {
     public class AddClimateCommand : IRequest<bool>
     {
-        public PredictionResult Prediction { get; init; }
+        public PredictionResultData Prediction { get; init; }
         public SensorsData SensorData { get; init; }
-        public TemperatureEvent TemperatureEvent { get; init; }
-        public HumidityEvent HumidityEvent { get; init; }
+        public TemperatureEventData TemperatureEvent { get; init; }
+        public HumidityEventData HumidityEvent { get; init; }
     }
 }

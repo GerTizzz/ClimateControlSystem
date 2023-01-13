@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClimateControlSystem.Server.Migrations
 {
     [DbContext(typeof(PredictionsDbContext))]
-    [Migration("20230111060720_InitializeDb")]
+    [Migration("20230113110055_InitializeDb")]
     partial class InitializeDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -85,10 +85,6 @@ namespace ClimateControlSystem.Server.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("Value")
                         .HasColumnType("real");
@@ -235,7 +231,7 @@ namespace ClimateControlSystem.Server.Migrations
                             CurrentRealHumidity = 19.71f,
                             CurrentRealTemperature = 23.48f,
                             MeanCoolingValue = 17.7f,
-                            MeasurementTime = new DateTimeOffset(new DateTime(2023, 1, 11, 11, 7, 20, 365, DateTimeKind.Unspecified).AddTicks(8570), new TimeSpan(0, 5, 0, 0, 0)),
+                            MeasurementTime = new DateTimeOffset(new DateTime(2023, 1, 13, 16, 0, 55, 333, DateTimeKind.Unspecified).AddTicks(5295), new TimeSpan(0, 5, 0, 0, 0)),
                             WindDirection = 225f,
                             WindEnthalpy = -4.06f,
                             WindSpeed = 3f
@@ -249,10 +245,6 @@ namespace ClimateControlSystem.Server.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("Value")
                         .HasColumnType("real");

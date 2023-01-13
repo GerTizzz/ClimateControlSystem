@@ -7,6 +7,5 @@ namespace ClimateControlSystem.Server.Resources.RepositoryResources
         [Key]
         public int Id { get; set; }
         public float Value { get; set; }
-        public string Message { get; set; }
     }
 }

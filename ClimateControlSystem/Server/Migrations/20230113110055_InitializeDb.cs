@@ -45,8 +45,7 @@ namespace ClimateControlSystem.Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Value = table.Column<float>(type: "real", nullable: false),
-                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Value = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -98,8 +97,7 @@ namespace ClimateControlSystem.Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Value = table.Column<float>(type: "real", nullable: false),
-                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Value = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -179,7 +177,7 @@ namespace ClimateControlSystem.Server.Migrations
             migrationBuilder.InsertData(
                 table: "SensorsData",
                 columns: new[] { "Id", "AirDryTemperatureOutside", "AirHumidityOutside", "AirWetTemperatureOutside", "ClusterLoad", "ClusterTemperature", "CpuUsage", "CurrentRealHumidity", "CurrentRealTemperature", "MeanCoolingValue", "MeasurementTime", "WindDirection", "WindEnthalpy", "WindSpeed" },
-                values: new object[] { 1, -3f, 91f, -3.91f, 50.8f, 56f, 5945.632f, 19.71f, 23.48f, 17.7f, new DateTimeOffset(new DateTime(2023, 1, 11, 11, 7, 20, 365, DateTimeKind.Unspecified).AddTicks(8570), new TimeSpan(0, 5, 0, 0, 0)), 225f, -4.06f, 3f });
+                values: new object[] { 1, -3f, 91f, -3.91f, 50.8f, 56f, 5945.632f, 19.71f, 23.48f, 17.7f, new DateTimeOffset(new DateTime(2023, 1, 13, 16, 0, 55, 333, DateTimeKind.Unspecified).AddTicks(5295), new TimeSpan(0, 5, 0, 0, 0)), 225f, -4.06f, 3f });
 
             migrationBuilder.InsertData(
                 table: "Users",

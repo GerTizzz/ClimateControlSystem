@@ -20,7 +20,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Monitoring>> GetMonitorings(int amountOfRecords)
+        public async Task<IReadOnlyCollection<MonitoringResponse>> GetMonitorings(int count)
         {
             try
             {
@@ -31,7 +31,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                              into mixedTable
                              from accuracy in mixedTable.DefaultIfEmpty()
                              orderby sensorData.MeasurementTime descending
-                             select new Monitoring()
+                             select new MonitoringResponse()
                              {
                                  MeasurementTime = sensorData.MeasurementTime,
                                  PredictedFutureTemperature = prediction.PredictedTemperature,
@@ -42,15 +42,15 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                                  PredictedHumidityAccuracy = accuracy.PredictedHumidityAccuracy
                              };
 
-                return await result.Take(amountOfRecords).ToListAsync();
+                return await result.Take(count).ToListAsync();
             }
             catch (Exception exc)
             {
-                return new List<Monitoring>();
+                return new List<MonitoringResponse>();
             }
         }
 
-        public async Task<PredictionResult> GetLastPredictionAsync()
+        public async Task<PredictionResultData> GetLastPredictionAsync()
         {
             try
             {
@@ -58,15 +58,15 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                     .OrderBy(record => record.Id)
                     .LastAsync();
 
-                return _mapper.Map<PredictionResult>(lastRecord);
+                return _mapper.Map<PredictionResultData>(lastRecord);
             }
             catch (Exception exc)
             {
-                return new PredictionResult();
+                return new PredictionResultData();
             }
         }
 
-        public async Task<bool> AddMicroclimateAsync(PredictionResult prediction, SensorsData monitoring, TemperatureEvent temperatureEvent, HumidityEvent humidityEvent)
+        public async Task<bool> AddMicroclimateAsync(PredictionResultData prediction, SensorsData monitoring, TemperatureEventData temperatureEvent, HumidityEventData humidityEvent)
         {
             try
             {
@@ -117,7 +117,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             return true;
         }
 
-        public async Task<IEnumerable<MicroclimateData>> GetMicroclimateDataAsync(int amountOfRecords)
+        public async Task<IReadOnlyCollection<MicroclimateResponse>> GetMicroclimateDataAsync(int count)
         {
             try
             {
@@ -127,8 +127,8 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                              join accuracy in _context.Accuracies on microclimate.AccuracyId equals accuracy.Id
                              into mixedTable
                              from accuracy in mixedTable.DefaultIfEmpty()
-                             orderby sensorData.MeasurementTime descending
-                             select new MicroclimateData()
+                             orderby sensorData.MeasurementTime descending                            
+                             select new MicroclimateResponse()
                              {
                                  MeasurementTime = sensorData.MeasurementTime,
                                  ClusterLoad = sensorData.ClusterLoad,
@@ -149,11 +149,43 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                                  PredictedHumidityAccuracy = accuracy.PredictedHumidityAccuracy
                              };
 
-                return await result.Take(amountOfRecords).ToListAsync();
+                return await result.Take(count).ToListAsync();
             }
             catch (Exception exc)
             {
-                return new List<MicroclimateData>();
+                return new List<MicroclimateResponse>();
+            }
+        }
+
+        public async Task<IReadOnlyCollection<TemperatureEventData>> GetTemperatureEventsAsync(int start, int count)
+        {
+            try
+            {
+                return await _context.TemperatureEvents
+                        .Skip(start)
+                        .Take(count)
+                        .Select(tempEv => _mapper.Map<TemperatureEventData>(tempEv))
+                        .ToListAsync();
+            }
+            catch (Exception exc)
+            {
+                return new List<TemperatureEventData>();
+            }
+        }
+
+        public async Task<IReadOnlyCollection<HumidityEventData>> GetHumidityEventsAsync(int start, int count)
+        {
+            try
+            {
+                return await _context.HumidityEvents
+                        .Skip(start)
+                        .Take(count)
+                        .Select(tempEv => _mapper.Map<HumidityEventData>(tempEv))
+                        .ToListAsync();
+            }
+            catch (Exception exc)
+            {
+                return new List<HumidityEventData>();
             }
         }
     }

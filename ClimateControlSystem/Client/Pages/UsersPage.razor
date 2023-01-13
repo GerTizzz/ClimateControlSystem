@@ -1,19 +1,16 @@
-﻿@page "/users"
+﻿@page "/userspage"
 @using ClimateControlSystem.Shared.Common;
 @inject NavigationManager NavigationManager
 @inject IUsersService UsersService
 @attribute [Authorize(Roles = "Admin")]
 
-<h3>Данные о пользователях</h3>
+<h3>Пользователи</h3>
 
 <AuthorizeView>
     <Authorized>
-
         @if (users is null || users.Count == 0)
         {
-            {
-                <p><em>Loading...</em></p>
-            }
+            <p><em>Загрузка...</em></p>
         }
         else
         {
@@ -27,17 +24,17 @@
                 </thead>
                 <tbody>
                     @foreach (var user in users)
-                        {
-                            <tr>
-                                <td>@user.Name</td>
-                                <td>@user.Role</td>
-                                <td>
-                                    <button class="btn btn-primary" @onclick="(() => ShowUser(user.Id))">
-                                        <i class="oi oi-pencil"/>
-                                    </button>
-                                </td>
-                            </tr>
-                        }
+                    {
+                        <tr>
+                            <td>@user.Name</td>
+                            <td>@user.Role</td>
+                            <td>
+                                <button class="btn btn-primary" @onclick="(() => ShowUser(user.Id))">
+                                    <i class="oi oi-pencil"/>
+                                </button>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
             <button class="btn btn-primary" @onclick="(() => CreateUser())">Создать нового пользователя</button>

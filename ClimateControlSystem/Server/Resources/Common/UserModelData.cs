@@ -1,6 +1,6 @@
 ﻿namespace ClimateControlSystem.Server.Resources.Common
 {
-    public sealed class UserModel
+    public sealed class UserModelData
     {
         public int Id { get; set; }
         public string Name { get; set; }

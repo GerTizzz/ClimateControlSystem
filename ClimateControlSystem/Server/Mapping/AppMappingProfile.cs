@@ -39,7 +39,7 @@ namespace ClimateControlSystem.Server.Mapping
                         property.MeanCoolingValue
                     }));
 
-            CreateMap<TensorPredictionResult, PredictionResult>()
+            CreateMap<TensorPredictionResult, PredictionResultData>()
                 .ForMember(result => result.PredictedTemperature, tensor => tensor
                     .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[0]))
                 .ForMember(result => result.PredictedHumidity, tensor => tensor
@@ -57,21 +57,21 @@ namespace ClimateControlSystem.Server.Mapping
 
             CreateMap<AccuracyData, AccuracyRecord>();
 
-            CreateMap<PredictionRecord, PredictionResult>();
+            CreateMap<PredictionRecord, PredictionResultData>();
 
-            CreateMap<PredictionResult, PredictionRecord>();
+            CreateMap<PredictionResultData, PredictionRecord>();
 
             CreateMap<Config, ConfigRecord>();
 
             CreateMap<ConfigRecord, Config>();
 
-            CreateMap<TemperatureEventRecord, TemperatureEvent>();
+            CreateMap<TemperatureEventRecord, TemperatureEventData>();
 
-            CreateMap<TemperatureEvent, TemperatureEventRecord>();
+            CreateMap<TemperatureEventData, TemperatureEventRecord>();
 
-            CreateMap<HumidityEventRecord, HumidityEvent>();
+            CreateMap<HumidityEventRecord, HumidityEventData>();
 
-            CreateMap<HumidityEvent, HumidityEventRecord>();
+            CreateMap<HumidityEventData, HumidityEventRecord>();
 
             CreateMap<UserRecord, UserModelWithCredentials>()
                 .ForMember(dto => dto.Name, auth => auth

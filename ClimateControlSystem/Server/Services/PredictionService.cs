@@ -28,13 +28,13 @@ namespace ClimateControlSystem.Server.Services
             _configManager = configManager;
         }
 
-        public async Task<PredictionResult> Predict(SensorsData climateData)
+        public async Task<PredictionResultData> Predict(SensorsData climateData)
         {
-            PredictionResult prediction = await _predictionEngine.Predict(climateData);
+            PredictionResultData prediction = await _predictionEngine.Predict(climateData);
 
             await CreateClimateRecord(climateData, prediction);
 
-            Monitoring monitoring = new Monitoring()
+            MonitoringResponse monitoring = new MonitoringResponse()
             {
                 MeasurementTime = climateData.MeasurementTime,
                 PredictedFutureTemperature = prediction.PredictedTemperature,
@@ -48,7 +48,7 @@ namespace ClimateControlSystem.Server.Services
             return prediction;
         }
 
-        private async Task CreateClimateRecord(SensorsData sensorData, PredictionResult prediction)
+        private async Task CreateClimateRecord(SensorsData sensorData, PredictionResultData prediction)
         {
             var accuracy = await CalculateLastPredictionAccuracy(sensorData);
 
@@ -75,7 +75,7 @@ namespace ClimateControlSystem.Server.Services
             var actualTemperature = sensorData.CurrentRealTemperature;
             var actualHumidity = sensorData.CurrentRealHumidity;
 
-            PredictionResult lastRecord = await _mediator.Send(new GetLastPredictionQuery());
+            PredictionResultData lastRecord = await _mediator.Send(new GetLastPredictionQuery());
 
             var predictedTemperature = lastRecord.PredictedTemperature;
             var predictedHumidity = lastRecord.PredictedHumidity;
@@ -89,53 +89,49 @@ namespace ClimateControlSystem.Server.Services
             return accuracy;
         }
 
-        private async Task SendNewMonitoringDataToWebClients(Monitoring monitoring)
+        private async Task SendNewMonitoringDataToWebClients(MonitoringResponse monitoring)
         {
             await _monitoringHub.Clients.All.SendAsync("GetMonitoringData", monitoring);
         }
 
-        private Task<TemperatureEvent> GetTemperatureEvent(PredictionResult prediction, Config config)
+        private Task<TemperatureEventData> GetTemperatureEvent(PredictionResultData prediction, Config config)
         {
-            TemperatureEvent temperatureEvent = null;
+            TemperatureEventData temperatureEvent = null;
 
             if (prediction.PredictedTemperature >= config.UpperTemperatureWarningLimit)
             {
-                temperatureEvent = new TemperatureEvent()
+                temperatureEvent = new TemperatureEventData()
                 {
-                    Value = prediction.PredictedHumidity - config.UpperTemperatureWarningLimit,
-                    Message = "Был превышен верхний лимит температуры!"
+                    Value = prediction.PredictedHumidity - config.UpperTemperatureWarningLimit
                 };
             }
             else if (prediction.PredictedHumidity <= config.LowerTemperatureWarningLimit)
             {
-                temperatureEvent = new TemperatureEvent()
+                temperatureEvent = new TemperatureEventData()
                 {
-                    Value = prediction.PredictedHumidity - config.LowerTemperatureWarningLimit,
-                    Message = "Был превышен нижний лимит температуры!"
+                    Value = prediction.PredictedHumidity - config.LowerTemperatureWarningLimit
                 };
             }
 
             return Task.FromResult(temperatureEvent);
         }
 
-        private Task<HumidityEvent> GetHumidityEvent(PredictionResult prediction, Config config)
+        private Task<HumidityEventData> GetHumidityEvent(PredictionResultData prediction, Config config)
         {
-            HumidityEvent humidityEvent = null;
+            HumidityEventData humidityEvent = null;
 
             if (prediction.PredictedHumidity >= config.UpperHumidityWarningLimit)
             {
-                humidityEvent = new HumidityEvent()
+                humidityEvent = new HumidityEventData()
                 {
-                    Value = prediction.PredictedHumidity - config.UpperHumidityWarningLimit,
-                    Message = "Был превышен верхний лимит влажности!"
+                    Value = prediction.PredictedHumidity - config.UpperHumidityWarningLimit
                 };
             }
             else if (prediction.PredictedHumidity <= config.LowerHumidityWarningLimit)
             {
-                humidityEvent = new HumidityEvent()
+                humidityEvent = new HumidityEventData()
                 {
-                    Value = prediction.PredictedHumidity - config.LowerHumidityWarningLimit,
-                    Message = "Был превышен нижний лимит влажности!"
+                    Value = prediction.PredictedHumidity - config.LowerHumidityWarningLimit
                 };
             }
 

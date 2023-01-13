@@ -1,17 +1,16 @@
-﻿@page "/predictionsjournal"
+﻿@page "/journalpage"
 @using ClimateControlSystem.Shared.SendToClient;
 @inject IMicroclimateService ClimateService
 
-<PageTitle>Predictions Journal</PageTitle>
+<PageTitle>Journal Page</PageTitle>
 
 <h3>Журнал прогнозов</h3>
-
 
 <AuthorizeView>
     <Authorized>
         @if (ClimatesData == null)
         {
-            <p><em>Loading...</em></p>
+            <p><em>Загрузка...</em></p>
         }
         else
         {
@@ -22,8 +21,8 @@
                         <th style="word-wrap:break-word; font-size:small">Загрузка кластера</th>
                         <th style="word-wrap:break-word; font-size:small">Использование ЦПУ</th>
                         <th style="word-wrap:break-word; font-size:small">Температура кластера</th>
-                        <th style="word-wrap:break-word; font-size:small">Текущая температура</th>
-                        <th style="word-wrap:break-word; font-size:small">Текущая влажность</th>
+                        <th style="word-wrap:break-word; font-size:small">Температура воздуха</th>
+                        <th style="word-wrap:break-word; font-size:small">Влажность воздуха</th>
                         <th style="word-wrap:break-word; font-size:small">Влажность снаружи</th>
                         <th style="word-wrap:break-word; font-size:small">Сухая температура снаружи</th>
                         <th style="word-wrap:break-word; font-size:small">Влажная температура снаружи</th>
@@ -70,10 +69,10 @@
 </AuthorizeView>
 
 @code {
-    private List<MicroclimateData> ClimatesData;
+    private List<MicroclimateResponse> ClimatesData;
 
     protected override async Task OnInitializedAsync()
     {
-        ClimatesData = await ClimateService.GetMicroclimatesDataAsync(25);
+        ClimatesData = (await ClimateService.GetMicroclimatesDataAsync(0, 25)).ToList();
     }
 }

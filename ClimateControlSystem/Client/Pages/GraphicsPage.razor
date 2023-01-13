@@ -1,9 +1,9 @@
-﻿@page "/predictionsgraphics"
+﻿@page "/graphicspage"
 @using ClimateControlSystem.Client.Resources
 @inject IMicroclimateService ClimateService
 @inject IConfigService ConfigService
 
-<PageTitle>Predictions Journal</PageTitle>
+<PageTitle>Graphics Page</PageTitle>
 
 <h3>Графики прогнозов</h3>
 
@@ -11,7 +11,7 @@
     <Authorized>
         @if (_predictions == null)
         {
-            <p><em>Loading...</em></p>
+            <p><em>Загрузка...</em></p>
         }
         else
         {
@@ -23,7 +23,7 @@
             }
             else
             {
-                <p><em>Sorry, no data to show...</em></p>
+                <p><em>Извините, слишком мало данных для построения...</em></p>
             }
         }
     </Authorized>
@@ -35,7 +35,7 @@
 @code{
     private Config _config;
 
-    List<Monitoring> _predictions;
+    List<MonitoringResponse> _predictions;
 
     bool _hasData = false;
 
@@ -51,7 +51,7 @@
     {
         _config = await ConfigService.GetConfigAsync();
 
-        _predictions = await ClimateService.GetMonitoringsAsync(25);
+        _predictions = (await ClimateService.GetMonitoringsDataAsync(0, 25)).ToList();
 
         _hasData = _predictions.Count >= 2;
 
