@@ -1,0 +1,73 @@
+﻿@page "/graphicspage"
+@using ClimateControlSystem.Client.Resources
+@inject IMicroclimateService ClimateService
+@inject IConfigService ConfigService
+
+<PageTitle>Graphics Page</PageTitle>
+
+<h3>Графики прогнозов</h3>
+
+<AuthorizeView>
+    <Authorized>
+        @if (_predictions == null)
+        {
+            <p><em>Загрузка...</em></p>
+        }
+        else
+        {
+            if (_hasData)
+            {
+                <Line Data="_actualAndPredictedTemperature" Config="_temperatureDataLineConfig"/>
+                <Line Data="_actualAndPredictedHumidity" Config="_humidityDataLineConfig"/>
+                <Line Data="_accuracy" Config="_accuracyLineConfig" />
+            }
+            else
+            {
+                <p><em>Извините, слишком мало данных для построения...</em></p>
+            }
+        }
+    </Authorized>
+    <NotAuthorized>
+        Вы не вошли в систему
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+    private Config _config;
+
+    List<MonitoringResponse> _predictions;
+
+    bool _hasData = false;
+
+    LineConfig _temperatureDataLineConfig;
+    LineConfig _humidityDataLineConfig;
+    LineConfig _accuracyLineConfig;
+
+    List<GraphicData> _actualAndPredictedTemperature;
+    List<GraphicData> _actualAndPredictedHumidity;
+    List<GraphicData> _accuracy;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _config = await ConfigService.GetConfigAsync();
+
+        _predictions = (await ClimateService.GetMonitoringsDataAsync(0, 25)).ToList();
+
+        _hasData = _predictions.Count >= 2;
+
+        if (_hasData is false)
+        {
+            return;    
+        }
+
+        Console.WriteLine(string.Join(" ", _predictions.Select(x => x.PredictedTemperatureAccuracy)));
+
+        _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_predictions, _config);
+        _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_predictions, _config);
+        _accuracy = AntChartHelper.GetAccuracyData(_predictions);
+
+        _temperatureDataLineConfig = AntChartHelper.GetTemperatureLineConfig(_actualAndPredictedTemperature);
+        _humidityDataLineConfig = AntChartHelper.GetHumidityLineConfig(_actualAndPredictedHumidity);
+        _accuracyLineConfig = AntChartHelper.GetAccuracyConfig(_accuracy);
+    }
+}

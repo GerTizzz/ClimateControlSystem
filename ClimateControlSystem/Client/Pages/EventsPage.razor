@@ -1,0 +1,81 @@
+﻿@page "/eventspage"
+@using ClimateControlSystem.Shared.SendToClient;
+@inject IMicroclimateService MicroclimateService
+@inject IConfigService ConfigService
+
+<PageTitle>Events Page</PageTitle>
+
+<h3>События</h3>
+
+<AuthorizeView>
+    <Authorized>
+        @if (_temperatureEvents is null && _humidityEvents is null)
+        {
+            <p><em>Загрузка...</em></p>
+        }
+        else
+        {
+            <p>События температуры</p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="word-wrap:break-word; font-size:small">Статус</th>
+                        <th style="word-wrap:break-word; font-size:small">Сообщение</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var _tempEvent in _temperatureEvents)
+                    {
+                        <tr>
+                            <td style="font-size:small"><span class="oi oi-warning ico" aria-hidden="true" style="color:red"></span></td>
+                            <td>Ожидается критическое значение температуры! На @_tempEvent.Value, °C!</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>       
+            
+            <p>События влажности</p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="word-wrap:break-word; font-size:small">Статус</th>
+                        <th style="word-wrap:break-word; font-size:small">Сообщение</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var _humEvent in _humidityEvents)
+                    {
+                        <tr>
+                            <td style="font-size:small"><span class="oi oi-warning" aria-hidden="true" style="color:red"></span></td>
+                            <td>Ожидается критическое значение влажности! На @_humEvent.Value, %!</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </Authorized>
+    <NotAuthorized>
+        Вы не вошли в систему
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private Config _config;
+
+    private IReadOnlyCollection<TemperatureEventResponse> _temperatureEvents;
+    private IReadOnlyCollection<HumidityEventResponse> _humidityEvents;
+
+    private float _temperatureDeviation = 0;
+    private float _humidityDeviation = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _config = await ConfigService.GetConfigAsync();
+
+        _temperatureDeviation = _config.UpperTemperatureWarningLimit - _config.LowerTemperatureWarningLimit;
+        _humidityDeviation = _config.UpperHumidityWarningLimit - _config.LowerHumidityWarningLimit;
+
+        _temperatureEvents = await MicroclimateService.GetTemperatureEventDataAsync(0, 20);
+        _humidityEvents = await MicroclimateService.GetHumidityEventDataAsync(0, 20);
+    }
+}

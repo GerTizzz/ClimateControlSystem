@@ -1,0 +1,65 @@
+﻿@page "/userspage"
+@using ClimateControlSystem.Shared.Common;
+@inject NavigationManager NavigationManager
+@inject IUsersService UsersService
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Пользователи</h3>
+
+<AuthorizeView>
+    <Authorized>
+        @if (users is null || users.Count == 0)
+        {
+            <p><em>Загрузка...</em></p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Имя</th>
+                        <th>Роль</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in users)
+                    {
+                        <tr>
+                            <td>@user.Name</td>
+                            <td>@user.Role</td>
+                            <td>
+                                <button class="btn btn-primary" @onclick="(() => ShowUser(user.Id))">
+                                    <i class="oi oi-pencil"/>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-primary" @onclick="(() => CreateUser())">Создать нового пользователя</button>
+        }
+    </Authorized>
+    <NotAuthorized>
+        Вы не вошли в систему
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private List<UserModelWithCredentials> users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UsersService.GetUsers();
+    }
+
+    void ShowUser(int id)
+    {
+        NavigationManager.NavigateTo($"/user/{id}");
+    }
+
+    void CreateUser()
+    {
+        NavigationManager.NavigateTo("/user");
+    }
+}

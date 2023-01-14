@@ -1,9 +1,9 @@
-﻿using Grpc.Net.Client;
-using ClimateMonitoringSystem.Protos;
+﻿using ClimateMonitoringSystem.Protos;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
+using Grpc.Net.Client;
 using Microsoft.VisualBasic.FileIO;
 using Client = ClimateMonitoringSystem.Protos.ClimateMonitoring.ClimateMonitoringClient;
-using Grpc.Core;
-using Google.Protobuf.WellKnownTypes;
 
 namespace ClimateMonitoringSystem
 {
@@ -91,8 +91,8 @@ namespace ClimateMonitoringSystem
                 ClusterLoad = requestData[0],
                 CpuUsage = requestData[1],
                 ClusterTemperature = requestData[2],
-                PreviousTemperature = requestData[3],
-                PreviousHumidity = requestData[4],
+                CurrentRealTemperature = requestData[3],
+                CurrentRealHumidity = requestData[4],
                 AirHumidityOutside = requestData[5],
                 AirDryTemperatureOutside = requestData[6],
                 AirWetTemperatureOutside = requestData[7],

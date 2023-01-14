@@ -1,44 +1,44 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Resources;
 using ClimateControlSystem.Server.Resources.Authentication;
-using ClimateControlSystem.Shared;
+using ClimateControlSystem.Server.Resources.RepositoryResources;
+using ClimateControlSystem.Shared.Common;
 
 namespace ClimateControlSystem.Server.Services
 {
     public sealed class UserManager : IUserManager
     {
-        private readonly IUsersRepository _userRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
-        public UserManager(IUsersRepository userRepository, IMapper mapper)
+        public UserManager(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _mapper = mapper;
         }
 
-        public async Task<UserDtoModel> GetUserById(int id)
+        public async Task<UserModelWithCredentials> GetUserById(int id)
         {
             var user = await _userRepository.GetUser(id);
 
-            return _mapper.Map<UserDtoModel>(user);
+            return _mapper.Map<UserModelWithCredentials>(user);
         }
 
-        public async Task<List<UserDtoModel>> GetUsers()
+        public async Task<List<UserModelWithCredentials>> GetUsers()
         {
             var users = await _userRepository.GetUsers();
 
-            var result = users.Select(user => _mapper.Map<UserDtoModel>(user)).ToList();
+            var result = users.Select(user => _mapper.Map<UserModelWithCredentials>(user)).ToList();
 
             return result;
         }
 
-        public Task<bool> CreateUser(UserDtoModel user)
+        public Task<bool> CreateUser(UserModelWithCredentials user)
         {
             TokenHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            AuthenticatedUserModel newUser = _mapper.Map<AuthenticatedUserModel>(user);
+            UserRecord newUser = _mapper.Map<UserRecord>(user);
 
             newUser.PasswordHash = passwordHash;
             newUser.PasswordSalt = passwordSalt;
@@ -46,9 +46,9 @@ namespace ClimateControlSystem.Server.Services
             return _userRepository.Create(newUser);
         }
 
-        public Task<bool> UpdateUser(UserDtoModel user, int id)
+        public Task<bool> UpdateUser(UserModelWithCredentials user, int id)
         {
-            AuthenticatedUserModel authUser = _mapper.Map<AuthenticatedUserModel>(user);
+            UserRecord authUser = _mapper.Map<UserRecord>(user);
 
             TokenHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
@@ -63,7 +63,7 @@ namespace ClimateControlSystem.Server.Services
             return _userRepository.DeleteUser(id);
         }
 
-        public Task<AuthenticatedUserModel> GetUserByName(string name)
+        public Task<UserRecord> GetUserByName(string name)
         {
             return _userRepository.GetUserByName(name);
         }

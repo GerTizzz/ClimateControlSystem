@@ -1,6 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using ClimateControlSystem.Client.Authentication;
-using ClimateControlSystem.Shared;
+using ClimateControlSystem.Shared.Common;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -22,7 +22,7 @@ namespace ClimateControlSystem.Client.Services.AuthenticationService
             _localStorage = localStorage;
         }
 
-        public async Task<bool> Login(UserDtoModel userForAuthentication)
+        public async Task<bool> Login(UserModelWithCredentials userForAuthentication)
         {
             var authResult = await _client.PostAsJsonAsync("api/auth/login", userForAuthentication);
             var token = await authResult.Content.ReadAsStringAsync();

@@ -1,10 +1,10 @@
-﻿using ClimateControlSystem.Shared;
+﻿using ClimateControlSystem.Shared.Common;
 
 namespace ClimateControlSystem.Client.Services.AuthenticationService
 {
     public interface IAuthenticationService
     {
-        Task<bool> Login(UserDtoModel userForAuthentication);
+        Task<bool> Login(UserModelWithCredentials userForAuthentication);
         Task Logout();
     }
 }

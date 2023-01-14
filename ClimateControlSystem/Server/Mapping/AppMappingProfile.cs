@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Protos;
-using ClimateControlSystem.Server.Resources.Authentication;
 using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Resources.RepositoryResources;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
-using ClimateControlSystem.Shared;
+using ClimateControlSystem.Shared.Common;
 
 namespace ClimateControlSystem.Server.Mapping
 {
@@ -14,7 +13,7 @@ namespace ClimateControlSystem.Server.Mapping
         {
             #region gRPC communication
 
-            CreateMap<ClimateMonitoringRequest, IncomingMonitoringData>()
+            CreateMap<ClimateMonitoringRequest, SensorsData>()
                 .ForMember(data => data.MeasurementTime, request => request
                     .MapFrom(requestSrc => requestSrc.MeasurementTime.ToDateTimeOffset().ToLocalTime()));
 
@@ -22,15 +21,15 @@ namespace ClimateControlSystem.Server.Mapping
 
             #region PredictEngine
 
-            CreateMap<IncomingMonitoringData, TensorPredictionRequest>()
+            CreateMap<SensorsData, TensorPredictionRequest>()
                 .ForMember(tensor => tensor.serving_default_input_1, opt => opt
                     .MapFrom(property => new float[]
                     {
                         property.ClusterLoad,
                         property.CpuUsage,
                         property.ClusterTemperature,
-                        property.PreviousTemperature,
-                        property.PreviousHumidity,
+                        property.CurrentRealTemperature,
+                        property.CurrentRealHumidity,
                         property.AirHumidityOutside,
                         property.AirDryTemperatureOutside,
                         property.AirWetTemperatureOutside,
@@ -40,31 +39,41 @@ namespace ClimateControlSystem.Server.Mapping
                         property.MeanCoolingValue
                     }));
 
-            CreateMap<TensorPredictionResult, PredictionResult>()
+            CreateMap<TensorPredictionResult, PredictionResultData>()
                 .ForMember(result => result.PredictedTemperature, tensor => tensor
                     .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[0]))
                 .ForMember(result => result.PredictedHumidity, tensor => tensor
                     .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[1]));
 
             #endregion
-
-            #region PredictionService
-
-            CreateMap<IncomingMonitoringData, MonitoringData>();
-
-            #endregion
             
             #region Repository
 
-            CreateMap<MonitoringData, MonitoringDataRecord>();
+            CreateMap<SensorsData, SensorsDataRecord>();
 
-            CreateMap<MonitoringDataRecord, MonitoringData>();
+            CreateMap<SensorsDataRecord, SensorsData>();
 
-            CreateMap<MonitoringDataRecord, PredictionResult>();
+            CreateMap<AccuracyRecord, AccuracyData>();
 
-            #endregion
+            CreateMap<AccuracyData, AccuracyRecord>();
 
-            CreateMap<AuthenticatedUserModel, UserDtoModel>()
+            CreateMap<PredictionRecord, PredictionResultData>();
+
+            CreateMap<PredictionResultData, PredictionRecord>();
+
+            CreateMap<Config, ConfigRecord>();
+
+            CreateMap<ConfigRecord, Config>();
+
+            CreateMap<TemperatureEventRecord, TemperatureEventData>();
+
+            CreateMap<TemperatureEventData, TemperatureEventRecord>();
+
+            CreateMap<HumidityEventRecord, HumidityEventData>();
+
+            CreateMap<HumidityEventData, HumidityEventRecord>();
+
+            CreateMap<UserRecord, UserModelWithCredentials>()
                 .ForMember(dto => dto.Name, auth => auth
                     .MapFrom(authSrc => authSrc.Name))
                 .ForMember(dto => dto.Role, auth => auth
@@ -72,11 +81,13 @@ namespace ClimateControlSystem.Server.Mapping
                 .ForMember(dto => dto.Id, auth => auth
                     .MapFrom(authSrc => authSrc.Id));
 
-            CreateMap<UserDtoModel, AuthenticatedUserModel>()
+            CreateMap<UserModelWithCredentials, UserRecord>()
                 .ForMember(auth => auth.Name, dto => dto
                     .MapFrom(dtoSrc => dtoSrc.Name))
                 .ForMember(auth => auth.Role, dto => dto
                     .MapFrom(dtoSrc => dtoSrc.Role));
+
+            #endregion
         }
     }
 }

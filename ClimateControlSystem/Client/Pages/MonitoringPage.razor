@@ -1,0 +1,130 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@using ClimateControlSystem.Client.Resources
+@inject NavigationManager NavigationManager
+@inject IMicroclimateService ClimateService
+@inject IConfigService ConfigService
+@implements IAsyncDisposable
+
+<PageTitle>Monitoring Page</PageTitle>
+
+<h3>Панель мониторинга</h3>
+
+<AuthorizeView>
+    <Authorized>
+        @if (_actualAndPredictedTemperature is null || _actualAndPredictedHumidity is null
+        || _actualAndPredictedTemperature.Count == 0 || _actualAndPredictedHumidity.Count == 0)
+        {
+            <p><em>Загрузка...</em></p>
+        }
+        else
+        {
+            <Line @ref="_temperatureChart" Data="_actualAndPredictedTemperature" Config="_temperatureDataLineConfig"/>
+            <Line @ref="_humidityChart" Data="_actualAndPredictedHumidity" Config="_humidityDataLineConfig"/>
+        }
+    </Authorized>
+    <NotAuthorized>
+        Вы не вошли в систему
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private Config _config;
+
+    private const int _recordsCount = 15;
+
+    private Line _temperatureChart;
+    private Line _humidityChart;
+
+    private LineConfig _temperatureDataLineConfig;
+    private LineConfig _humidityDataLineConfig;
+
+    private List<GraphicData> _actualAndPredictedTemperature;
+    private List<GraphicData> _actualAndPredictedHumidity;
+
+    private List<MonitoringResponse> _predictions;
+
+    private HubConnection? _hubConnection;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> _authState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _authState;
+
+        if (authState.User.Identity.IsAuthenticated)
+        {
+            _config = await ConfigService.GetConfigAsync();
+            _predictions = (await ClimateService.GetMonitoringsDataAsync(0, _recordsCount)).ToList();
+            _predictions.Capacity = _recordsCount;
+
+            await UpdateLineChartsConfigsAndData();
+
+            await Connect();
+        }
+    }
+
+    private async Task Connect()
+    {
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/monitoringhub"))
+            .WithAutomaticReconnect()
+            .Build();
+
+        _hubConnection.On<MonitoringResponse>("GetMonitoringData", (newData) => MonitoringDataArrived(newData));
+
+        await _hubConnection.StartAsync();
+    }
+
+    private async Task MonitoringDataArrived(MonitoringResponse prediction)
+    {
+        try
+        {
+            if (_predictions is null)
+            {
+                return;
+            }
+
+            while (_predictions.Count >= _predictions.Capacity)
+            {
+                _predictions.RemoveAt(0);
+            }
+
+            _predictions.Add(prediction);
+
+            await UpdateLineChartsConfigsAndData();
+
+            await _temperatureChart.ChangeData(_actualAndPredictedTemperature);
+            await _humidityChart.ChangeData(_actualAndPredictedHumidity);
+
+            //await _temperatureChart.UpdateChart(csData: _actualAndPredictedTemperature, csConfig: _temperatureDataLineConfig);
+            //await _humidityChart.UpdateChart(csData: _actualAndPredictedHumidity, csConfig: _humidityDataLineConfig);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection != null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
+    }
+
+    private Task UpdateLineChartsConfigsAndData()
+    {
+        _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_predictions, _config);
+        _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_predictions, _config);
+
+        // the min and max y-values change
+        _temperatureDataLineConfig = AntChartHelper.GetTemperatureLineConfig(_actualAndPredictedTemperature);
+        _humidityDataLineConfig = AntChartHelper.GetHumidityLineConfig(_actualAndPredictedHumidity);
+
+        return Task.CompletedTask;
+    }
+}

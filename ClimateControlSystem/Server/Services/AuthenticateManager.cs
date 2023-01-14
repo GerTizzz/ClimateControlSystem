@@ -1,6 +1,7 @@
 ﻿using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Resources.Authentication;
-using ClimateControlSystem.Shared;
+using ClimateControlSystem.Server.Resources.RepositoryResources;
+using ClimateControlSystem.Shared.Common;
+using ClimateControlSystem.Shared.Enums;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -19,9 +20,9 @@ namespace ClimateControlSystem.Server.Services
             _configuration = configuration;
         }
 
-        public async Task<string> GetTokenForUser(UserDtoModel request)
+        public async Task<string> GetTokenForUser(UserModelWithCredentials request)
         {
-            AuthenticatedUserModel user = await _userManager.GetUserByName(request.Name);
+            UserRecord user = await _userManager.GetUserByName(request.Name);
 
             if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt) is false)
             {
@@ -47,7 +48,7 @@ namespace ClimateControlSystem.Server.Services
             }
         }
 
-        private async Task<bool> IsUserVerifyed(UserDtoModel request, AuthenticatedUserModel user)
+        private async Task<bool> IsUserVerifyed(UserModelWithCredentials request, UserRecord user)
         {
             if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
@@ -57,7 +58,7 @@ namespace ClimateControlSystem.Server.Services
             return false;
         }
 
-        private string CreateToken(AuthenticatedUserModel user, string securityKey)
+        private string CreateToken(UserRecord user, string securityKey)
         {
             ClaimsIdentity claim = GetIdentity(user);
 
@@ -82,7 +83,7 @@ namespace ClimateControlSystem.Server.Services
             return jwt;
         }
 
-        private ClaimsIdentity GetIdentity(AuthenticatedUserModel user)
+        private ClaimsIdentity GetIdentity(UserRecord user)
         {
             if (user != null)
             {

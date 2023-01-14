@@ -22,7 +22,237 @@ namespace ClimateControlSystem.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("ClimateControlSystem.Server.Resources.Authentication.AuthenticatedUserModel", b =>
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.AccuracyRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<float>("PredictedHumidityAccuracy")
+                        .HasColumnType("real");
+
+                    b.Property<float>("PredictedTemperatureAccuracy")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Accuracies");
+                });
+
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.ConfigRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<float>("LowerHumidityWarningLimit")
+                        .HasColumnType("real");
+
+                    b.Property<float>("LowerTemperatureWarningLimit")
+                        .HasColumnType("real");
+
+                    b.Property<float>("UpperHumidityWarningLimit")
+                        .HasColumnType("real");
+
+                    b.Property<float>("UpperTemperatureWarningLimit")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Configs");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            LowerHumidityWarningLimit = 10f,
+                            LowerTemperatureWarningLimit = 16f,
+                            UpperHumidityWarningLimit = 21f,
+                            UpperTemperatureWarningLimit = 24f
+                        });
+                });
+
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.HumidityEventRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<float>("Value")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HumidityEvents");
+                });
+
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.MicroclimateRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("AccuracyId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HumidityEventId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PredictionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SensorDataId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TemperatureEventId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccuracyId");
+
+                    b.HasIndex("HumidityEventId");
+
+                    b.HasIndex("PredictionId");
+
+                    b.HasIndex("SensorDataId");
+
+                    b.HasIndex("TemperatureEventId");
+
+                    b.ToTable("Microclimates");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            PredictionId = 1,
+                            SensorDataId = 1
+                        });
+                });
+
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.PredictionRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<float>("PredictedHumidity")
+                        .HasColumnType("real");
+
+                    b.Property<float>("PredictedTemperature")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Predictions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            PredictedHumidity = 18.77f,
+                            PredictedTemperature = 23.32f
+                        });
+                });
+
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.SensorsDataRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<float>("AirDryTemperatureOutside")
+                        .HasColumnType("real");
+
+                    b.Property<float>("AirHumidityOutside")
+                        .HasColumnType("real");
+
+                    b.Property<float>("AirWetTemperatureOutside")
+                        .HasColumnType("real");
+
+                    b.Property<float>("ClusterLoad")
+                        .HasColumnType("real");
+
+                    b.Property<float>("ClusterTemperature")
+                        .HasColumnType("real");
+
+                    b.Property<float>("CpuUsage")
+                        .HasColumnType("real");
+
+                    b.Property<float>("CurrentRealHumidity")
+                        .HasColumnType("real");
+
+                    b.Property<float>("CurrentRealTemperature")
+                        .HasColumnType("real");
+
+                    b.Property<float>("MeanCoolingValue")
+                        .HasColumnType("real");
+
+                    b.Property<DateTimeOffset>("MeasurementTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<float>("WindDirection")
+                        .HasColumnType("real");
+
+                    b.Property<float>("WindEnthalpy")
+                        .HasColumnType("real");
+
+                    b.Property<float>("WindSpeed")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SensorsData");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AirDryTemperatureOutside = -3f,
+                            AirHumidityOutside = 91f,
+                            AirWetTemperatureOutside = -3.91f,
+                            ClusterLoad = 50.8f,
+                            ClusterTemperature = 56f,
+                            CpuUsage = 5945.632f,
+                            CurrentRealHumidity = 19.71f,
+                            CurrentRealTemperature = 23.48f,
+                            MeanCoolingValue = 17.7f,
+                            MeasurementTime = new DateTimeOffset(new DateTime(2023, 1, 13, 16, 0, 55, 333, DateTimeKind.Unspecified).AddTicks(5295), new TimeSpan(0, 5, 0, 0, 0)),
+                            WindDirection = 225f,
+                            WindEnthalpy = -4.06f,
+                            WindSpeed = 3f
+                        });
+                });
+
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.TemperatureEventRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<float>("Value")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TemperatureEvents");
+                });
+
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.UserRecord", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -61,89 +291,41 @@ namespace ClimateControlSystem.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.MonitoringDataRecord", b =>
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.RepositoryResources.MicroclimateRecord", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.HasOne("ClimateControlSystem.Server.Resources.RepositoryResources.AccuracyRecord", "Accuracy")
+                        .WithMany()
+                        .HasForeignKey("AccuracyId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    b.HasOne("ClimateControlSystem.Server.Resources.RepositoryResources.HumidityEventRecord", "HumidityEvent")
+                        .WithMany()
+                        .HasForeignKey("HumidityEventId");
 
-                    b.Property<float>("AirDryTemperatureOutside")
-                        .HasColumnType("real");
+                    b.HasOne("ClimateControlSystem.Server.Resources.RepositoryResources.PredictionRecord", "Prediction")
+                        .WithMany()
+                        .HasForeignKey("PredictionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<float>("AirHumidityOutside")
-                        .HasColumnType("real");
+                    b.HasOne("ClimateControlSystem.Server.Resources.RepositoryResources.SensorsDataRecord", "SensorData")
+                        .WithMany()
+                        .HasForeignKey("SensorDataId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<float>("AirWetTemperatureOutside")
-                        .HasColumnType("real");
+                    b.HasOne("ClimateControlSystem.Server.Resources.RepositoryResources.TemperatureEventRecord", "TemperatureEvent")
+                        .WithMany()
+                        .HasForeignKey("TemperatureEventId");
 
-                    b.Property<float>("ClusterLoad")
-                        .HasColumnType("real");
+                    b.Navigation("Accuracy");
 
-                    b.Property<float>("ClusterTemperature")
-                        .HasColumnType("real");
+                    b.Navigation("HumidityEvent");
 
-                    b.Property<float>("CpuUsage")
-                        .HasColumnType("real");
+                    b.Navigation("Prediction");
 
-                    b.Property<float>("MeanCoolingValue")
-                        .HasColumnType("real");
+                    b.Navigation("SensorData");
 
-                    b.Property<DateTimeOffset>("MeasurementTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<float>("PredictedHumidity")
-                        .HasColumnType("real");
-
-                    b.Property<float?>("PredictedHumidityAccuracy")
-                        .HasColumnType("real");
-
-                    b.Property<float>("PredictedTemperature")
-                        .HasColumnType("real");
-
-                    b.Property<float?>("PredictedTemperatureAccuracy")
-                        .HasColumnType("real");
-
-                    b.Property<float>("PreviousHumidity")
-                        .HasColumnType("real");
-
-                    b.Property<float>("PreviousTemperature")
-                        .HasColumnType("real");
-
-                    b.Property<float>("WindDirection")
-                        .HasColumnType("real");
-
-                    b.Property<float>("WindEnthalpy")
-                        .HasColumnType("real");
-
-                    b.Property<float>("WindSpeed")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MonitoringData");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AirDryTemperatureOutside = -3f,
-                            AirHumidityOutside = 91f,
-                            AirWetTemperatureOutside = -3.91f,
-                            ClusterLoad = 50.8f,
-                            ClusterTemperature = 56f,
-                            CpuUsage = 5945.632f,
-                            MeanCoolingValue = 17.7f,
-                            MeasurementTime = new DateTimeOffset(new DateTime(2022, 11, 28, 8, 34, 55, 631, DateTimeKind.Unspecified).AddTicks(7283), new TimeSpan(0, 5, 0, 0, 0)),
-                            PredictedHumidity = 18.77f,
-                            PredictedTemperature = 23.32f,
-                            PreviousHumidity = 19.71f,
-                            PreviousTemperature = 23.48f,
-                            WindDirection = 225f,
-                            WindEnthalpy = -4.06f,
-                            WindSpeed = 3f
-                        });
+                    b.Navigation("TemperatureEvent");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,0 +1,81 @@
+﻿@page "/user"
+@page "/user/{id:int}"
+@using ClimateControlSystem.Shared.Common;
+@attribute [Authorize(Roles = "Admin")]
+@inject IUsersService UsersService
+
+@if (Id == null)
+{
+    <PageTitle>Создание нового пользователя</PageTitle>
+    <h3>Создайте нового пользователя</h3>
+}
+else
+{
+    <PageTitle>Редактировать @user.Name</PageTitle>
+    <h3>Редактировать @user.Name</h3>
+}
+
+<EditForm Model="user" OnSubmit="HandleSubmit">
+    <div>
+        <label for="name">Имя</label>
+        <InputText id="name" @bind-Value="user.Name" class="form-control"></InputText>
+    </div>
+    <div>
+        <label for="role">Роль</label>
+        <InputSelect id="role" @bind-Value="user.Role" class="form-control">
+            <option>Admin</option>
+            <option>Operator</option>
+        </InputSelect>
+    </div>
+        <div>
+        <label for="password">Пароль</label>
+        <InputText id="password" @bind-Value="user.Password" class="form-control"></InputText>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">@btnText</button>
+    <button type="button" class="btn btn-danger" @onclick="DeleteUser">Удалить пользователя</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    UserModelWithCredentials user = new UserModelWithCredentials();
+
+    string btnText = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        btnText = Id == null ? "Создать пользователя" : "Редактировать пользователя";
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id != null)
+        {
+            var arrivedUser = await UsersService.GetUser(Id.Value);
+
+            user.Role = arrivedUser.Role;
+            user.Name = arrivedUser.Name;
+            user.Password = string.Empty;
+            user.Id = arrivedUser.Id;
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        if (Id == null)
+        {
+            await UsersService.CreateUser(user);
+        }
+        else
+        {
+            await UsersService.UpdateUser(user);
+        }
+    }
+
+    async Task DeleteUser()
+    {
+        await UsersService.DeleteUser(user.Id);
+    }
+}

@@ -1,9 +1,9 @@
-﻿using ClimateControlSystem.Shared;
+﻿using ClimateControlSystem.Shared.Common;
 
 namespace ClimateControlSystem.Server.Domain.Services
 {
     public interface IAuthenticateManager
     {
-        Task<string> GetTokenForUser(UserDtoModel request);
+        Task<string> GetTokenForUser(UserModelWithCredentials request);
     }
 }
