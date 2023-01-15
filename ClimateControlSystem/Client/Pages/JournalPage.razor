@@ -1,6 +1,6 @@
 ﻿@page "/journalpage"
 @using ClimateControlSystem.Shared.SendToClient;
-@inject IMicroclimateService ClimateService
+@inject IMicroclimateService MicroclimateService
 
 <PageTitle>Journal Page</PageTitle>
 
@@ -8,59 +8,65 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (ClimatesData == null)
+        @if (_climatesData == null)
         {
             <p><em>Загрузка...</em></p>
         }
         else
         {
-            <table class="table">
+            <table class="table-bordered" align="center">
                 <thead>
                     <tr>
-                        <th style="word-wrap:break-word; font-size:small">Время измерения</th>
-                        <th style="word-wrap:break-word; font-size:small">Загрузка кластера</th>
-                        <th style="word-wrap:break-word; font-size:small">Использование ЦПУ</th>
-                        <th style="word-wrap:break-word; font-size:small">Температура кластера</th>
-                        <th style="word-wrap:break-word; font-size:small">Температура воздуха</th>
-                        <th style="word-wrap:break-word; font-size:small">Влажность воздуха</th>
-                        <th style="word-wrap:break-word; font-size:small">Влажность снаружи</th>
-                        <th style="word-wrap:break-word; font-size:small">Сухая температура снаружи</th>
-                        <th style="word-wrap:break-word; font-size:small">Влажная температура снаружи</th>
-                        <th style="word-wrap:break-word; font-size:small">Скорость ветра снаружи</th>
-                        <th style="word-wrap:break-word; font-size:small">Направления ветра снаружи</th>
-                        <th style="word-wrap:break-word; font-size:small">Энтальпия воздуха снаружи</th>
-                        <th style="word-wrap:break-word; font-size:small">Температура охлаждения</th>
-                        <th style="word-wrap:break-word; font-size:small">Спрогнозированная температура</th>
-                        <th style="word-wrap:break-word; font-size:small">Спрогнозированная влажность</th>
-                        <th style="word-wrap:break-word; font-size:small">Точность прогноза температуры</th>
-                        <th style="word-wrap:break-word; font-size:small">Точность прогноза влажности</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Время измерения</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Загрузка кластера</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Использование ЦПУ</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Температура кластера</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Температура воздуха</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Влажность воздуха</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Влажность снаружи</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Сухая температура снаружи</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Влажная температура снаружи</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Скорость ветра снаружи</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Направления ветра снаружи</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Энтальпия воздуха снаружи</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Температура охлаждения</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Спрогнозированная температура</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Спрогнозированная влажность</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Точность прогноза температуры</th>
+                        <th style="word-wrap:break-word; font-size:small; text-align:center">Точность прогноза влажности</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var record in ClimatesData)
+                    @foreach (var record in _climatesData)
                     {
                         <tr>
-                            <td style="font-size:small">@record.MeasurementTime.ToString("HH:mm:ss")<br/>@record.MeasurementTime.ToString("dd:MM:yyyy")</td>
-                            <td>@record.ClusterLoad</td>
-                            <td>@record.CpuUsage</td>
-                            <td>@record.ClusterTemperature</td>
-                            <td>@record.CurrentRealTemperature</td>
-                            <td>@record.CurrentRealHumidity</td>
-                            <td>@record.AirHumidityOutside</td>
-                            <td>@record.AirDryTemperatureOutside</td>
-                            <td>@record.AirWetTemperatureOutside</td>
-                            <td>@record.WindSpeed</td>
-                            <td>@record.WindDirection</td>
-                            <td>@record.WindEnthalpy</td>
-                            <td>@record.MeanCoolingValue</td>
-                            <td>@record.PredictedFutureTemperature</td>
-                            <td>@record.PredictedFutureHumidity</td>
-                            <td>@record.PredictedTemperatureAccuracy</td>
-                            <td>@record.PredictedHumidityAccuracy</td>
+                            <td style="font-size:small; text-align:center">@record.MeasurementTime.ToString("HH:mm:ss")<br/>@record.MeasurementTime.ToString("dd:MM:yyyy")</td>
+                            <td style="font-size:small; text-align:center">@record.ClusterLoad</td>
+                            <td style="font-size:small; text-align:center">@record.CpuUsage</td>
+                            <td style="font-size:small; text-align:center">@record.ClusterTemperature</td>
+                            <td style="font-size:small; text-align:center">@record.CurrentRealTemperature</td>
+                            <td style="font-size:small; text-align:center">@record.CurrentRealHumidity</td>
+                            <td style="font-size:small; text-align:center">@record.AirHumidityOutside</td>
+                            <td style="font-size:small; text-align:center">@record.AirDryTemperatureOutside</td>
+                            <td style="font-size:small; text-align:center">@record.AirWetTemperatureOutside</td>
+                            <td style="font-size:small; text-align:center">@record.WindSpeed</td>
+                            <td style="font-size:small; text-align:center">@record.WindDirection</td>
+                            <td style="font-size:small; text-align:center">@record.WindEnthalpy</td>
+                            <td style="font-size:small; text-align:center">@record.MeanCoolingValue</td>
+                            <td style="font-size:small; text-align:center">@record.PredictedFutureTemperature</td>
+                            <td style="font-size:small; text-align:center">@record.PredictedFutureHumidity</td>
+                            <td style="font-size:small; text-align:center">@record.PredictedTemperatureAccuracy</td>
+                            <td style="font-size:small; text-align:center">@record.PredictedHumidityAccuracy</td>
                         </tr>
                     }
                 </tbody>
             </table>
+
+            <ClimateControlSystem.Client.Components.PaginationComponent 
+            RecordsCount=@_microclimateRecordsCount 
+            RecordsPerPage=@_recordsPerPage
+            VisiblePagesCount=@_visiblePaginationButtonsCount
+            />
         }
     </Authorized>
     <NotAuthorized>
@@ -69,10 +75,15 @@
 </AuthorizeView>
 
 @code {
-    private List<MicroclimateResponse> ClimatesData;
+    private List<MicroclimateResponse> _climatesData;
+    private int _microclimateRecordsCount;
+    private int _visiblePaginationButtonsCount = 5;
+    private int _recordsPerPage = 15;
 
     protected override async Task OnInitializedAsync()
     {
-        ClimatesData = (await ClimateService.GetMicroclimatesDataAsync(0, 25)).ToList();
+        _microclimateRecordsCount = await MicroclimateService.GetMicroclimatesRecordsCount(_recordsPerPage);
+
+        _climatesData = (await MicroclimateService.GetMicroclimatesDataAsync(0, _recordsPerPage)).ToList();
     }
 }

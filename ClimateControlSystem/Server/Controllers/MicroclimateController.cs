@@ -18,18 +18,26 @@ namespace ClimateControlSystem.Server.Controllers
             _microclimateRepository = predictionRepository;
         }
 
-        [HttpGet("monitorings/{recordsCount:int:range(1, 25)}")]
-        public async Task<ActionResult<List<MonitoringResponse>>> GetMonitorings(int recordsCount)
+        [HttpGet("microclimatesrecordscount")]
+        public async Task<ActionResult<int>> GetMicroclimatesRecordsCount()
         {
-            var records = await _microclimateRepository.GetMonitorings(recordsCount);
+            var recordsCount = await _microclimateRepository.GetMicroclimatesCount();
+
+            return Ok(recordsCount);
+        }
+
+        [HttpGet("monitorings/{start:int}/{count:int:range(1, 25)}")]
+        public async Task<ActionResult<List<MonitoringResponse>>> GetMonitorings(int start, int count)
+        {
+            var records = await _microclimateRepository.GetMonitorings(start, count);
 
             return Ok(records);
         }
 
-        [HttpGet("microclimates/{recordsCount:int:range(1, 25)}")]
-        public async Task<ActionResult<List<MicroclimateResponse>>> GetMicroclimateData(int recordsCount)
+        [HttpGet("microclimates/{start:int}/{count:int:range(1, 25)}")]
+        public async Task<ActionResult<List<MicroclimateResponse>>> GetMicroclimateData(int start, int count)
         {
-            var records = await _microclimateRepository.GetMicroclimateDataAsync(recordsCount);
+            var records = await _microclimateRepository.GetMicroclimateDataAsync(start, count);
 
             return Ok(records);
         }

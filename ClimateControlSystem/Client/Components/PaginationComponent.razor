@@ -1,0 +1,232 @@
+﻿@implements IAsyncDisposable
+@using ClimateControlSystem.Client.PagesNavigation
+
+<table align="center">
+    <tbody>
+        <tr>
+            @foreach (var pageButton in PaginationButtons)
+            {
+                <td style="font-size:medium">
+                    <button class="btn-primary" @onclick="@(e => pageButton.ChangePage())">
+                        @(pageButton.Title)
+                    </button>
+                </td>
+            }
+        </tr>
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public EventCallback<int> PageChanged { get; set; }
+
+    private const int StartPageNumber = 1;
+    private const int SkippingNotNumberPages = 2;
+    private const int PageOffset = 1;
+    private const int NumberOfReservedButtons = 4;
+
+    private int _visibleSiteDistance;
+    private int _maximumPageNumber;
+
+    [Parameter]
+    public int RecordsCount { get; set; }
+    [Parameter]
+    public int RecordsPerPage { get; set; } 
+    [Parameter]
+    public int VisiblePagesCount { get; set; }
+
+    public int LastPageNumber { get; private set; }
+
+    public int CurrentPageIndex { get; private set; }
+    public int CurrentPageNumber { get; private set; }
+
+    public List<PaginationButton> PaginationButtons { get; private set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _visibleSiteDistance = (int)Math.Floor(VisiblePagesCount / 2.0);
+        CurrentPageNumber = StartPageNumber;
+
+        PaginationButtons = new List<PaginationButton>();
+
+        if (RecordsCount < 0 || RecordsPerPage < 1)
+        {
+            throw new Exception();
+        }
+
+        LastPageNumber = RecordsCount / RecordsPerPage;
+
+        if (RecordsCount % RecordsPerPage != 0)
+        {
+            LastPageNumber += 1;
+        }
+
+        VisiblePagesCount = 5;
+        CurrentPageIndex = 0;
+        CurrentPageNumber = 1;
+
+        await InitializePageButtons();
+    }
+
+    private async Task InitializePageButtons()
+    {
+        PaginationButtons.Add(PaginationButton.CreateGoToTheFirstPage());
+        PaginationButtons.Add(PaginationButton.CreateGoToThePreviousPage());
+
+        for (int i = 0; i < VisiblePagesCount; i++)
+        {
+            PaginationButtons.Add(PaginationButton.CreateConcretePageViewModel(StartPageNumber + i));
+        }
+
+        PaginationButtons.Add(PaginationButton.CreateGoToTheNextPage());
+        PaginationButtons.Add(PaginationButton.CreateGoToTheLastPage());
+
+        await SubscribeOnPages();
+    }
+
+    private Task SubscribeOnPages()
+    {
+        foreach (var page in PaginationButtons)
+        {
+            page.Activated += GoToPage;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task UnsubscribeFromPages()
+    {
+        foreach (var page in PaginationButtons)
+        {
+            page.Activated -= GoToPage;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await UnsubscribeFromPages();
+        PaginationButtons.Clear();
+    }
+
+    private async Task GoToPage(PaginationButton nextPage)
+    {
+        Console.WriteLine("Была запрошена новая страница: " + nextPage.Title);
+
+        if (PaginationButtons.Count < NumberOfReservedButtons)
+        {
+            return;
+        }
+
+        CurrentPageNumber = await GetNextPageNumber(nextPage);
+
+        await PageChanged.InvokeAsync(CurrentPageNumber - PageOffset);
+
+        (int start, int end) = DefineStartAndEndIndices();
+
+        UpdateNumberPages(start, end);
+
+        if (CurrentPageNumber <= StartPageNumber)
+        {
+            PaginationButtons[0].Hide();
+            PaginationButtons[1].Hide();
+        }
+        else
+        {
+            PaginationButtons[0].Show();
+            PaginationButtons[1].Show();
+        }
+
+        if (CurrentPageNumber >= _maximumPageNumber)
+        {
+            PaginationButtons[PaginationButtons.Count - 2].Hide();
+            PaginationButtons[PaginationButtons.Count - 1].Hide();
+        }
+        else
+        {
+            PaginationButtons[PaginationButtons.Count - 2].Show();
+            PaginationButtons[PaginationButtons.Count - 1].Show();
+        }
+    }
+
+    private async Task<int> GetNextPageNumber(PaginationButton nextPage)
+    {
+        if (nextPage.IsGoToTheFirstPage)
+        {
+            return StartPageNumber;
+        }
+
+        if (nextPage.IsGoToThePreviousPage)
+        {
+            return CurrentPageNumber <= StartPageNumber
+                ? CurrentPageNumber
+                : CurrentPageNumber - 1;
+        }
+
+        if (nextPage.IsGoToTheNextPage)
+        {
+            return CurrentPageNumber >= _maximumPageNumber
+                ? CurrentPageNumber
+                : CurrentPageNumber + 1;
+        }
+
+        if (nextPage.IsGoToTheLastPage)
+        {
+            return _maximumPageNumber;
+        }
+
+        return nextPage.PageNumber;
+    }
+
+    private (int start, int end) DefineStartAndEndIndices()
+    {
+        int startIndex = CurrentPageNumber - _visibleSiteDistance;
+        int endIndex = CurrentPageNumber + _visibleSiteDistance;
+
+        if (_maximumPageNumber < VisiblePagesCount)
+        {
+            startIndex = StartPageNumber;
+            endIndex = _maximumPageNumber;
+        }
+        else
+        {
+            if (startIndex < StartPageNumber)
+            {
+                endIndex += (StartPageNumber - startIndex);
+                startIndex = StartPageNumber;
+            }
+            else if (endIndex > _maximumPageNumber)
+            {
+                startIndex -= (endIndex - _maximumPageNumber);
+                endIndex = _maximumPageNumber;
+            }
+        }
+
+        return (startIndex, endIndex);
+    }
+
+    private void UpdateNumberPages(int startIndex, int endIndex)
+    {
+        for (int i = SkippingNotNumberPages; i < VisiblePagesCount + SkippingNotNumberPages; i++)
+        {
+            int step = startIndex + i - SkippingNotNumberPages;
+
+            if (step <= endIndex)
+            {
+                PaginationButtons[i].PageNumber = step;
+                PaginationButtons[i].Show();
+                PaginationButtons[i].IsActivePage = false;
+
+                if (step == CurrentPageNumber)
+                {
+                    PaginationButtons[i].IsActivePage = true;
+                }
+            }
+            else
+            {
+                PaginationButtons[i].Collapse();
+            }
+        }
+    }
+}

@@ -4,8 +4,8 @@ namespace ClimateControlSystem.Server.Domain.Repositories
 {
     public interface IConfigRepository
     {
-        Task<bool> UpdateConfig(Config configToUpdate);
+        Task<bool> UpdateConfigAsync(Config configToUpdate);
 
-        Task<Config> GetConfig();
+        Task<Config> GetConfigAsync();
     }
 }

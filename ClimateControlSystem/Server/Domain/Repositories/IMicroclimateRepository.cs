@@ -9,15 +9,17 @@ namespace ClimateControlSystem.Server.Domain.Repositories
         Task<PredictionResultData> GetLastPredictionAsync();
 
         Task<bool> AddMicroclimateAsync(PredictionResultData prediction, SensorsData monitoring, TemperatureEventData temperatureEvent, HumidityEventData humidityEvent);
-
-        Task<IReadOnlyCollection<MonitoringResponse>> GetMonitorings(int count);
-
+        
         Task<bool> AddAccuracyAsync(AccuracyData accuracy);
 
-        Task<IReadOnlyCollection<MicroclimateResponse>> GetMicroclimateDataAsync(int count);
+        Task<int> GetMicroclimatesCount();
 
-        Task<IReadOnlyCollection<TemperatureEventData>> GetTemperatureEventsAsync(int start, int count);
+        Task<MonitoringResponse[]> GetMonitorings(int start, int count);
 
-        Task<IReadOnlyCollection<HumidityEventData>> GetHumidityEventsAsync(int start, int count);
+        Task<MicroclimateResponse[]> GetMicroclimateDataAsync(int start, int count);
+
+        Task<TemperatureEventData[]> GetTemperatureEventsAsync(int start, int count);
+
+        Task<HumidityEventData[]> GetHumidityEventsAsync(int start, int count);
     }
 }

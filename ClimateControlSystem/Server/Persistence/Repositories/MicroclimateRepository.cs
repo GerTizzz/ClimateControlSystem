@@ -20,7 +20,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             _mapper = mapper;
         }
 
-        public async Task<IReadOnlyCollection<MonitoringResponse>> GetMonitorings(int count)
+        public async Task<MonitoringResponse[]> GetMonitorings(int start, int count)
         {
             try
             {
@@ -30,7 +30,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                              join accuracy in _context.Accuracies on microclimate.AccuracyId equals accuracy.Id
                              into mixedTable
                              from accuracy in mixedTable.DefaultIfEmpty()
-                             orderby sensorData.MeasurementTime descending
+                             orderby microclimate.Id descending
                              select new MonitoringResponse()
                              {
                                  MeasurementTime = sensorData.MeasurementTime,
@@ -42,12 +42,89 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                                  PredictedHumidityAccuracy = accuracy.PredictedHumidityAccuracy
                              };
 
-                return await result.Take(count).ToListAsync();
+                return await result.Skip(start).Take(count).ToArrayAsync();
             }
             catch (Exception exc)
             {
-                return new List<MonitoringResponse>();
+                return Array.Empty<MonitoringResponse>();
             }
+        }
+
+        public async Task<MicroclimateResponse[]> GetMicroclimateDataAsync(int start, int count)
+        {
+            try
+            {
+                var result = from microclimate in _context.Microclimates
+                             join sensorData in _context.SensorsData on microclimate.SensorDataId equals sensorData.Id
+                             join prediction in _context.Predictions on microclimate.PredictionId equals prediction.Id
+                             join accuracy in _context.Accuracies on microclimate.AccuracyId equals accuracy.Id
+                             into mixedTable
+                             from accuracy in mixedTable.DefaultIfEmpty()
+                             orderby microclimate.Id descending                        
+                             select new MicroclimateResponse()
+                             {
+                                 MeasurementTime = sensorData.MeasurementTime,
+                                 ClusterLoad = sensorData.ClusterLoad,
+                                 CpuUsage = sensorData.CpuUsage,
+                                 ClusterTemperature = sensorData.ClusterTemperature,
+                                 CurrentRealTemperature = sensorData.CurrentRealTemperature,
+                                 CurrentRealHumidity = sensorData.CurrentRealHumidity,
+                                 AirHumidityOutside = sensorData.AirHumidityOutside,
+                                 AirDryTemperatureOutside = sensorData.AirDryTemperatureOutside,
+                                 AirWetTemperatureOutside = sensorData.AirWetTemperatureOutside,
+                                 WindSpeed = sensorData.WindSpeed,
+                                 WindDirection = sensorData.WindDirection,
+                                 WindEnthalpy = sensorData.WindEnthalpy,
+                                 MeanCoolingValue = sensorData.MeanCoolingValue,
+                                 PredictedFutureTemperature = prediction.PredictedTemperature,
+                                 PredictedFutureHumidity = prediction.PredictedHumidity,
+                                 PredictedTemperatureAccuracy = accuracy.PredictedTemperatureAccuracy,
+                                 PredictedHumidityAccuracy = accuracy.PredictedHumidityAccuracy
+                             };
+
+                return await result.Skip(start).Take(count).ToArrayAsync();
+            }
+            catch (Exception exc)
+            {
+                return Array.Empty<MicroclimateResponse>();
+            }
+        }
+
+        public async Task<TemperatureEventData[]> GetTemperatureEventsAsync(int start, int count)
+        {
+            try
+            {
+                return await _context.TemperatureEvents
+                    .OrderBy(tempEv => tempEv.Id)
+                    .TakeLast(count)
+                    .Select(tempEv => _mapper.Map<TemperatureEventData>(tempEv))
+                    .ToArrayAsync();
+            }
+            catch (Exception exc)
+            {
+                return Array.Empty<TemperatureEventData>();
+            }
+        }
+
+        public async Task<HumidityEventData[]> GetHumidityEventsAsync(int start, int count)
+        {
+            try
+            {
+                return await _context.HumidityEvents
+                    .OrderBy(humEv => humEv.Id)
+                    .TakeLast(count)
+                    .Select(humEv => _mapper.Map<HumidityEventData>(humEv))
+                    .ToArrayAsync();
+            }
+            catch (Exception exc)
+            {
+                return Array.Empty<HumidityEventData>();
+            }
+        }
+
+        public async Task<int> GetMicroclimatesCount()
+        {
+            return await _context.Microclimates.CountAsync();
         }
 
         public async Task<PredictionResultData> GetLastPredictionAsync()
@@ -73,7 +150,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                 MicroclimateRecord climate = new MicroclimateRecord();
 
                 climate.SensorData = _mapper.Map<SensorsDataRecord>(monitoring);
-                climate.Prediction = _mapper.Map<PredictionRecord>(prediction);                
+                climate.Prediction = _mapper.Map<PredictionRecord>(prediction);
                 climate.TemperatureEvent = _mapper.Map<TemperatureEventRecord>(temperatureEvent);
                 climate.HumidityEvent = _mapper.Map<HumidityEventRecord>(humidityEvent);
 
@@ -115,78 +192,6 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
 
             return true;
-        }
-
-        public async Task<IReadOnlyCollection<MicroclimateResponse>> GetMicroclimateDataAsync(int count)
-        {
-            try
-            {
-                var result = from microclimate in _context.Microclimates
-                             join sensorData in _context.SensorsData on microclimate.SensorDataId equals sensorData.Id
-                             join prediction in _context.Predictions on microclimate.PredictionId equals prediction.Id
-                             join accuracy in _context.Accuracies on microclimate.AccuracyId equals accuracy.Id
-                             into mixedTable
-                             from accuracy in mixedTable.DefaultIfEmpty()
-                             orderby sensorData.MeasurementTime descending                            
-                             select new MicroclimateResponse()
-                             {
-                                 MeasurementTime = sensorData.MeasurementTime,
-                                 ClusterLoad = sensorData.ClusterLoad,
-                                 CpuUsage = sensorData.CpuUsage,
-                                 ClusterTemperature = sensorData.ClusterTemperature,
-                                 CurrentRealTemperature = sensorData.CurrentRealTemperature,
-                                 CurrentRealHumidity = sensorData.CurrentRealHumidity,
-                                 AirHumidityOutside = sensorData.AirHumidityOutside,
-                                 AirDryTemperatureOutside = sensorData.AirDryTemperatureOutside,
-                                 AirWetTemperatureOutside = sensorData.AirWetTemperatureOutside,
-                                 WindSpeed = sensorData.WindSpeed,
-                                 WindDirection = sensorData.WindDirection,
-                                 WindEnthalpy = sensorData.WindEnthalpy,
-                                 MeanCoolingValue = sensorData.MeanCoolingValue,
-                                 PredictedFutureTemperature = prediction.PredictedTemperature,
-                                 PredictedFutureHumidity = prediction.PredictedHumidity,
-                                 PredictedTemperatureAccuracy = accuracy.PredictedTemperatureAccuracy,
-                                 PredictedHumidityAccuracy = accuracy.PredictedHumidityAccuracy
-                             };
-
-                return await result.Take(count).ToListAsync();
-            }
-            catch (Exception exc)
-            {
-                return new List<MicroclimateResponse>();
-            }
-        }
-
-        public async Task<IReadOnlyCollection<TemperatureEventData>> GetTemperatureEventsAsync(int start, int count)
-        {
-            try
-            {
-                return await _context.TemperatureEvents
-                        .Skip(start)
-                        .Take(count)
-                        .Select(tempEv => _mapper.Map<TemperatureEventData>(tempEv))
-                        .ToListAsync();
-            }
-            catch (Exception exc)
-            {
-                return new List<TemperatureEventData>();
-            }
-        }
-
-        public async Task<IReadOnlyCollection<HumidityEventData>> GetHumidityEventsAsync(int start, int count)
-        {
-            try
-            {
-                return await _context.HumidityEvents
-                        .Skip(start)
-                        .Take(count)
-                        .Select(tempEv => _mapper.Map<HumidityEventData>(tempEv))
-                        .ToListAsync();
-            }
-            catch (Exception exc)
-            {
-                return new List<HumidityEventData>();
-            }
         }
     }
 }

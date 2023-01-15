@@ -18,7 +18,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             _mapper = mapper;
         }
 
-        public async Task<bool> UpdateConfig(Config configToUpdate)
+        public async Task<bool> UpdateConfigAsync(Config configToUpdate)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
         }
 
-        public async Task<Config> GetConfig()
+        public async Task<Config> GetConfigAsync()
         {
             try
             {

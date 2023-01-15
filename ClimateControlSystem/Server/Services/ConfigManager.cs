@@ -7,8 +7,9 @@ namespace ClimateControlSystem.Server.Services
     public sealed class ConfigManager : IConfigManager
     {
         private readonly IConfigRepository _configRepository;
+        private readonly IConfigSingleton _configSingleton;
 
-        private Config _config;
+        private Config _config => _configSingleton.Config;
 
         public Config Config => _config;
 
@@ -18,24 +19,25 @@ namespace ClimateControlSystem.Server.Services
         public float UpperHumidityWarningLimit => _config.UpperHumidityWarningLimit;
         public float LowerHumidityWarningLimit => _config.LowerHumidityWarningLimit;
 
-        public ConfigManager(IConfigRepository configRepository)
+        public ConfigManager(IConfigRepository configRepository, IConfigSingleton configSingleton)
         {
             _configRepository = configRepository;
+            _configSingleton = configSingleton;
 
-            var conf = _configRepository.GetConfig();
+            var conf = _configRepository.GetConfigAsync();
 
             Task.WaitAll(conf);
 
-            _config = conf.Result;
+            _ = _configSingleton.TrySetInitialConfig(conf.Result);
         }
 
         public async Task<bool> UpdateConfig(Config config)
         {
-            bool isUpdated = await _configRepository.UpdateConfig(config);
+            bool isUpdated = await _configRepository.UpdateConfigAsync(config);
 
             if (isUpdated)
             {
-                _config = config;
+                await _configSingleton.UpdateConfig(config);
             }
 
             return isUpdated;

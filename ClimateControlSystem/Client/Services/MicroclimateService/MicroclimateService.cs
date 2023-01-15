@@ -18,13 +18,40 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             _authService = authService;
         }
 
+        public async Task<int> GetMicroclimatesRecordsCount(int recordsPerPage = 15)
+        {
+            try
+            {
+                string urlRequest = $"api/microclimate/microclimatesrecordscount";
+                var totalRecords = await _httpClient.GetFromJsonAsync<int>(urlRequest);
+
+                var pages = totalRecords / recordsPerPage;
+
+                if (totalRecords % recordsPerPage != 0)
+                {
+                    pages += 1;
+                }
+
+                return pages;
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode.HasValue && e.StatusCode.Value == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await _authService.Logout();
+                }
+            }
+
+            return 0;
+        }
+
         public async Task<IReadOnlyCollection<MonitoringResponse>> GetMonitoringsDataAsync(int start = 0, int count = 25)
         {
             count = CheckCountParameter(count);
 
             try
             {
-                string urlRequest = $"api/microclimate/monitorings/{count}";
+                string urlRequest = $"api/microclimate/monitorings/{start}/{count}";
                 var result = await _httpClient.GetFromJsonAsync<List<MonitoringResponse>>(urlRequest);
                 return result;
             }
@@ -45,7 +72,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
 
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<MicroclimateResponse>>($"api/microclimate/microclimates/{count}") ?? new List<MicroclimateResponse>();
+                var result = await _httpClient.GetFromJsonAsync<List<MicroclimateResponse>>($"api/microclimate/microclimates/{start}/{count}") ?? new List<MicroclimateResponse>();
                 return result;
             }
             catch (HttpRequestException e)
