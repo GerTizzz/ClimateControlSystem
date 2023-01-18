@@ -67,6 +67,11 @@ builder.Services.AddResponseCompression(options =>
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseWebAssemblyDebugging();
+}
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

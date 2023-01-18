@@ -22,17 +22,9 @@ namespace ClimateControlSystem.Client.Services.ClimateService
         {
             try
             {
-                string urlRequest = $"api/microclimate/microclimatesrecordscount";
-                var totalRecords = await _httpClient.GetFromJsonAsync<int>(urlRequest);
+                var totalRecords = await _httpClient.GetFromJsonAsync<int>($"api/microclimate/microclimatesrecordscount");
 
-                var pages = totalRecords / recordsPerPage;
-
-                if (totalRecords % recordsPerPage != 0)
-                {
-                    pages += 1;
-                }
-
-                return pages;
+                return totalRecords;
             }
             catch (HttpRequestException e)
             {
@@ -51,8 +43,8 @@ namespace ClimateControlSystem.Client.Services.ClimateService
 
             try
             {
-                string urlRequest = $"api/microclimate/monitorings/{start}/{count}";
-                var result = await _httpClient.GetFromJsonAsync<List<MonitoringResponse>>(urlRequest);
+                var result = await _httpClient.GetFromJsonAsync<List<MonitoringResponse>>($"api/microclimate/monitorings/{start}/{count}");
+                
                 return result;
             }
             catch (HttpRequestException e)

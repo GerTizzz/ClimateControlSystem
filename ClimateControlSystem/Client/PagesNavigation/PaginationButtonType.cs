@@ -1,6 +1,6 @@
 ﻿namespace ClimateControlSystem.Client.PagesNavigation
 {
-    public enum SelectionPageButtonType
+    public enum PaginationButtonType
     {
         StartPage,
         PreviousPage,

@@ -65,8 +65,7 @@
             <ClimateControlSystem.Client.Components.PaginationComponent 
             RecordsCount=@_microclimateRecordsCount 
             RecordsPerPage=@_recordsPerPage
-            VisiblePagesCount=@_visiblePaginationButtonsCount
-            />
+            PageChanged=@OnChangedPage/>
         }
     </Authorized>
     <NotAuthorized>
@@ -85,5 +84,10 @@
         _microclimateRecordsCount = await MicroclimateService.GetMicroclimatesRecordsCount(_recordsPerPage);
 
         _climatesData = (await MicroclimateService.GetMicroclimatesDataAsync(0, _recordsPerPage)).ToList();
+    }
+
+    private void OnChangedPage(Tuple<int, int> tuple)
+    {
+        
     }
 }
