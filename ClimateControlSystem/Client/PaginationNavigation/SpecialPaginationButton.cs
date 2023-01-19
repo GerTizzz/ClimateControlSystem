@@ -18,7 +18,7 @@
 
         public SpecialPaginationButton(PaginationButtonType selectionPageButtonType)
         {
-            ButtonType = PaginationButtonType.Number;
+            ButtonType = selectionPageButtonType;
             IsEnabled = true;
 
             if (ButtonType == PaginationButtonType.StartPage)

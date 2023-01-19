@@ -1,7 +1,8 @@
 ﻿@implements IAsyncDisposable
 @using ClimateControlSystem.Client.PagesNavigation
+@using ClimateControlSystem.Client.PaginationNavigation;
 
-<div class="panel panel-default border collapsed">
+@*<div class="panel panel-default border collapsed">
     <div class="panel-heading alert-primary">
         <h3 class="panel-title">Goodwill PKW/smart</h3>
     </div>
@@ -11,7 +12,7 @@
     <div class="panel-heading alert-primary">
         <h3 class="panel-title">Goodwill PKW/smart</h3>
     </div>
-</div>
+</div>*@
 
 <table align="center">
     <tbody>
@@ -29,9 +30,7 @@
                 else
                 {
                     <td style="font-size:medium">
-                        <button class="btn-primary" style="background-color:cadetblue">
-                            @(pageButton.Title)
-                        </button>
+
                     </td>
                 }
             }
@@ -48,46 +47,27 @@
     public int RecordsPerPage { get; set; } 
 
     [Parameter]
-    public EventCallback<Tuple<int, int>> PageChanged { get; set; }
+    public EventCallback<RecordsRequest> PageChanged { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         _paginationManager = new PaginationButtonManager(RecordsCount, RecordsPerPage);
 
-        _paginationManager.PageChangedEvent += OnPageChaned;
+        _paginationManager.PageChangedEvent += OnPageChanged;
     }
 
-    public async Task OnPageChaned(Tuple<int, int> arg)
+    public void OnPageChanged(RecordsRequest request)
     {
-        await PageChanged.InvokeAsync(new Tuple<int, int>(arg.Item1, arg.Item2));
+        PageChanged.InvokeAsync(request);
+        StateHasChanged();
     }
 
     public async ValueTask DisposeAsync()
     {
         if (_paginationManager is not null)
         {
-            _paginationManager.PageChangedEvent -= OnPageChaned;
+            _paginationManager.PageChangedEvent -= OnPageChanged;
             _paginationManager.Close();
         }
-    }
-
-    private void UpdateNumberPages(int startIndex, int endIndex)
-    {
-        //for (int i = SkippingNotNumberPages; i < PagesWithNumbersCount + SkippingNotNumberPages; i++)
-        //{
-        //    int step = startIndex + i - SkippingNotNumberPages;
-
-        //    if (step <= endIndex)
-        //    {
-        //        PaginationButtons[i].PageNumber = step;
-        //        PaginationButtons[i].Enable();
-        //        PaginationButtons[i].IsActivePage = false;
-
-        //        if (step == CurrentPageNumber)
-        //        {
-        //            PaginationButtons[i].IsActivePage = true;
-        //        }
-        //    }
-        //}
     }
 }

@@ -18,7 +18,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             _authService = authService;
         }
 
-        public async Task<int> GetMicroclimatesRecordsCount(int recordsPerPage = 15)
+        public async Task<int> GetMicroclimatesRecordsCount()
         {
             try
             {

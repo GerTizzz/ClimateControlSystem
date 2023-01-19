@@ -3,7 +3,6 @@
     public abstract class BasePaginationButton
     {
         private int _pageNumber;
-        private bool _isActivePage;
         private bool _isEnabled;
         private PaginationButtonType _buttonType;
 
@@ -13,12 +12,6 @@
         {
             get => _buttonType;
             protected set => _buttonType = value;
-        }
-
-        public bool IsActivePage
-        {
-            get => _isActivePage;
-            set => _isActivePage = value;
         }
 
         public bool IsEnabled

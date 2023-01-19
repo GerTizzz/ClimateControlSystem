@@ -24,7 +24,7 @@ namespace ClimateControlSystem.Server.Services
         {
             UserRecord user = await _userManager.GetUserByName(request.Name);
 
-            if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt) is false)
+            if (user is null || VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt) is false)
             {
                 return null;
             }

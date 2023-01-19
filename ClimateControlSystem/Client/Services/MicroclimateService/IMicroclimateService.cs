@@ -5,7 +5,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
 {
     public interface IMicroclimateService
     {
-        Task<int> GetMicroclimatesRecordsCount(int recordsPerPage);
+        Task<int> GetMicroclimatesRecordsCount();
         Task<IReadOnlyCollection<MonitoringResponse>> GetMonitoringsDataAsync(int start, int count);
         Task<IReadOnlyCollection<MicroclimateResponse>> GetMicroclimatesDataAsync(int start, int count);
         Task<IReadOnlyCollection<TemperatureEventResponse>> GetTemperatureEventDataAsync(int start, int count);

@@ -1,4 +1,5 @@
 ﻿@page "/journalpage"
+@using ClimateControlSystem.Client.PaginationNavigation;
 @using ClimateControlSystem.Shared.SendToClient;
 @inject IMicroclimateService MicroclimateService
 
@@ -63,9 +64,9 @@
             </table>
 
             <ClimateControlSystem.Client.Components.PaginationComponent 
-            RecordsCount=@_microclimateRecordsCount 
-            RecordsPerPage=@_recordsPerPage
-            PageChanged=@OnChangedPage/>
+            RecordsCount=@_microclimateRecordsCount
+            RecordsPerPage=@RecordsPerPage
+            PageChanged=@OnPageChanged/>
         }
     </Authorized>
     <NotAuthorized>
@@ -76,18 +77,18 @@
 @code {
     private List<MicroclimateResponse> _climatesData;
     private int _microclimateRecordsCount;
-    private int _visiblePaginationButtonsCount = 5;
-    private int _recordsPerPage = 15;
+    private const int RecordsPerPage = 15;
+    private const int RecordsRangeStart = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        _microclimateRecordsCount = await MicroclimateService.GetMicroclimatesRecordsCount(_recordsPerPage);
+        _microclimateRecordsCount = await MicroclimateService.GetMicroclimatesRecordsCount();
 
-        _climatesData = (await MicroclimateService.GetMicroclimatesDataAsync(0, _recordsPerPage)).ToList();
+        _climatesData = (await MicroclimateService.GetMicroclimatesDataAsync(RecordsRangeStart, RecordsPerPage)).ToList();
     }
 
-    private void OnChangedPage(Tuple<int, int> tuple)
+    private async Task OnPageChanged(RecordsRequest request)
     {
-        
+        _climatesData = (await MicroclimateService.GetMicroclimatesDataAsync(request.RecordsOffset, request.RecordsCount)).ToList();
     }
 }
