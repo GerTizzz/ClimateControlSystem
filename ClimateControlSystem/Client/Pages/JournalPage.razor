@@ -78,13 +78,14 @@
     private List<MicroclimateResponse> _climatesData;
     private int _microclimateRecordsCount;
     private const int RecordsPerPage = 15;
-    private const int RecordsRangeStart = 0;
 
     protected override async Task OnInitializedAsync()
     {
         _microclimateRecordsCount = await MicroclimateService.GetMicroclimatesRecordsCount();
 
-        _climatesData = (await MicroclimateService.GetMicroclimatesDataAsync(RecordsRangeStart, RecordsPerPage)).ToList();
+        int offsetFromTheEnd = _microclimateRecordsCount - RecordsPerPage;
+
+        _climatesData = (await MicroclimateService.GetMicroclimatesDataAsync(offsetFromTheEnd, RecordsPerPage)).ToList();
     }
 
     private async Task OnPageChanged(RecordsRequest request)

@@ -18,8 +18,8 @@ namespace ClimateControlSystem.Server.Controllers
             _microclimateRepository = predictionRepository;
         }
 
-        [HttpGet("microclimatesrecordscount")]
-        public async Task<ActionResult<int>> GetMicroclimatesRecordsCount()
+        [HttpGet("microclimatescount")]
+        public async Task<ActionResult<int>> GetMicroclimatesCount()
         {
             var recordsCount = await _microclimateRepository.GetMicroclimatesCount();
 
@@ -34,10 +34,10 @@ namespace ClimateControlSystem.Server.Controllers
             return Ok(records);
         }
 
-        [HttpGet("microclimates/{start:int}/{count:int:range(1, 25)}")]
-        public async Task<ActionResult<List<MicroclimateResponse>>> GetMicroclimateData(int start, int count)
+        [HttpGet("microclimates/{offsetFromTheEnd:int}/{count:int:range(1, 25)}")]
+        public async Task<ActionResult<List<MicroclimateResponse>>> GetMicroclimates(int offsetFromTheEnd, int count)
         {
-            var records = await _microclimateRepository.GetMicroclimateDataAsync(start, count);
+            var records = await _microclimateRepository.GetMicroclimateDataAsync(offsetFromTheEnd, count);
 
             return Ok(records);
         }

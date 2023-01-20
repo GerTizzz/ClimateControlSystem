@@ -82,7 +82,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                                  PredictedHumidityAccuracy = accuracy.PredictedHumidityAccuracy
                              };
 
-                return await result.Skip(start).Take(count).ToArrayAsync();
+                return await result.Reverse().Skip(start).Take(count).ToArrayAsync();
             }
             catch (Exception exc)
             {

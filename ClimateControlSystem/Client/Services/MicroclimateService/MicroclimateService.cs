@@ -22,7 +22,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
         {
             try
             {
-                var totalRecords = await _httpClient.GetFromJsonAsync<int>($"api/microclimate/microclimatesrecordscount");
+                var totalRecords = await _httpClient.GetFromJsonAsync<int>($"api/microclimate/microclimatescount");
 
                 return totalRecords;
             }
@@ -58,13 +58,13 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             return new List<MonitoringResponse>();
         }
 
-        public async Task<IReadOnlyCollection<MicroclimateResponse>> GetMicroclimatesDataAsync(int start = 0, int count = 25)
+        public async Task<IReadOnlyCollection<MicroclimateResponse>> GetMicroclimatesDataAsync(int offsetFromTheEnd, int count)
         {
             count = CheckCountParameter(count);
 
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<MicroclimateResponse>>($"api/microclimate/microclimates/{start}/{count}") ?? new List<MicroclimateResponse>();
+                var result = await _httpClient.GetFromJsonAsync<List<MicroclimateResponse>>($"api/microclimate/microclimates/{offsetFromTheEnd}/{count}") ?? new List<MicroclimateResponse>();
                 return result;
             }
             catch (HttpRequestException e)
