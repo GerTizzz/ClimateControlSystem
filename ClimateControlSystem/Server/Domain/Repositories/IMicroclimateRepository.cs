@@ -6,20 +6,24 @@ namespace ClimateControlSystem.Server.Domain.Repositories
 {
     public interface IMicroclimateRepository
     {
-        Task<PredictionResultData> GetLastPredictionAsync();
+        Task<PredictionResult> GetLastPredictionAsync();
 
-        Task<bool> AddMicroclimateAsync(PredictionResultData prediction, SensorsData monitoring, TemperatureEventData temperatureEvent, HumidityEventData humidityEvent);
+        Task<bool> AddSensorsDataAsync(SensorsData monitoring);
         
-        Task<bool> AddAccuracyAsync(AccuracyData accuracy);
+        Task<bool> AddAccuracyAsync(PredictionAccuracy accuracy);
 
-        Task<int> GetMicroclimatesCount();
+        Task<bool> AddPredictionAsync(PredictionResult prediction, TemperatureEvent temperatureEvent, HumidityEvent humidityEvent);
 
-        Task<MonitoringResponse[]> GetMonitorings(int start, int count);
+        Task<int> GetMicroclimatesCountAsync();
 
-        Task<MicroclimateResponse[]> GetMicroclimateDataAsync(int start, int count);
+        Task<int> GetMonitoringsCountAsync();
 
-        Task<TemperatureEventData[]> GetTemperatureEventsAsync(int start, int count);
+        Task<MonitoringResponse[]> GetMonitoringsAsync(int start, int count);
 
-        Task<HumidityEventData[]> GetHumidityEventsAsync(int start, int count);
+        Task<MicroclimateResponse[]> GetMicroclimatesAsync(int start, int count);
+
+        Task<TemperatureEvent[]> GetTemperatureEventsAsync(int start, int count);
+
+        Task<HumidityEvent[]> GetHumidityEventsAsync(int start, int count);
     }
 }

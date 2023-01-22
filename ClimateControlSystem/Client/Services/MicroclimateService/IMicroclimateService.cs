@@ -5,21 +5,22 @@ namespace ClimateControlSystem.Client.Services.ClimateService
 {
     public interface IMicroclimateService
     {
-        /// <returns>Amount of microclimates records count</returns>
-        Task<int> GetMicroclimatesRecordsCount();
+        /// <returns>Amount of monitorings records count</returns>
+        Task<int> GetMonitoringsCount();
 
-        Task<IReadOnlyCollection<MonitoringResponse>> GetMonitoringsDataAsync(int start, int count);
+        /// <returns>Amount of microclimates records count</returns>
+        Task<int> GetMicroclimatesCount();
+
+        Task<IReadOnlyCollection<MonitoringResponse>> GetMonitoringsAsync(int start, int count);
 
         /// <summary>
         /// Returns microclimate records
         /// </summary>
         /// <param name="offsetFromTheEnd">Number of records to skip from the end</param>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        Task<IReadOnlyCollection<MicroclimateResponse>> GetMicroclimatesDataAsync(int offsetFromTheEnd, int count);
+        Task<IReadOnlyCollection<MicroclimateResponse>> GetMicroclimatesAsync(int offsetFromTheEnd, int count);
 
-        Task<IReadOnlyCollection<TemperatureEventResponse>> GetTemperatureEventDataAsync(int start, int count);
+        Task<IReadOnlyCollection<TemperatureEventResponse>> GetTemperatureEventsAsync(int start, int count);
 
-        Task<IReadOnlyCollection<HumidityEventResponse>> GetHumidityEventDataAsync(int start, int count);
+        Task<IReadOnlyCollection<HumidityEventResponse>> GetHumidityEventsAsync(int start, int count);
     }
 }

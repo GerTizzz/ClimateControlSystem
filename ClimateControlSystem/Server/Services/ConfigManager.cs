@@ -1,6 +1,6 @@
 ﻿using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Shared.Common;
+using ClimateControlSystem.Server.Resources.Common;
 
 namespace ClimateControlSystem.Server.Services
 {
@@ -24,11 +24,11 @@ namespace ClimateControlSystem.Server.Services
             _configRepository = configRepository;
             _configSingleton = configSingleton;
 
-            var conf = _configRepository.GetConfigAsync();
+            var config = _configRepository.GetConfigAsync();
 
-            Task.WaitAll(conf);
+            Task.WaitAll(config);
 
-            _ = _configSingleton.TrySetInitialConfig(conf.Result);
+            _ = _configSingleton.TrySetInitialConfig(config.Result);
         }
 
         public async Task<bool> UpdateConfig(Config config)

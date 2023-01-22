@@ -63,10 +63,14 @@
                 </tbody>
             </table>
 
+            <br />
+
             <ClimateControlSystem.Client.Components.PaginationComponent 
             RecordsCount=@_microclimateRecordsCount
             RecordsPerPage=@RecordsPerPage
             PageChanged=@OnPageChanged/>
+
+            <br />
         }
     </Authorized>
     <NotAuthorized>
@@ -81,15 +85,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _microclimateRecordsCount = await MicroclimateService.GetMicroclimatesRecordsCount();
+        _microclimateRecordsCount = await MicroclimateService.GetMicroclimatesCount();
 
-        int offsetFromTheEnd = _microclimateRecordsCount - RecordsPerPage;
-
-        _climatesData = (await MicroclimateService.GetMicroclimatesDataAsync(offsetFromTheEnd, RecordsPerPage)).ToList();
+        _climatesData = (await MicroclimateService.GetMicroclimatesAsync(0, RecordsPerPage)).ToList();
     }
 
     private async Task OnPageChanged(RecordsRequest request)
     {
-        _climatesData = (await MicroclimateService.GetMicroclimatesDataAsync(request.RecordsOffset, request.RecordsCount)).ToList();
+        _climatesData = (await MicroclimateService.GetMicroclimatesAsync(request.RecordsOffset, request.RecordsCount)).ToList();
     }
 }

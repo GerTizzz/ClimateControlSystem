@@ -4,7 +4,6 @@ using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Services.MediatR.Commands;
 using ClimateControlSystem.Server.Services.MediatR.Queries;
 using ClimateControlSystem.Shared;
-using ClimateControlSystem.Shared.Common;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 
@@ -28,11 +27,13 @@ namespace ClimateControlSystem.Server.Services
             _configManager = configManager;
         }
 
-        public async Task<PredictionResultData> Predict(SensorsData climateData)
+        public async Task<PredictionResult> Predict(SensorsData climateData)
         {
-            PredictionResultData prediction = await _predictionEngine.Predict(climateData);
+            PredictionResult prediction = await _predictionEngine.Predict(climateData);
 
-            await CreateClimateRecord(climateData, prediction);
+            await UpdatePreviousMicroclimateRecord(climateData);
+
+            await CreateNewMicroclimateRecord(prediction);
 
             MonitoringResponse monitoring = new MonitoringResponse()
             {
@@ -48,39 +49,54 @@ namespace ClimateControlSystem.Server.Services
             return prediction;
         }
 
-        private async Task CreateClimateRecord(SensorsData sensorData, PredictionResultData prediction)
+        private async Task UpdatePreviousMicroclimateRecord(SensorsData sensorData)
         {
             var accuracy = await CalculateLastPredictionAccuracy(sensorData);
 
+            await _mediator.Send(new AddSensorsDataCommand()
+            {
+                SensorData = sensorData
+            });
+
+            if (accuracy is not null)
+            {
+                await _mediator.Send(new AddAccuracyCommand()
+                {
+                    Accuracy = accuracy
+                });
+            }
+        }
+
+        private async Task CreateNewMicroclimateRecord(PredictionResult prediction)
+        {
             var temperatureEvent = await GetTemperatureEvent(prediction, _configManager.Config);
 
             var humidityEvent = await GetHumidityEvent(prediction, _configManager.Config);
 
-            await _mediator.Send(new AddClimateCommand()
+            await _mediator.Send(new AddPredictionCommand()
             {
-                Prediction = prediction,
-                SensorData = sensorData,
+                Predicition = prediction,
                 TemperatureEvent = temperatureEvent,
                 HumidityEvent = humidityEvent
             });
-
-            _ = _mediator.Send(new AddAccuracyCommand()
-            {
-                Accuracy = accuracy
-            });
         }
 
-        private async Task<AccuracyData> CalculateLastPredictionAccuracy(SensorsData sensorData)
+        private async Task<PredictionAccuracy?> CalculateLastPredictionAccuracy(SensorsData sensorData)
         {
             var actualTemperature = sensorData.CurrentRealTemperature;
             var actualHumidity = sensorData.CurrentRealHumidity;
 
-            PredictionResultData lastRecord = await _mediator.Send(new GetLastPredictionQuery());
+            PredictionResult? lastRecord = await _mediator.Send(new GetLastPredictionQuery());
+
+            if (lastRecord is null)
+            {
+                return null;
+            }
 
             var predictedTemperature = lastRecord.PredictedTemperature;
             var predictedHumidity = lastRecord.PredictedHumidity;
 
-            AccuracyData accuracy = new AccuracyData()
+            PredictionAccuracy accuracy = new PredictionAccuracy()
             {
                 PredictedTemperatureAccuracy = 100f - Math.Abs(predictedTemperature - actualTemperature) * 100 / actualTemperature,
                 PredictedHumidityAccuracy = 100f - Math.Abs(predictedHumidity - actualHumidity) * 100 / actualHumidity
@@ -94,20 +110,20 @@ namespace ClimateControlSystem.Server.Services
             await _monitoringHub.Clients.All.SendAsync("GetMonitoringData", monitoring);
         }
 
-        private Task<TemperatureEventData> GetTemperatureEvent(PredictionResultData prediction, Config config)
+        private Task<TemperatureEvent> GetTemperatureEvent(PredictionResult prediction, Config config)
         {
-            TemperatureEventData temperatureEvent = null;
+            TemperatureEvent temperatureEvent = null;
 
             if (prediction.PredictedTemperature >= config.UpperTemperatureWarningLimit)
             {
-                temperatureEvent = new TemperatureEventData()
+                temperatureEvent = new TemperatureEvent()
                 {
                     Value = prediction.PredictedHumidity - config.UpperTemperatureWarningLimit
                 };
             }
             else if (prediction.PredictedHumidity <= config.LowerTemperatureWarningLimit)
             {
-                temperatureEvent = new TemperatureEventData()
+                temperatureEvent = new TemperatureEvent()
                 {
                     Value = prediction.PredictedHumidity - config.LowerTemperatureWarningLimit
                 };
@@ -116,20 +132,20 @@ namespace ClimateControlSystem.Server.Services
             return Task.FromResult(temperatureEvent);
         }
 
-        private Task<HumidityEventData> GetHumidityEvent(PredictionResultData prediction, Config config)
+        private Task<HumidityEvent> GetHumidityEvent(PredictionResult prediction, Config config)
         {
-            HumidityEventData humidityEvent = null;
+            HumidityEvent humidityEvent = null;
 
             if (prediction.PredictedHumidity >= config.UpperHumidityWarningLimit)
             {
-                humidityEvent = new HumidityEventData()
+                humidityEvent = new HumidityEvent()
                 {
                     Value = prediction.PredictedHumidity - config.UpperHumidityWarningLimit
                 };
             }
             else if (prediction.PredictedHumidity <= config.LowerHumidityWarningLimit)
             {
-                humidityEvent = new HumidityEventData()
+                humidityEvent = new HumidityEvent()
                 {
                     Value = prediction.PredictedHumidity - config.LowerHumidityWarningLimit
                 };

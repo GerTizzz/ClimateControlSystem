@@ -15,11 +15,11 @@ namespace ClimateControlSystem.Client.Services.ConfigService
             _authService = authService;
         }
 
-        public async Task<Config> GetConfigAsync()
+        public async Task<ConfigResponse> GetConfigAsync()
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<Config>($"api/config/") ?? GetDefaultConfig();
+                var result = await _httpClient.GetFromJsonAsync<ConfigResponse>($"api/config/") ?? GetDefaultConfig();
                 return result;
             }
             catch (HttpRequestException e)
@@ -33,7 +33,7 @@ namespace ClimateControlSystem.Client.Services.ConfigService
             return GetDefaultConfig();
         }
 
-        public async Task<bool> UpdateConfigAsync(Config config)
+        public async Task<bool> UpdateConfigAsync(ConfigResponse config)
         {
             try
             {
@@ -56,9 +56,9 @@ namespace ClimateControlSystem.Client.Services.ConfigService
             return await result.Content.ReadFromJsonAsync<bool>();
         }
 
-        private static Config GetDefaultConfig()
+        private static ConfigResponse GetDefaultConfig()
         {
-            return new Config()
+            return new ConfigResponse()
             {
                 UpperTemperatureWarningLimit = 24f,
                 LowerTemperatureWarningLimit = 16f,

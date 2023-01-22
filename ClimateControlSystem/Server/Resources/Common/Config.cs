@@ -1,4 +1,4 @@
-﻿namespace ClimateControlSystem.Shared.Common
+﻿namespace ClimateControlSystem.Server.Resources.Common
 {
     public sealed class Config
     {

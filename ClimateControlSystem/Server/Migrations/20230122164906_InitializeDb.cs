@@ -126,8 +126,8 @@ namespace ClimateControlSystem.Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PredictionId = table.Column<int>(type: "int", nullable: false),
-                    SensorDataId = table.Column<int>(type: "int", nullable: false),
+                    PredictionId = table.Column<int>(type: "int", nullable: true),
+                    SensorDataId = table.Column<int>(type: "int", nullable: true),
                     AccuracyId = table.Column<int>(type: "int", nullable: true),
                     TemperatureEventId = table.Column<int>(type: "int", nullable: true),
                     HumidityEventId = table.Column<int>(type: "int", nullable: true)
@@ -149,14 +149,12 @@ namespace ClimateControlSystem.Server.Migrations
                         name: "FK_Microclimates_Predictions_PredictionId",
                         column: x => x.PredictionId,
                         principalTable: "Predictions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Microclimates_SensorsData_SensorDataId",
                         column: x => x.SensorDataId,
                         principalTable: "SensorsData",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Microclimates_TemperatureEvents_TemperatureEventId",
                         column: x => x.TemperatureEventId,
@@ -170,24 +168,9 @@ namespace ClimateControlSystem.Server.Migrations
                 values: new object[] { 1, 10f, 16f, 21f, 24f });
 
             migrationBuilder.InsertData(
-                table: "Predictions",
-                columns: new[] { "Id", "PredictedHumidity", "PredictedTemperature" },
-                values: new object[] { 1, 18.77f, 23.32f });
-
-            migrationBuilder.InsertData(
-                table: "SensorsData",
-                columns: new[] { "Id", "AirDryTemperatureOutside", "AirHumidityOutside", "AirWetTemperatureOutside", "ClusterLoad", "ClusterTemperature", "CpuUsage", "CurrentRealHumidity", "CurrentRealTemperature", "MeanCoolingValue", "MeasurementTime", "WindDirection", "WindEnthalpy", "WindSpeed" },
-                values: new object[] { 1, -3f, 91f, -3.91f, 50.8f, 56f, 5945.632f, 19.71f, 23.48f, 17.7f, new DateTimeOffset(new DateTime(2023, 1, 13, 16, 0, 55, 333, DateTimeKind.Unspecified).AddTicks(5295), new TimeSpan(0, 5, 0, 0, 0)), 225f, -4.06f, 3f });
-
-            migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Name", "PasswordHash", "PasswordSalt", "Role" },
                 values: new object[] { 1, "admin", new byte[] { 234, 67, 146, 201, 134, 164, 86, 202, 125, 217, 174, 99, 230, 69, 196, 32, 223, 130, 86, 2, 110, 245, 35, 7, 159, 20, 84, 62, 49, 84, 81, 28, 175, 203, 198, 202, 128, 63, 128, 15, 96, 135, 210, 4, 252, 15, 252, 17, 150, 160, 104, 243, 99, 40, 181, 210, 193, 226, 14, 26, 229, 165, 150, 197 }, new byte[] { 29, 90, 245, 35, 83, 27, 162, 74, 226, 234, 171, 134, 93, 187, 246, 80, 193, 193, 90, 50, 37, 118, 116, 254, 107, 30, 200, 72, 10, 31, 43, 139, 58, 135, 118, 189, 5, 99, 211, 203, 0, 84, 81, 146, 28, 164, 132, 63, 61, 143, 124, 25, 66, 231, 99, 189, 203, 55, 91, 105, 23, 169, 254, 10, 20, 179, 147, 58, 198, 70, 204, 60, 221, 77, 160, 128, 50, 190, 189, 205, 83, 48, 107, 183, 51, 48, 173, 248, 28, 230, 153, 194, 13, 108, 51, 123, 87, 228, 62, 31, 167, 11, 30, 180, 130, 172, 254, 241, 22, 7, 150, 212, 195, 48, 144, 92, 52, 199, 221, 202, 91, 200, 83, 109, 66, 70, 223, 200 }, "Admin" });
-
-            migrationBuilder.InsertData(
-                table: "Microclimates",
-                columns: new[] { "Id", "AccuracyId", "HumidityEventId", "PredictionId", "SensorDataId", "TemperatureEventId" },
-                values: new object[] { 1, null, null, 1, 1, null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Microclimates_AccuracyId",

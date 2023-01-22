@@ -25,7 +25,7 @@ namespace ClimateControlSystem.Server.Services.gRPC
             try
             {
                 SensorsData predictionRequest = _mapper.Map<SensorsData>(grpcRequest);
-                PredictionResultData predictionResult = await _mediatr.Send(new PredictQuery() { Data = predictionRequest });
+                PredictionResult predictionResult = await _mediatr.Send(new PredictQuery() { Data = predictionRequest });
                 reply.Reply = $"[Status: Success][Time: {DateTime.Now.ToString("HH:mm:ss dd:MM:yyyy")}][Data: {predictionResult.PredictedTemperature}, {predictionResult.PredictedHumidity}]";
             }
             catch
@@ -47,7 +47,7 @@ namespace ClimateControlSystem.Server.Services.gRPC
                     try
                     {
                         SensorsData predictionRequest = _mapper.Map<SensorsData>(request);
-                        PredictionResultData predictionResult = await _mediatr.Send(new PredictQuery() { Data = predictionRequest });
+                        PredictionResult predictionResult = await _mediatr.Send(new PredictQuery() { Data = predictionRequest });
                         reply.Reply = $"[Status: Success][Time: {DateTime.Now.ToString("HH:mm:ss dd:MM:yyyy")}][Data: {predictionResult.PredictedTemperature}, {predictionResult.PredictedHumidity}]";
                     }
                     catch

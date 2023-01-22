@@ -5,7 +5,7 @@ using MediatR;
 
 namespace ClimateControlSystem.Server.Services.MediatR.Handlers
 {
-    public class GetLastPredictionHandler : IRequestHandler<GetLastPredictionQuery, PredictionResultData>
+    public class GetLastPredictionHandler : IRequestHandler<GetLastPredictionQuery, PredictionResult>
     {
         private readonly IMicroclimateRepository _predictionRepository;
 
@@ -14,7 +14,7 @@ namespace ClimateControlSystem.Server.Services.MediatR.Handlers
             _predictionRepository = predictionRepository;
         }
 
-        public async Task<PredictionResultData> Handle(GetLastPredictionQuery request, CancellationToken cancellationToken)
+        public async Task<PredictionResult> Handle(GetLastPredictionQuery request, CancellationToken cancellationToken)
         {
             return await _predictionRepository.GetLastPredictionAsync();
         }

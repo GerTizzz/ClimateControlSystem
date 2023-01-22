@@ -15,6 +15,12 @@
             type = fieldType;
         }
 
+        public GraphicData(string x, string fieldType)
+        {
+            time = x;
+            type = fieldType;
+        }
+
         public override string ToString()
         {
             return $"X: {time} Y: {value} Type: {type}";

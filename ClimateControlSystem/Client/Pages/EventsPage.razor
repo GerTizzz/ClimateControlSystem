@@ -60,7 +60,7 @@
 </AuthorizeView>
 
 @code {
-    private Config _config;
+    private ConfigResponse _config;
 
     private IReadOnlyCollection<TemperatureEventResponse> _temperatureEvents;
     private IReadOnlyCollection<HumidityEventResponse> _humidityEvents;
@@ -75,7 +75,7 @@
         _temperatureDeviation = _config.UpperTemperatureWarningLimit - _config.LowerTemperatureWarningLimit;
         _humidityDeviation = _config.UpperHumidityWarningLimit - _config.LowerHumidityWarningLimit;
 
-        _temperatureEvents = await MicroclimateService.GetTemperatureEventDataAsync(0, 20);
-        _humidityEvents = await MicroclimateService.GetHumidityEventDataAsync(0, 20);
+        _temperatureEvents = await MicroclimateService.GetTemperatureEventsAsync(0, 20);
+        _humidityEvents = await MicroclimateService.GetHumidityEventsAsync(0, 20);
     }
 }

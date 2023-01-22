@@ -2,7 +2,6 @@
 using ClimateControlSystem.Server.Domain.Services;
 using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
-using ClimateControlSystem.Shared;
 using Microsoft.ML;
 using Microsoft.ML.Transforms;
 
@@ -20,13 +19,13 @@ namespace ClimateControlSystem.Server.Services
             _predictionEgine = CreatePredictionEgine(modelLocation);
         }
 
-        public Task<PredictionResultData> Predict(SensorsData incomingRequest)
+        public Task<PredictionResult> Predict(SensorsData incomingRequest)
         {
             TensorPredictionRequest features = _mapper.Map<TensorPredictionRequest>(incomingRequest);
 
             TensorPredictionResult prediction = _predictionEgine.Predict(features);
 
-            PredictionResultData predictionResult = _mapper.Map<PredictionResultData>(prediction);
+            PredictionResult predictionResult = _mapper.Map<PredictionResult>(prediction);
 
             return Task.FromResult(predictionResult);
         }

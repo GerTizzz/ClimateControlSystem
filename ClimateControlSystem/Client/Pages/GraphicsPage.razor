@@ -1,6 +1,8 @@
 ﻿@page "/graphicspage"
+@using ClimateControlSystem.Client.PaginationNavigation;
 @using ClimateControlSystem.Client.Resources
-@inject IMicroclimateService ClimateService
+@using ClimateControlSystem.Client.Components
+@inject IMicroclimateService MicroclimateService
 @inject IConfigService ConfigService
 
 <PageTitle>Graphics Page</PageTitle>
@@ -15,16 +17,17 @@
         }
         else
         {
-            if (_hasData)
-            {
-                <Line Data="_actualAndPredictedTemperature" Config="_temperatureDataLineConfig"/>
-                <Line Data="_actualAndPredictedHumidity" Config="_humidityDataLineConfig"/>
-                <Line Data="_accuracy" Config="_accuracyLineConfig" />
-            }
-            else
-            {
-                <p><em>Извините, слишком мало данных для построения...</em></p>
-            }
+            <Line @ref="_temperatureChart" Data="_actualAndPredictedTemperature" Config="_temperatureDataLineConfig" />
+            <Line @ref="_humidityChart" Data="_actualAndPredictedHumidity" Config="_humidityDataLineConfig"/>
+            <Line @ref="_accuracyChart" Data="_temperatureAndHumidityAccuracy" Config="_accuracyLineConfig" />
+
+            <br />
+
+            <PaginationComponent RecordsCount=@_monitoringsRecordsCount
+                RecordsPerPage=@RecordsPerGraphic
+                PageChanged=@OnPageChanged />
+
+            <br />
         }
     </Authorized>
     <NotAuthorized>
@@ -33,41 +36,56 @@
 </AuthorizeView>
 
 @code{
-    private Config _config;
+    private const int RecordsPerGraphic = 15;
 
-    List<MonitoringResponse> _predictions;
+    private ConfigResponse _config;
 
-    bool _hasData = false;
+    private List<MonitoringResponse> _predictions;
 
-    LineConfig _temperatureDataLineConfig;
-    LineConfig _humidityDataLineConfig;
-    LineConfig _accuracyLineConfig;
+    private Line _temperatureChart;
+    private Line _humidityChart;
+    private Line _accuracyChart;
 
-    List<GraphicData> _actualAndPredictedTemperature;
-    List<GraphicData> _actualAndPredictedHumidity;
-    List<GraphicData> _accuracy;
+    private LineConfig _temperatureDataLineConfig;
+    private LineConfig _humidityDataLineConfig;
+    private LineConfig _accuracyLineConfig;
+
+    private List<GraphicData> _actualAndPredictedTemperature;
+    private List<GraphicData> _actualAndPredictedHumidity;
+    private List<GraphicData> _temperatureAndHumidityAccuracy;
+
+    private int _monitoringsRecordsCount;
 
     protected override async Task OnInitializedAsync()
     {
         _config = await ConfigService.GetConfigAsync();
 
-        _predictions = (await ClimateService.GetMonitoringsDataAsync(0, 25)).ToList();
+        _monitoringsRecordsCount = await MicroclimateService.GetMonitoringsCount();
 
-        _hasData = _predictions.Count >= 2;
+        _predictions = (await MicroclimateService.GetMonitoringsAsync(0, RecordsPerGraphic)).ToList();
 
-        if (_hasData is false)
-        {
-            return;    
-        }
+        UpdateGraphics();
+    }
 
-        Console.WriteLine(string.Join(" ", _predictions.Select(x => x.PredictedTemperatureAccuracy)));
-
+    private async Task UpdateGraphics()
+    {
         _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_predictions, _config);
         _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_predictions, _config);
-        _accuracy = AntChartHelper.GetAccuracyData(_predictions);
+        _temperatureAndHumidityAccuracy = AntChartHelper.GetAccuracyData(_predictions);
 
         _temperatureDataLineConfig = AntChartHelper.GetTemperatureLineConfig(_actualAndPredictedTemperature);
         _humidityDataLineConfig = AntChartHelper.GetHumidityLineConfig(_actualAndPredictedHumidity);
-        _accuracyLineConfig = AntChartHelper.GetAccuracyConfig(_accuracy);
+        _accuracyLineConfig = AntChartHelper.GetAccuracyConfig(_temperatureAndHumidityAccuracy);
+
+        await _temperatureChart.ChangeData(_actualAndPredictedTemperature);
+        await _humidityChart.ChangeData(_actualAndPredictedHumidity);
+        await _accuracyChart.ChangeData(_temperatureAndHumidityAccuracy);
+    }
+
+    private async Task OnPageChanged(RecordsRequest request)
+    {
+        _predictions = (await MicroclimateService.GetMonitoringsAsync(request.RecordsOffset, request.RecordsCount)).ToList();
+
+        UpdateGraphics();
     }
 }

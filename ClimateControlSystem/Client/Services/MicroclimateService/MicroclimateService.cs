@@ -18,13 +18,13 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             _authService = authService;
         }
 
-        public async Task<int> GetMicroclimatesRecordsCount()
+        public async Task<int> GetMonitoringsCount()
         {
             try
             {
-                var totalRecords = await _httpClient.GetFromJsonAsync<int>($"api/microclimate/microclimatescount");
+                var totalCount = await _httpClient.GetFromJsonAsync<int>($"api/microclimate/monitoringscount");
 
-                return totalRecords;
+                return totalCount;
             }
             catch (HttpRequestException e)
             {
@@ -37,15 +37,34 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             return 0;
         }
 
-        public async Task<IReadOnlyCollection<MonitoringResponse>> GetMonitoringsDataAsync(int start = 0, int count = 25)
+        public async Task<int> GetMicroclimatesCount()
+        {
+            try
+            {
+                var totalCount = await _httpClient.GetFromJsonAsync<int>($"api/microclimate/microclimatescount");
+
+                return totalCount;
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode.HasValue && e.StatusCode.Value == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await _authService.Logout();
+                }
+            }
+
+            return 0;
+        }
+
+        public async Task<IReadOnlyCollection<MonitoringResponse>> GetMonitoringsAsync(int start = 0, int count = 25)
         {
             count = CheckCountParameter(count);
 
             try
             {
                 var result = await _httpClient.GetFromJsonAsync<List<MonitoringResponse>>($"api/microclimate/monitorings/{start}/{count}");
-                
-                return result;
+
+                return result.Reverse<MonitoringResponse>().ToList();
             }
             catch (HttpRequestException e)
             {
@@ -58,7 +77,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             return new List<MonitoringResponse>();
         }
 
-        public async Task<IReadOnlyCollection<MicroclimateResponse>> GetMicroclimatesDataAsync(int offsetFromTheEnd, int count)
+        public async Task<IReadOnlyCollection<MicroclimateResponse>> GetMicroclimatesAsync(int offsetFromTheEnd, int count)
         {
             count = CheckCountParameter(count);
 
@@ -78,7 +97,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             return new List<MicroclimateResponse>();
         }
 
-        public async Task<IReadOnlyCollection<TemperatureEventResponse>> GetTemperatureEventDataAsync(int start = 0, int count = 25)
+        public async Task<IReadOnlyCollection<TemperatureEventResponse>> GetTemperatureEventsAsync(int start = 0, int count = 25)
         {
             count = CheckCountParameter(count);
 
@@ -98,7 +117,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             return new List<TemperatureEventResponse>();
         }
 
-        public async Task<IReadOnlyCollection<HumidityEventResponse>> GetHumidityEventDataAsync(int start = 0, int count = 25)
+        public async Task<IReadOnlyCollection<HumidityEventResponse>> GetHumidityEventsAsync(int start = 0, int count = 25)
         {
             count = CheckCountParameter(count);
 

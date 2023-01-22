@@ -260,20 +260,9 @@ namespace ClimateControlSystem.Client.PagesNavigation
 
         private void CallPageChangedEvent()
         {
-            int offsetFromTheEnd = _recordsCount - _recordsPerPage * (_currentPageNumber - PageOffset);
-            int recordsCount = _recordsPerPage;
+            int offset = _recordsPerPage * (_currentPageNumber - PageOffset);
 
-            if (offsetFromTheEnd <= _recordsPerPage)
-            {
-                recordsCount = offsetFromTheEnd;
-                offsetFromTheEnd = 0;
-            }
-            else
-            {
-                offsetFromTheEnd -= _recordsPerPage;
-            }
-
-            PageChangedEvent?.Invoke(new RecordsRequest(offsetFromTheEnd, recordsCount));
+            PageChangedEvent?.Invoke(new RecordsRequest(offset, _recordsPerPage));
         }
     }
 }

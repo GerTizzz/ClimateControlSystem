@@ -1,6 +1,6 @@
 ﻿namespace ClimateControlSystem.Server.Resources.Common
 {
-    public sealed class HumidityEventData
+    public sealed class HumidityEvent
     {
         public float Value { get; set; }
     }

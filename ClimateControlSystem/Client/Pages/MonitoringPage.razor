@@ -29,7 +29,7 @@
 </AuthorizeView>
 
 @code {
-    private Config _config;
+    private ConfigResponse _config;
 
     private const int _recordsCount = 15;
 
@@ -56,10 +56,10 @@
         if (authState.User.Identity.IsAuthenticated)
         {
             _config = await ConfigService.GetConfigAsync();
-            _predictions = (await ClimateService.GetMonitoringsDataAsync(0, _recordsCount)).ToList();
+            _predictions = (await ClimateService.GetMonitoringsAsync(0, _recordsCount)).ToList();
             _predictions.Capacity = _recordsCount;
 
-            await UpdateLineChartsConfigsAndData();
+            UpdateLineChartsConfigsAndData();
 
             await Connect();
         }
@@ -93,7 +93,7 @@
 
             _predictions.Add(prediction);
 
-            await UpdateLineChartsConfigsAndData();
+            UpdateLineChartsConfigsAndData();
 
             await _temperatureChart.ChangeData(_actualAndPredictedTemperature);
             await _humidityChart.ChangeData(_actualAndPredictedHumidity);
@@ -116,7 +116,7 @@
         }
     }
 
-    private Task UpdateLineChartsConfigsAndData()
+    private void UpdateLineChartsConfigsAndData()
     {
         _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_predictions, _config);
         _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_predictions, _config);
@@ -124,7 +124,5 @@
         // the min and max y-values change
         _temperatureDataLineConfig = AntChartHelper.GetTemperatureLineConfig(_actualAndPredictedTemperature);
         _humidityDataLineConfig = AntChartHelper.GetHumidityLineConfig(_actualAndPredictedHumidity);
-
-        return Task.CompletedTask;
     }
 }

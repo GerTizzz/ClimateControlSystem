@@ -34,24 +34,6 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 Role = UserType.Admin
             };
 
-            SensorsDataRecord initializedMonitoring = new()
-            {
-                Id = 1,
-                MeasurementTime = DateTimeOffset.Now,
-                ClusterLoad = 50.8f,
-                CpuUsage = 5945.632f,
-                ClusterTemperature = 56f,
-                CurrentRealTemperature = 23.48f,
-                CurrentRealHumidity = 19.71f,
-                AirHumidityOutside = 91f,
-                AirDryTemperatureOutside = -3f,
-                AirWetTemperatureOutside = -3.91f,
-                WindSpeed = 3f,
-                WindDirection = 225f,
-                WindEnthalpy = -4.06f,
-                MeanCoolingValue = 17.7f
-            };
-
             ConfigRecord initializedConfig = new()
             {
                 Id = 1,
@@ -62,34 +44,8 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 LowerHumidityWarningLimit = 10f
             };
 
-            PredictionRecord initializedPrediction = new()
-            {
-                Id = 1,
-                PredictedTemperature = 23.32f,
-                PredictedHumidity = 18.77f
-            };
-
-            MicroclimateRecord initializedClimate = new()
-            {
-                Id = 1,
-                PredictionId = initializedPrediction.Id,
-                SensorDataId = initializedMonitoring.Id,
-                AccuracyId = null,
-                TemperatureEventId = null,
-                HumidityEventId = null
-            };
-
-            modelBuilder.Entity<SensorsDataRecord>()
-                .HasData(initializedMonitoring);
-
-            modelBuilder.Entity<PredictionRecord>()
-                .HasData(initializedPrediction);
-
             modelBuilder.Entity<ConfigRecord>()
                 .HasData(initializedConfig);
-
-            modelBuilder.Entity<MicroclimateRecord>()
-                .HasData(initializedClimate);
 
             modelBuilder.Entity<UserRecord>()
                 .Property(user => user.Role)
