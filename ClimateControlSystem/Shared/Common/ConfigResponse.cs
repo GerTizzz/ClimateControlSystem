@@ -7,5 +7,7 @@
 
         public float UpperHumidityWarningLimit { get; set; }
         public float LowerHumidityWarningLimit { get; set; }
+
+        public int PredictionTimeIntervalSeconds { get; set; }
     }
 }

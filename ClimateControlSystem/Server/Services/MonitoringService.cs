@@ -1,58 +1,69 @@
 ﻿using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Hubs;
+using ClimateControlSystem.Server.Infrastructure;
 using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Services.MediatR.Commands;
 using ClimateControlSystem.Server.Services.MediatR.Queries;
-using ClimateControlSystem.Shared;
 using MediatR;
-using Microsoft.AspNetCore.SignalR;
 
 namespace ClimateControlSystem.Server.Services
 {
-    public class PredictionService : IPredictionService
+    public class MonitoringService : IMonitoringService
     {
         private readonly IPredictionEngineService _predictionEngine;
         private readonly IMediator _mediator;
-        private readonly IHubContext<MonitoringHub> _monitoringHub;
         private readonly IConfigManager _configManager;
 
-        public PredictionService(IPredictionEngineService predictionEngine,
+        public MonitoringService(IPredictionEngineService predictionEngine,
                                  IMediator mediator,
-                                 IHubContext<MonitoringHub> monitoringHub,
                                  IConfigManager configManager)
         {
             _mediator = mediator;
             _predictionEngine = predictionEngine;
-            _monitoringHub = monitoringHub;
             _configManager = configManager;
         }
 
-        public async Task<PredictionResult> Predict(SensorsData climateData)
+        public async Task<PredictionResult> Predict(SensorsData sensorsData)
         {
-            PredictionResult prediction = await _predictionEngine.Predict(climateData);
+            PredictionResult prediction = await _predictionEngine.Predict(sensorsData);
 
-            await UpdatePreviousMicroclimateRecord(climateData);
-
-            await CreateNewMicroclimateRecord(prediction);
-
-            MonitoringResponse monitoring = new MonitoringResponse()
-            {
-                MeasurementTime = climateData.MeasurementTime,
-                PredictedFutureTemperature = prediction.PredictedTemperature,
-                PredictedFutureHumidity = prediction.PredictedHumidity,
-                CurrentRealTemperature = climateData.CurrentRealTemperature,
-                CurrentRealHumidity = climateData.CurrentRealHumidity
-            };
-
-            _ = SendNewMonitoringDataToWebClients(monitoring);
+            _ = Task.Run(() => ProcessMonitoringData(sensorsData, prediction));
 
             return prediction;
         }
 
-        private async Task UpdatePreviousMicroclimateRecord(SensorsData sensorData)
+        private async Task ProcessMonitoringData(SensorsData sensorsData, PredictionResult prediction)
         {
-            var accuracy = await CalculateLastPredictionAccuracy(sensorData);
+            var accuracy = await CalculateLastPredictionAccuracy(sensorsData);
 
+            var temperatureEvent = await GetTemperatureEvent(prediction, _configManager.Config);
+
+            var humidityEvent = await GetHumidityEvent(prediction, _configManager.Config);
+
+            await UpdatePreviousMonitoringInDb(sensorsData, accuracy);
+
+            await WriteNewMonitroingToDb(prediction, temperatureEvent, humidityEvent);
+
+            MonitoringData monitoring = new MonitoringDataBuilder()
+                .AddSensorsData(sensorsData)
+                .AddPredictionData(prediction)
+                .AddAccuracyData(accuracy)
+                .AddTemperatureEvent(temperatureEvent)
+                .AddHumidityEvent(humidityEvent)
+                .Build();
+
+            _ = Task.Run(() => SendMonitoringToCustomers(monitoring));
+        }
+
+        private async Task SendMonitoringToCustomers(MonitoringData monitoring)
+        {
+            await _mediator.Send(new SendMonitoringCommand()
+            {
+                Monitoring = monitoring
+            });
+        }
+
+        private async Task UpdatePreviousMonitoringInDb(SensorsData sensorData, PredictionAccuracy? accuracy)
+        {
             await _mediator.Send(new AddSensorsDataCommand()
             {
                 SensorData = sensorData
@@ -65,20 +76,6 @@ namespace ClimateControlSystem.Server.Services
                     Accuracy = accuracy
                 });
             }
-        }
-
-        private async Task CreateNewMicroclimateRecord(PredictionResult prediction)
-        {
-            var temperatureEvent = await GetTemperatureEvent(prediction, _configManager.Config);
-
-            var humidityEvent = await GetHumidityEvent(prediction, _configManager.Config);
-
-            await _mediator.Send(new AddPredictionCommand()
-            {
-                Predicition = prediction,
-                TemperatureEvent = temperatureEvent,
-                HumidityEvent = humidityEvent
-            });
         }
 
         private async Task<PredictionAccuracy?> CalculateLastPredictionAccuracy(SensorsData sensorData)
@@ -105,14 +102,19 @@ namespace ClimateControlSystem.Server.Services
             return accuracy;
         }
 
-        private async Task SendNewMonitoringDataToWebClients(MonitoringResponse monitoring)
+        private async Task WriteNewMonitroingToDb(PredictionResult prediction, TemperatureEvent? temperatureEvent, HumidityEvent? humidityEvent)
         {
-            await _monitoringHub.Clients.All.SendAsync("GetMonitoringData", monitoring);
+            await _mediator.Send(new AddPredictionCommand()
+            {
+                Predicition = prediction,
+                TemperatureEvent = temperatureEvent,
+                HumidityEvent = humidityEvent
+            });
         }
 
-        private Task<TemperatureEvent> GetTemperatureEvent(PredictionResult prediction, Config config)
+        private Task<TemperatureEvent?> GetTemperatureEvent(PredictionResult prediction, Config config)
         {
-            TemperatureEvent temperatureEvent = null;
+            TemperatureEvent? temperatureEvent = null;
 
             if (prediction.PredictedTemperature >= config.UpperTemperatureWarningLimit)
             {
@@ -132,9 +134,9 @@ namespace ClimateControlSystem.Server.Services
             return Task.FromResult(temperatureEvent);
         }
 
-        private Task<HumidityEvent> GetHumidityEvent(PredictionResult prediction, Config config)
+        private Task<HumidityEvent?> GetHumidityEvent(PredictionResult prediction, Config config)
         {
-            HumidityEvent humidityEvent = null;
+            HumidityEvent? humidityEvent = null;
 
             if (prediction.PredictedHumidity >= config.UpperHumidityWarningLimit)
             {

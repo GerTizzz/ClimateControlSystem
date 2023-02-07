@@ -7,9 +7,9 @@ namespace ClimateControlSystem.Server.Services.Handlers
 {
     public class PredictHandler : IRequestHandler<PredictQuery, PredictionResult>
     {
-        private readonly IPredictionService _predictionService;
+        private readonly IMonitoringService _predictionService;
 
-        public PredictHandler(IPredictionService predictionService)
+        public PredictHandler(IMonitoringService predictionService)
         {
             _predictionService = predictionService;
         }

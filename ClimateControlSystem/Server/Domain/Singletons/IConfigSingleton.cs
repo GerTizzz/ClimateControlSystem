@@ -1,6 +1,6 @@
 ﻿using ClimateControlSystem.Server.Resources.Common;
 
-namespace ClimateControlSystem.Server.Services
+namespace ClimateControlSystem.Server.Domain.Singletons
 {
     public interface IConfigSingleton
     {

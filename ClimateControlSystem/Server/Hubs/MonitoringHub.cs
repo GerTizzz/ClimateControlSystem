@@ -1,13 +1,18 @@
-﻿using ClimateControlSystem.Shared;
+﻿using ClimateControlSystem.Shared.SendToClient;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ClimateControlSystem.Server.Hubs
 {
-    public class MonitoringHub : Hub
+    public class MonitoringHub : Hub, IMonitoringHub
     {
-        public async Task SendMonitoringData(MonitoringResponse prediction)
+        public MonitoringHub()
         {
-            await Clients.All.SendAsync("GetMonitoringData", prediction);
+
+        }
+
+        public async Task SendMonitoringToWebClients(MonitoringResponse dataToSend)
+        {
+            await Clients.All.SendAsync("GetMonitoringResponse", dataToSend);
         }
     }
 }

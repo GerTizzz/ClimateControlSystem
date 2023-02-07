@@ -1,5 +1,4 @@
-﻿using ClimateControlSystem.Shared;
-using ClimateControlSystem.Shared.SendToClient;
+﻿using ClimateControlSystem.Shared.SendToClient;
 
 namespace ClimateControlSystem.Client.Services.ClimateService
 {
@@ -11,7 +10,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
         /// <returns>Amount of microclimates records count</returns>
         Task<int> GetMicroclimatesCount();
 
-        Task<IReadOnlyCollection<MonitoringResponse>> GetMonitoringsAsync(int start, int count);
+        Task<IReadOnlyCollection<PredictionResponse>> GetMonitoringsAsync(int start, int count);
 
         /// <summary>
         /// Returns microclimate records

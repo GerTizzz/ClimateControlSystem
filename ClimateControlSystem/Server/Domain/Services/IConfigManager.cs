@@ -11,6 +11,8 @@ namespace ClimateControlSystem.Server.Domain.Services
         float UpperHumidityWarningLimit { get; }
         float LowerHumidityWarningLimit { get; }
 
+        int PredictionTimeIntervalSeconds { get; }
+
         Task<bool> UpdateConfig(Config config);
     }
 }

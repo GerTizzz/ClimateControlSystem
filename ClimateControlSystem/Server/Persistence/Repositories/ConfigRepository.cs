@@ -30,6 +30,8 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                 existingConfig.UpperHumidityWarningLimit = configToUpdate.UpperHumidityWarningLimit;
                 existingConfig.LowerHumidityWarningLimit = configToUpdate.LowerHumidityWarningLimit;
 
+                existingConfig.PredictionTimeIntervalSeconds = configToUpdate.PredictionTimeIntervalSeconds;
+
                 await _context.SaveChangesAsync();
 
                 return true;

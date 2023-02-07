@@ -1,6 +1,7 @@
 using AutoMapper;
 using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Domain.Services;
+using ClimateControlSystem.Server.Domain.Singletons;
 using ClimateControlSystem.Server.Hubs;
 using ClimateControlSystem.Server.Mapping;
 using ClimateControlSystem.Server.Persistence.Context;
@@ -29,7 +30,7 @@ builder.Services.AddSingleton<IPredictionEngineService>(sp =>
 builder.Services.AddScoped<IMicroclimateRepository, MicroclimateRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IConfigRepository, ConfigRepository>();
-builder.Services.AddScoped<IPredictionService, PredictionService>();
+builder.Services.AddScoped<IMonitoringService, MonitoringService>();
 builder.Services.AddScoped<IAuthenticateManager, AuthenticateManager>();
 builder.Services.AddScoped<IUserManager, UserManager>();
 builder.Services.AddScoped<IConfigManager, ConfigManager>();

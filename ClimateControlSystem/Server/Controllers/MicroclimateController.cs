@@ -1,5 +1,4 @@
 ﻿using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Shared;
 using ClimateControlSystem.Shared.SendToClient;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +26,7 @@ namespace ClimateControlSystem.Server.Controllers
         }
 
         [HttpGet("monitorings/{start:int}/{count:int:range(1, 25)}")]
-        public async Task<ActionResult<List<MonitoringResponse>>> GetMonitorings(int start, int count)
+        public async Task<ActionResult<List<PredictionResponse>>> GetMonitorings(int start, int count)
         {
             var records = await _microclimateRepository.GetMonitoringsAsync(start, count);
 

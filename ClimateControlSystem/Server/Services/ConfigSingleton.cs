@@ -1,4 +1,5 @@
-﻿using ClimateControlSystem.Server.Resources.Common;
+﻿using ClimateControlSystem.Server.Domain.Singletons;
+using ClimateControlSystem.Server.Resources.Common;
 
 namespace ClimateControlSystem.Server.Services
 {

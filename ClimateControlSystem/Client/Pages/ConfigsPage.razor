@@ -25,6 +25,10 @@
     <div>
         <label for="lowHumWarn">Нижний тревожный предел абсолютной влажности, г/м^3</label>
         <InputNumber id="lowHumWarn" @bind-Value="_config.LowerHumidityWarningLimit" />
+    </div>   
+    <div>
+        <label for="predictionTimeInterval">Интервал прогнозирования, с</label>
+        <InputNumber id="predictionTimeInterval" @bind-Value="_config.PredictionTimeIntervalSeconds" />
     </div>
     <br />
     <button type="submit" class="btn btn-primary">Сохранить</button>

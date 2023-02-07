@@ -4,6 +4,7 @@ using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Resources.RepositoryResources;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
 using ClimateControlSystem.Shared.Common;
+using ClimateControlSystem.Shared.SendToClient;
 
 namespace ClimateControlSystem.Server.Mapping
 {
@@ -86,6 +87,20 @@ namespace ClimateControlSystem.Server.Mapping
                     .MapFrom(dtoSrc => dtoSrc.Name))
                 .ForMember(auth => auth.Role, dto => dto
                     .MapFrom(dtoSrc => dtoSrc.Role));
+
+            #endregion
+
+            #region ClientCommunication
+
+            CreateMap<ConfigResponse, Config>();
+
+            CreateMap<Config, ConfigResponse>();
+
+            CreateMap<MonitoringData, MonitoringResponse>();
+
+            CreateMap<TemperatureEvent, TemperatureEventResponse>();
+
+            CreateMap<HumidityEvent, HumidityEventResponse>();
 
             #endregion
         }

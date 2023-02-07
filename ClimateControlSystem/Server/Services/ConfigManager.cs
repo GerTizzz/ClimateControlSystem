@@ -1,5 +1,6 @@
 ﻿using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Domain.Services;
+using ClimateControlSystem.Server.Domain.Singletons;
 using ClimateControlSystem.Server.Resources.Common;
 
 namespace ClimateControlSystem.Server.Services
@@ -18,6 +19,8 @@ namespace ClimateControlSystem.Server.Services
 
         public float UpperHumidityWarningLimit => _config.UpperHumidityWarningLimit;
         public float LowerHumidityWarningLimit => _config.LowerHumidityWarningLimit;
+
+        public int PredictionTimeIntervalSeconds => _config.PredictionTimeIntervalSeconds;
 
         public ConfigManager(IConfigRepository configRepository, IConfigSingleton configSingleton)
         {

@@ -1,5 +1,4 @@
 ﻿using ClimateControlSystem.Server.Resources.Common;
-using ClimateControlSystem.Shared;
 using ClimateControlSystem.Shared.SendToClient;
 
 namespace ClimateControlSystem.Server.Domain.Repositories
@@ -18,7 +17,7 @@ namespace ClimateControlSystem.Server.Domain.Repositories
 
         Task<int> GetMonitoringsCountAsync();
 
-        Task<MonitoringResponse[]> GetMonitoringsAsync(int start, int count);
+        Task<PredictionResponse[]> GetMonitoringsAsync(int start, int count);
 
         Task<MicroclimateResponse[]> GetMicroclimatesAsync(int start, int count);
 

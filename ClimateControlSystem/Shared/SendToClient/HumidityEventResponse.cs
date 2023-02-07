@@ -1,6 +1,6 @@
 ﻿namespace ClimateControlSystem.Shared.SendToClient
 {
-    public readonly struct HumidityEventResponse
+    public record class HumidityEventResponse
     {
         public float Value { get; init; }
     }

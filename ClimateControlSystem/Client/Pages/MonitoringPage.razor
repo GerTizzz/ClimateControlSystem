@@ -2,9 +2,10 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using ClimateControlSystem.Client.Resources
 @inject NavigationManager NavigationManager
-@inject IMicroclimateService ClimateService
+@inject IMicroclimateService MicroclimateService
 @inject IConfigService ConfigService
 @implements IAsyncDisposable
+@inject IJSRuntime JsRuntime
 
 <PageTitle>Monitoring Page</PageTitle>
 
@@ -12,15 +13,15 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_actualAndPredictedTemperature is null || _actualAndPredictedHumidity is null
-        || _actualAndPredictedTemperature.Count == 0 || _actualAndPredictedHumidity.Count == 0)
+        @if (_temperatureRenderableSeries is null || _humidityRenderableSeries is null
+        || _temperatureRenderableSeries.Count == 0 || _humidityRenderableSeries.Count == 0)
         {
             <p><em>Загрузка...</em></p>
         }
         else
         {
-            <Line @ref="_temperatureChart" Data="_actualAndPredictedTemperature" Config="_temperatureDataLineConfig"/>
-            <Line @ref="_humidityChart" Data="_actualAndPredictedHumidity" Config="_humidityDataLineConfig"/>
+            <Line @ref="_temperatureChart" Data="_temperatureRenderableSeries" Config="_temperatureDataLineConfig"/>
+            <Line @ref="_humidityChart" Data="_humidityRenderableSeries" Config="_humidityDataLineConfig"/>
         }
     </Authorized>
     <NotAuthorized>
@@ -32,6 +33,7 @@
     private ConfigResponse _config;
 
     private const int _recordsCount = 15;
+    private const int _recordsRequsetBeginningIndex = 0;
 
     private Line _temperatureChart;
     private Line _humidityChart;
@@ -39,12 +41,12 @@
     private LineConfig _temperatureDataLineConfig;
     private LineConfig _humidityDataLineConfig;
 
-    private List<GraphicData> _actualAndPredictedTemperature;
-    private List<GraphicData> _actualAndPredictedHumidity;
+    private List<GraphicData> _temperatureRenderableSeries;
+    private List<GraphicData> _humidityRenderableSeries;
 
-    private List<MonitoringResponse> _predictions;
+    private List<PredictionResponse> _monitorings;
 
-    private HubConnection? _hubConnection;
+    private HubConnection? _monitoringConnection;
 
     [CascadingParameter]
     private Task<AuthenticationState> _authState { get; set; }
@@ -56,73 +58,213 @@
         if (authState.User.Identity.IsAuthenticated)
         {
             _config = await ConfigService.GetConfigAsync();
-            _predictions = (await ClimateService.GetMonitoringsAsync(0, _recordsCount)).ToList();
-            _predictions.Capacity = _recordsCount;
+            _monitorings = (await MicroclimateService.GetMonitoringsAsync(_recordsRequsetBeginningIndex, _recordsCount))
+            .ToList();
+            _monitorings.Capacity = _recordsCount;
 
-            UpdateLineChartsConfigsAndData();
+            UpdateRenderableSeries();
+            UpdateChartsConfigs();
 
-            await Connect();
+            await CreateMonitoringConnection();
         }
     }
 
-    private async Task Connect()
+    private async Task CreateMonitoringConnection()
     {
-        _hubConnection = new HubConnectionBuilder()
+        _monitoringConnection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri("/monitoringhub"))
             .WithAutomaticReconnect()
             .Build();
 
-        _hubConnection.On<MonitoringResponse>("GetMonitoringData", (newData) => MonitoringDataArrived(newData));
+        _monitoringConnection.On<MonitoringResponse>("GetMonitoringResponse", (newData) => MonitoringDataArrived(newData));
 
-        await _hubConnection.StartAsync();
+        await _monitoringConnection.StartAsync();
     }
 
-    private async Task MonitoringDataArrived(MonitoringResponse prediction)
+    private async Task MonitoringDataArrived(MonitoringResponse monitoring)
     {
         try
         {
-            if (_predictions is null)
+            if (_monitorings is null)
             {
                 return;
             }
 
-            while (_predictions.Count >= _predictions.Capacity)
+            DateTimeOffset? predictedTime = null;
+
+            if (_monitorings.Any())
             {
-                _predictions.RemoveAt(0);
+                var lastMonitoring = _monitorings.Last();
+                lastMonitoring = UpdateMonitoringWithSensorsData(monitoring, lastMonitoring);
+                predictedTime = lastMonitoring.MeasurementTime;
+            }
+            else
+            {
+                var firstMonitroing = UpdateMonitoringWithSensorsData(monitoring, new PredictionResponse());
+                _monitorings.Add(firstMonitroing);
+                predictedTime = DateTimeOffset.Now;
             }
 
-            _predictions.Add(prediction);
+            _ = Task.Run(() => TemperatureEventArrived(monitoring));
+            _ = Task.Run(() => HumidityEventArrived(monitoring));
 
-            UpdateLineChartsConfigsAndData();
+            var newMonitoring = new PredictionResponse()
+                {
+                    PredictedFutureHumidity = monitoring.PredictedFutureHumidity,
+                    PredictedFutureTemperature = monitoring.PredictedFutureTemperature,
+                    MeasurementTime = predictedTime.Value.AddSeconds(_config.PredictionTimeIntervalSeconds)
+                };
 
-            await _temperatureChart.ChangeData(_actualAndPredictedTemperature);
-            await _humidityChart.ChangeData(_actualAndPredictedHumidity);
+            _monitorings.Add(newMonitoring);
 
-            //await _temperatureChart.UpdateChart(csData: _actualAndPredictedTemperature, csConfig: _temperatureDataLineConfig);
-            //await _humidityChart.UpdateChart(csData: _actualAndPredictedHumidity, csConfig: _humidityDataLineConfig);
+            RemoveExtraMonitroingElementsFromBeginning();
+
+            await UpdateCharts();
         }
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
         }
+    }
 
+    private PredictionResponse UpdateMonitoringWithSensorsData(MonitoringResponse newMonitoring, PredictionResponse existingMonitoring)
+    {
+        existingMonitoring.CurrentRealTemperature = newMonitoring.CurrentRealTemperature;
+        existingMonitoring.CurrentRealHumidity = newMonitoring.CurrentRealHumidity;
+
+        if (newMonitoring.PredictedHumidityAccuracy.HasValue)
+        {
+            existingMonitoring.PredictedHumidityAccuracy = newMonitoring.PredictedHumidityAccuracy;
+        }
+
+        if (newMonitoring.PredictedTemperatureAccuracy.HasValue)
+        {
+            existingMonitoring.PredictedTemperatureAccuracy = newMonitoring.PredictedTemperatureAccuracy;
+        }
+
+        return existingMonitoring;
+    }
+
+    private async Task TemperatureEventArrived(MonitoringResponse monitoring)
+    {
+        try
+        {
+            if (monitoring.TemperatureEvent is null)
+            {
+                return;
+            }
+
+            string alertMessage = GetTemperatureAlertMessage(monitoring.TemperatureEvent, monitoring.MeasurementTime);
+
+            if (string.IsNullOrEmpty(alertMessage) is false)
+            {
+                await JsRuntime.InvokeVoidAsync("Alert", alertMessage);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+    }
+
+    private async Task HumidityEventArrived(MonitoringResponse monitoring)
+    {
+        try
+        {
+            if (monitoring.HumidityEvent is null)
+            {
+                return;
+            }
+
+            string alertMessage = GetHumidityAlertMessage(monitoring.HumidityEvent, monitoring.MeasurementTime);
+
+            if (string.IsNullOrEmpty(alertMessage) is false)
+            {
+                await JsRuntime.InvokeVoidAsync("Alert", alertMessage);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
     }
 
     public async ValueTask DisposeAsync()
     {
-        if (_hubConnection != null)
+        if (_monitoringConnection is not null)
         {
-            await _hubConnection.DisposeAsync();
+            await _monitoringConnection.DisposeAsync();
         }
     }
 
-    private void UpdateLineChartsConfigsAndData()
+    private void RemoveExtraMonitroingElementsFromBeginning()
     {
-        _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_predictions, _config);
-        _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_predictions, _config);
+        while (_monitorings.Count >= _monitorings.Capacity)
+        {
+            _monitorings.RemoveAt(0);
+        }
+    }
 
-        // the min and max y-values change
-        _temperatureDataLineConfig = AntChartHelper.GetTemperatureLineConfig(_actualAndPredictedTemperature);
-        _humidityDataLineConfig = AntChartHelper.GetHumidityLineConfig(_actualAndPredictedHumidity);
+    private async Task UpdateCharts()
+    {
+        UpdateRenderableSeries();
+        UpdateChartsConfigs();
+        await RerenderCharts();
+    }
+
+    private void UpdateRenderableSeries()
+    {
+        _temperatureRenderableSeries = AntChartHelper.GetTemperatureData(_monitorings, _config);
+        _humidityRenderableSeries = AntChartHelper.GetHumidityData(_monitorings, _config);
+    }
+
+    private void UpdateChartsConfigs()
+    {
+        if (_temperatureRenderableSeries.Any())
+        {
+            _temperatureDataLineConfig = AntChartHelper.GetTemperatureLineConfig(_temperatureRenderableSeries);
+        }
+        if (_humidityRenderableSeries.Any())
+        {
+            _humidityDataLineConfig = AntChartHelper.GetHumidityLineConfig(_humidityRenderableSeries);
+        }
+    }
+
+    private async Task RerenderCharts()
+    {
+        await _temperatureChart.ChangeData(_temperatureRenderableSeries);
+        await _humidityChart.ChangeData(_humidityRenderableSeries);
+    }
+
+    private string GetTemperatureAlertMessage(TemperatureEventResponse tempEvent, DateTimeOffset eventTime)
+    {
+        string alertMessage = "";
+
+        if (tempEvent.Value > 0)
+        {
+            alertMessage += $"{eventTime.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается превышение температуры выше допустимого предела!";
+        }
+        else if (tempEvent.Value < 0)
+        {
+            alertMessage += $"{eventTime.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается понижение температуры ниже допустимого предела!";
+        }
+
+        return alertMessage;
+    }
+
+    private string GetHumidityAlertMessage(HumidityEventResponse humEvent, DateTimeOffset eventTime)
+    {
+        string alertMessage = "";
+
+        if (humEvent.Value > 0)
+        {
+            alertMessage += $"{eventTime.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается превышение влажности выше допустимого предела!";
+        }
+        else if (humEvent.Value < 0)
+        {
+            alertMessage += $"{eventTime.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается понижение влажности ниже допустимого предела!";
+        }
+
+        return alertMessage;
     }
 }

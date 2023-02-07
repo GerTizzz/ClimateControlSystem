@@ -41,7 +41,9 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 LowerTemperatureWarningLimit = 16f,
 
                 UpperHumidityWarningLimit = 21f,
-                LowerHumidityWarningLimit = 10f
+                LowerHumidityWarningLimit = 10f,
+
+                PredictionTimeIntervalSeconds = 5
             };
 
             modelBuilder.Entity<ConfigRecord>()
