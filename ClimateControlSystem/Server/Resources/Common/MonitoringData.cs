@@ -8,7 +8,7 @@
         public float TemperaturePredictionForFuture { get; set; }
         public float HumidityPredictionForFuture { get; set; }
         /// <remarks> Can be null in case of first monitoring, when there is no any previous data to calculate accuracy </remarks>
-        public float? PredviousTemperaturePredictionAccuracy { get; set; }
+        public float? PreviousTemperaturePredictionAccuracy { get; set; }
         /// <remarks> Can be null in case of first monitoring, when there is no any previous data to calculate accuracy </remarks>
         public float? PreviousHumidityPredicitionAccuracy { get; set; }
         /// <remarks> Can be null in case if prediction value is in allowed interval </remarks>

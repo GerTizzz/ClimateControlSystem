@@ -28,12 +28,12 @@ namespace ClimateControlSystem.Server.Infrastructure
             if (accuracy is null)
             {
                 _monitoringData.PreviousHumidityPredicitionAccuracy = null;
-                _monitoringData.PredviousTemperaturePredictionAccuracy = null;
+                _monitoringData.PreviousTemperaturePredictionAccuracy = null;
             }
             else
             {
                 _monitoringData.PreviousHumidityPredicitionAccuracy = accuracy.PredictedHumidityAccuracy;
-                _monitoringData.PredviousTemperaturePredictionAccuracy = accuracy.PredictedTemperatureAccuracy;
+                _monitoringData.PreviousTemperaturePredictionAccuracy = accuracy.PredictedTemperatureAccuracy;
             }
 
             return this;

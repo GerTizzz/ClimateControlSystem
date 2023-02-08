@@ -3,13 +3,13 @@
     public record class MonitoringResponse
     {
         public DateTimeOffset MeasurementTime { get; set; }
-        public float CurrentRealTemperature { get; set; }
-        public float CurrentRealHumidity { get; set; }
-        public float PredictedFutureTemperature { get; set; }
-        public float PredictedFutureHumidity { get; set; }
-        public float? PredictedTemperatureAccuracy { get; set; }
-        public float? PredictedHumidityAccuracy { get; set; }
-        public TemperatureEventResponse? TemperatureEvent { get; set; }
-        public HumidityEventResponse? HumidityEvent { get; set; }
+        public float MeasuredTemperature { get; set; }
+        public float MeasuredHumidity { get; set; }
+        public float TemperaturePredictionForFuture { get; set; }
+        public float HumidityPredictionForFuture { get; set; }
+        public float? PreviousTemperaturePredictionAccuracy { get; set; }
+        public float? PreviousHumidityPredicitionAccuracy { get; set; }
+        public TemperatureEventResponse? TemperaturePredictionEvent { get; set; }
+        public HumidityEventResponse? HumidityPredictionEvent { get; set; }
     }
 }

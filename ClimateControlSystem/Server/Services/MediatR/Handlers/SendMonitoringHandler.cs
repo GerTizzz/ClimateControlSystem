@@ -3,15 +3,18 @@ using ClimateControlSystem.Server.Hubs;
 using ClimateControlSystem.Server.Services.MediatR.Commands;
 using ClimateControlSystem.Shared.SendToClient;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ClimateControlSystem.Server.Services.MediatR.Handlers
 {
     public class SendMonitoringHandler : IRequestHandler<SendMonitoringCommand, bool>
     {
-        private readonly IMonitoringHub _monitoringHub;
+        private readonly IHubContext<MonitoringHub> _monitoringHub;
+        private readonly IMapper _mapper;
 
-        public SendMonitoringHandler(IMapper mapper, IMonitoringHub monitoringHub)
+        public SendMonitoringHandler(IMapper mapper, IHubContext<MonitoringHub> monitoringHub)
         {
+            _mapper = mapper;
             _monitoringHub = monitoringHub;
         }
 
@@ -19,7 +22,9 @@ namespace ClimateControlSystem.Server.Services.MediatR.Handlers
         {
             try
             {
-                await _monitoringHub.SendMonitoringToWebClients(request.Monitoring);
+                var monitoring = _mapper.Map<MonitoringResponse>(request.Monitoring);
+
+                await _monitoringHub.Clients.All.SendAsync("GetMonitoringResponse", monitoring);
 
                 return true;
             }

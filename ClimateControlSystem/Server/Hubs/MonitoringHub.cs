@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace ClimateControlSystem.Server.Hubs
 {
-    public class MonitoringHub : Hub, IMonitoringHub
+    public class MonitoringHub : Hub
     {
         private readonly IMapper _mapper;
 

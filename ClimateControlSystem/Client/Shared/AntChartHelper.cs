@@ -148,6 +148,8 @@ namespace ClimateControlSystem.Client.Shared
                 var resultTime = firstMonWithTime.MeasurementTime.Value.AddSeconds((index - elementWithTimeIndex) * config.PredictionTimeIntervalSeconds);
 
                 monitorings[index].MeasurementTime = resultTime;
+
+                return;
             }
 
             throw new ArgumentNullException(nameof(PredictionResponse.MeasurementTime));

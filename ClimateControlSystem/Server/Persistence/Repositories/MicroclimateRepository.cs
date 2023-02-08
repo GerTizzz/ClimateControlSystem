@@ -26,6 +26,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                 var monitorings = await _context.Microclimates
                     .Include(micro => micro.Prediction)
                     .Include(micro => micro.SensorData)
+                    .Include(micro => micro.Accuracy)
                     .OrderByDescending(micro => micro.Id)
                     .Skip(start)
                     .Take(count)
@@ -38,7 +39,9 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                         PredictedFutureTemperature = monitor.Prediction?.PredictedTemperature,
                         PredictedFutureHumidity = monitor.Prediction?.PredictedHumidity,
                         CurrentRealTemperature = monitor.SensorData?.CurrentRealTemperature,
-                        CurrentRealHumidity = monitor.SensorData?.CurrentRealHumidity
+                        CurrentRealHumidity = monitor.SensorData?.CurrentRealHumidity,
+                        PredictedTemperatureAccuracy = monitor.Accuracy?.PredictedTemperatureAccuracy,
+                        PredictedHumidityAccuracy = monitor.Accuracy?.PredictedHumidityAccuracy
                     })
                     .ToArray();
 
@@ -140,9 +143,11 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
         {
             try
             {
-                var id = (await _context.Microclimates
+                var lastMicroclimate = await _context.Microclimates
                     .OrderBy(record => record.Id)
-                    .LastAsync()).PredictionId;
+                    .LastOrDefaultAsync();
+
+                var id = lastMicroclimate?.PredictionId;
 
                 PredictionRecord? lastRecord = await _context.Predictions
                     .FirstOrDefaultAsync(prediction => prediction.Id == id);

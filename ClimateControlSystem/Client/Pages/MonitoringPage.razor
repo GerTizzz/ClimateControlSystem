@@ -110,8 +110,8 @@
 
             var newMonitoring = new PredictionResponse()
                 {
-                    PredictedFutureHumidity = monitoring.PredictedFutureHumidity,
-                    PredictedFutureTemperature = monitoring.PredictedFutureTemperature,
+                    PredictedFutureHumidity = monitoring.HumidityPredictionForFuture,
+                    PredictedFutureTemperature = monitoring.TemperaturePredictionForFuture,
                     MeasurementTime = predictedTime.Value.AddSeconds(_config.PredictionTimeIntervalSeconds)
                 };
 
@@ -129,17 +129,17 @@
 
     private PredictionResponse UpdateMonitoringWithSensorsData(MonitoringResponse newMonitoring, PredictionResponse existingMonitoring)
     {
-        existingMonitoring.CurrentRealTemperature = newMonitoring.CurrentRealTemperature;
-        existingMonitoring.CurrentRealHumidity = newMonitoring.CurrentRealHumidity;
+        existingMonitoring.CurrentRealTemperature = newMonitoring.MeasuredTemperature;
+        existingMonitoring.CurrentRealHumidity = newMonitoring.MeasuredHumidity;
 
-        if (newMonitoring.PredictedHumidityAccuracy.HasValue)
+        if (newMonitoring.PreviousHumidityPredicitionAccuracy.HasValue)
         {
-            existingMonitoring.PredictedHumidityAccuracy = newMonitoring.PredictedHumidityAccuracy;
+            existingMonitoring.PredictedHumidityAccuracy = newMonitoring.PreviousHumidityPredicitionAccuracy;
         }
 
-        if (newMonitoring.PredictedTemperatureAccuracy.HasValue)
+        if (newMonitoring.PreviousTemperaturePredictionAccuracy.HasValue)
         {
-            existingMonitoring.PredictedTemperatureAccuracy = newMonitoring.PredictedTemperatureAccuracy;
+            existingMonitoring.PredictedTemperatureAccuracy = newMonitoring.PreviousTemperaturePredictionAccuracy;
         }
 
         return existingMonitoring;
@@ -149,12 +149,12 @@
     {
         try
         {
-            if (monitoring.TemperatureEvent is null)
+            if (monitoring.TemperaturePredictionEvent is null)
             {
                 return;
             }
 
-            string alertMessage = GetTemperatureAlertMessage(monitoring.TemperatureEvent, monitoring.MeasurementTime);
+            string alertMessage = GetTemperatureAlertMessage(monitoring.TemperaturePredictionEvent, monitoring.MeasurementTime);
 
             if (string.IsNullOrEmpty(alertMessage) is false)
             {
@@ -171,12 +171,12 @@
     {
         try
         {
-            if (monitoring.HumidityEvent is null)
+            if (monitoring.HumidityPredictionEvent is null)
             {
                 return;
             }
 
-            string alertMessage = GetHumidityAlertMessage(monitoring.HumidityEvent, monitoring.MeasurementTime);
+            string alertMessage = GetHumidityAlertMessage(monitoring.HumidityPredictionEvent, monitoring.MeasurementTime);
 
             if (string.IsNullOrEmpty(alertMessage) is false)
             {
