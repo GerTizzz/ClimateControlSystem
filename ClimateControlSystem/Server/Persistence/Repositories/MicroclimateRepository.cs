@@ -161,18 +161,23 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             {
                 var record = _mapper.Map<SensorsDataRecord>(sensorsData);
 
-                var microclimate = await _context.Microclimates
-                        .OrderBy(pred => pred.Id)
-                        .LastOrDefaultAsync();
+                if (await _context.Microclimates.AnyAsync() is false)
+                {
+                    var firstRecord = new MicroclimateRecord()
+                    {
+                        SensorData = record
+                    };
 
-                if (microclimate != null)
-                {
-                    microclimate.SensorData = record;
+                    await AddMicroclimateRecord(firstRecord);
+
+                    return true;
                 }
-                else
-                {
-                    await _context.Microclimates.AddAsync(new MicroclimateRecord() { SensorData = record });
-                }
+
+                var microclimate = await _context.Microclimates
+                    .OrderBy(pred => pred.Id)
+                    .LastAsync();
+
+                microclimate.SensorData = record;
 
                 await _context.SaveChangesAsync();
 
@@ -228,9 +233,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                     HumidityEvent = humidityEventRecord
                 };
 
-                await _context.Microclimates.AddAsync(microclimateRecord);
-
-                await _context.SaveChangesAsync();
+                await AddMicroclimateRecord(microclimateRecord);
             }
             catch
             {
@@ -238,6 +241,13 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
 
             return true;
+        }
+
+        private async Task AddMicroclimateRecord(MicroclimateRecord microclimateRecord)
+        {
+            await _context.Microclimates.AddAsync(microclimateRecord);
+
+            await _context.SaveChangesAsync();
         }
     }
 }

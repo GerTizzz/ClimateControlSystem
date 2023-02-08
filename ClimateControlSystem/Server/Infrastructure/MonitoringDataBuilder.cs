@@ -8,16 +8,16 @@ namespace ClimateControlSystem.Server.Infrastructure
 
         public MonitoringDataBuilder AddPredictionData(PredictionResult prediction)
         {
-            _monitoringData.PredictedFutureHumidity = prediction.PredictedHumidity;
-            _monitoringData.PredictedFutureTemperature = prediction.PredictedTemperature;
+            _monitoringData.HumidityPredictionForFuture = prediction.PredictedHumidity;
+            _monitoringData.TemperaturePredictionForFuture = prediction.PredictedTemperature;
 
             return this;
         }
 
         public MonitoringDataBuilder AddSensorsData(SensorsData sensors)
         {
-            _monitoringData.CurrentRealHumidity = sensors.CurrentRealHumidity;
-            _monitoringData.CurrentRealTemperature = sensors.CurrentRealTemperature;
+            _monitoringData.MeasuredHumidity = sensors.CurrentRealHumidity;
+            _monitoringData.MeasuredTemperature = sensors.CurrentRealTemperature;
             _monitoringData.MeasurementTime = sensors.MeasurementTime;
 
             return this;
@@ -27,13 +27,13 @@ namespace ClimateControlSystem.Server.Infrastructure
         {
             if (accuracy is null)
             {
-                _monitoringData.PredictedHumidityAccuracy = null;
-                _monitoringData.PredictedTemperatureAccuracy = null;
+                _monitoringData.PreviousHumidityPredicitionAccuracy = null;
+                _monitoringData.PredviousTemperaturePredictionAccuracy = null;
             }
             else
             {
-                _monitoringData.PredictedHumidityAccuracy = accuracy.PredictedHumidityAccuracy;
-                _monitoringData.PredictedTemperatureAccuracy = accuracy.PredictedTemperatureAccuracy;
+                _monitoringData.PreviousHumidityPredicitionAccuracy = accuracy.PredictedHumidityAccuracy;
+                _monitoringData.PredviousTemperaturePredictionAccuracy = accuracy.PredictedTemperatureAccuracy;
             }
 
             return this;
@@ -41,14 +41,14 @@ namespace ClimateControlSystem.Server.Infrastructure
 
         public MonitoringDataBuilder AddTemperatureEvent(TemperatureEvent? temperatureEvent)
         {
-            _monitoringData.TemperatureEvent = temperatureEvent;
+            _monitoringData.TemperaturePredictionEvent = temperatureEvent;
 
             return this;
         }
 
         public MonitoringDataBuilder AddHumidityEvent(HumidityEvent? humidityEvent)
         {
-            _monitoringData.HumidityEvent = humidityEvent;
+            _monitoringData.HumidityPredictionEvent = humidityEvent;
 
             return this;
         }

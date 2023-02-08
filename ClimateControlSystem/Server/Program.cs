@@ -30,6 +30,8 @@ builder.Services.AddSingleton<IPredictionEngineService>(sp =>
 builder.Services.AddScoped<IMicroclimateRepository, MicroclimateRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IConfigRepository, ConfigRepository>();
+
+builder.Services.AddScoped<IMonitoringHub, MonitoringHub>();
 builder.Services.AddScoped<IMonitoringService, MonitoringService>();
 builder.Services.AddScoped<IAuthenticateManager, AuthenticateManager>();
 builder.Services.AddScoped<IUserManager, UserManager>();

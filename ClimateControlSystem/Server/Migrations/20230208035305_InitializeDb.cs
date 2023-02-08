@@ -32,7 +32,8 @@ namespace ClimateControlSystem.Server.Migrations
                     UpperTemperatureWarningLimit = table.Column<float>(type: "real", nullable: false),
                     LowerTemperatureWarningLimit = table.Column<float>(type: "real", nullable: false),
                     UpperHumidityWarningLimit = table.Column<float>(type: "real", nullable: false),
-                    LowerHumidityWarningLimit = table.Column<float>(type: "real", nullable: false)
+                    LowerHumidityWarningLimit = table.Column<float>(type: "real", nullable: false),
+                    PredictionTimeIntervalSeconds = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -164,8 +165,8 @@ namespace ClimateControlSystem.Server.Migrations
 
             migrationBuilder.InsertData(
                 table: "Configs",
-                columns: new[] { "Id", "LowerHumidityWarningLimit", "LowerTemperatureWarningLimit", "UpperHumidityWarningLimit", "UpperTemperatureWarningLimit" },
-                values: new object[] { 1, 10f, 16f, 21f, 24f });
+                columns: new[] { "Id", "LowerHumidityWarningLimit", "LowerTemperatureWarningLimit", "PredictionTimeIntervalSeconds", "UpperHumidityWarningLimit", "UpperTemperatureWarningLimit" },
+                values: new object[] { 1, 10f, 16f, 5, 21f, 24f });
 
             migrationBuilder.InsertData(
                 table: "Users",

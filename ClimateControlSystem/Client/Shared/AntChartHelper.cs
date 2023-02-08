@@ -2,24 +2,29 @@
 using ClimateControlSystem.Client.Resources;
 using ClimateControlSystem.Shared.Common;
 using ClimateControlSystem.Shared.SendToClient;
+using System;
 
 namespace ClimateControlSystem.Client.Shared
 {
     public static class AntChartHelper
     {
         private const float AccuracyUpperLimit = 100f;
-        private const int MaxGraphicsDataElementsPerMonitoringResponse = 4;
+        private const int MaxGraphicsDataPerMonitoringResponse = 4;
 
-        public static List<GraphicData> GetNewTemperatureGraphicData(PredictionResponse newResonse, ConfigResponse config)
+        private static List<GraphicData> GetNewTemperatureGraphicData(PredictionResponse newResonse, ConfigResponse config)
         {
             try
             {
-                List<GraphicData> graphicsData = new List<GraphicData>(MaxGraphicsDataElementsPerMonitoringResponse);
+                List<GraphicData> graphicsData = new List<GraphicData>(MaxGraphicsDataPerMonitoringResponse);
 
-                string time = newResonse.MeasurementTime.ToString("HH:mm:ss dd.MM.yyyy");
+                string time = newResonse.MeasurementTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
 
-                graphicsData.Add(new GraphicData(time,
-                    newResonse.PredictedFutureTemperature, "Спрогнозированная"));
+                if (newResonse.PredictedFutureTemperature is not null)
+                {
+                    graphicsData.Add(new GraphicData(time,
+                        newResonse.PredictedFutureTemperature.Value, "Спрогнозированная"));
+                }
+
                 graphicsData.Add(new GraphicData(time,
                     config.UpperTemperatureWarningLimit, "Верхний лимит"));
                 graphicsData.Add(new GraphicData(time,
@@ -39,16 +44,20 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        public static List<GraphicData> GetNewHumidityGraphicsData(PredictionResponse newResonse, ConfigResponse config)
+        private static List<GraphicData> GetNewHumidityGraphicsData(PredictionResponse newResonse, ConfigResponse config)
         {
             try
             {
-                List<GraphicData> graphicsData = new List<GraphicData>(MaxGraphicsDataElementsPerMonitoringResponse);
+                List<GraphicData> graphicsData = new List<GraphicData>(MaxGraphicsDataPerMonitoringResponse);
 
-                string time = newResonse.MeasurementTime.ToString("HH:mm:ss dd.MM.yyyy");
+                string time = newResonse.MeasurementTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
 
-                graphicsData.Add(new GraphicData(time,
-                    newResonse.PredictedFutureHumidity, "Спрогнозированная"));
+                if (newResonse.PredictedFutureHumidity is not null)
+                {
+                    graphicsData.Add(new GraphicData(time,
+                        newResonse.PredictedFutureHumidity.Value, "Спрогнозированная"));
+                }
+
                 graphicsData.Add(new GraphicData(time,
                     config.UpperHumidityWarningLimit, "Верхний лимит"));
                 graphicsData.Add(new GraphicData(time,
@@ -103,12 +112,17 @@ namespace ClimateControlSystem.Client.Shared
         {
             try
             {
-                int maxHumidityDataSize = monitorings.Count * MaxGraphicsDataElementsPerMonitoringResponse;
+                int maxHumidityDataSize = monitorings.Count * MaxGraphicsDataPerMonitoringResponse;
 
                 List<GraphicData> temperatureData = new List<GraphicData>(maxHumidityDataSize);
 
                 for (int i = 0; i < monitorings.Count; i++)
                 {
+                    if (monitorings[i].MeasurementTime is null)
+                    {
+                        TrySetDateTime(monitorings, i, config);
+                    }
+
                     var graphicsData = GetNewTemperatureGraphicData(monitorings[i], config);
 
                     temperatureData.AddRange(graphicsData);
@@ -123,16 +137,37 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
+        private static void TrySetDateTime(List<PredictionResponse> monitorings, int index, ConfigResponse config)
+        {
+            var firstMonWithTime = monitorings.FirstOrDefault(mon => mon.MeasurementTime.HasValue);
+            
+            if (firstMonWithTime is not null)
+            {
+                int elementWithTimeIndex = monitorings.IndexOf(firstMonWithTime);
+
+                var resultTime = firstMonWithTime.MeasurementTime.Value.AddSeconds((index - elementWithTimeIndex) * config.PredictionTimeIntervalSeconds);
+
+                monitorings[index].MeasurementTime = resultTime;
+            }
+
+            throw new ArgumentNullException(nameof(PredictionResponse.MeasurementTime));
+        }
+
         public static List<GraphicData> GetHumidityData(List<PredictionResponse> monitorings, ConfigResponse config)
         {
             try
             {
-                int maxHumidityDataSize = monitorings.Count * MaxGraphicsDataElementsPerMonitoringResponse;
+                int maxHumidityDataSize = monitorings.Count * MaxGraphicsDataPerMonitoringResponse;
 
                 List<GraphicData> humidityData = new List<GraphicData>(maxHumidityDataSize);
 
                 for (int i = 0; i < monitorings.Count; i++)
                 {
+                    if (monitorings[i].MeasurementTime is null)
+                    {
+                        TrySetDateTime(monitorings, i, config);
+                    }
+
                     var graphicsData = GetNewHumidityGraphicsData(monitorings[i], config);
 
                     humidityData.AddRange(graphicsData);

@@ -1,9 +1,9 @@
-﻿using ClimateControlSystem.Shared.SendToClient;
+﻿using ClimateControlSystem.Server.Resources.Common;
 
 namespace ClimateControlSystem.Server.Hubs
 {
     public interface IMonitoringHub
     {
-        Task SendMonitoringToWebClients(MonitoringResponse dataToSend);
+        Task SendMonitoringToWebClients(MonitoringData monitoring);
     }
 }

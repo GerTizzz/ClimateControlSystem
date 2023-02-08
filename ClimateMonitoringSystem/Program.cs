@@ -27,7 +27,7 @@ namespace ClimateMonitoringSystem
             {
                 var getResponsesTask = GetResponsesFromStream(call);
 
-                _ = SendRequestsOverStream(call, dataSet, sendingRequestTokenSource);
+                _ = SendRequestsOverStream(call, dataSet, sendingRequestTokenSource.Token);
 
                 #pragma warning disable CS8600
                 string command = Console.ReadLine();
@@ -59,13 +59,19 @@ namespace ClimateMonitoringSystem
         }
 
         private static async Task SendRequestsOverStream(AsyncDuplexStreamingCall<ClimateMonitoringRequest, ClimateMonitoringReply> call,
-            float[][] dataSet, CancellationTokenSource tokenSource)
+            float[][] dataSet, CancellationToken token)
         {
-            while (tokenSource.IsCancellationRequested is false)
+            int count = 0;
+
+            while (count < 1)//(token.IsCancellationRequested is false)
             {
                 await Task.Delay(5000);
-                await call.RequestStream.WriteAsync(GenerateRequest(dataSet));                    
+                await call.RequestStream.WriteAsync(GenerateRequest(dataSet));
+
+                count++;
             }
+
+            await Task.Delay(3000);
 
             await call.RequestStream.CompleteAsync();
         }

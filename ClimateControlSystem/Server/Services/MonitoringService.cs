@@ -26,7 +26,7 @@ namespace ClimateControlSystem.Server.Services
         {
             PredictionResult prediction = await _predictionEngine.Predict(sensorsData);
 
-            _ = Task.Run(() => ProcessMonitoringData(sensorsData, prediction));
+            await ProcessMonitoringData(sensorsData, prediction);
 
             return prediction;
         }
@@ -51,10 +51,10 @@ namespace ClimateControlSystem.Server.Services
                 .AddHumidityEvent(humidityEvent)
                 .Build();
 
-            _ = Task.Run(() => SendMonitoringToCustomers(monitoring));
+            await SendMonitoringToClients(monitoring);
         }
 
-        private async Task SendMonitoringToCustomers(MonitoringData monitoring)
+        private async Task SendMonitoringToClients(MonitoringData monitoring)
         {
             await _mediator.Send(new SendMonitoringCommand()
             {

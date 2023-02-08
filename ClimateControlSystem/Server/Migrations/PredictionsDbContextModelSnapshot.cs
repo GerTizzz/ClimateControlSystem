@@ -55,6 +55,9 @@ namespace ClimateControlSystem.Server.Migrations
                     b.Property<float>("LowerTemperatureWarningLimit")
                         .HasColumnType("real");
 
+                    b.Property<int>("PredictionTimeIntervalSeconds")
+                        .HasColumnType("int");
+
                     b.Property<float>("UpperHumidityWarningLimit")
                         .HasColumnType("real");
 
@@ -71,6 +74,7 @@ namespace ClimateControlSystem.Server.Migrations
                             Id = 1,
                             LowerHumidityWarningLimit = 10f,
                             LowerTemperatureWarningLimit = 16f,
+                            PredictionTimeIntervalSeconds = 5,
                             UpperHumidityWarningLimit = 21f,
                             UpperTemperatureWarningLimit = 24f
                         });
