@@ -33,7 +33,7 @@
     private ConfigResponse _config;
 
     private const int _recordsCount = 15;
-    private const int _recordsRequsetBeginningIndex = 0;
+    private const int _recordsRequestBeginningIndex = 0;
 
     private Line _temperatureChart;
     private Line _humidityChart;
@@ -44,7 +44,7 @@
     private List<GraphicData> _temperatureRenderableSeries;
     private List<GraphicData> _humidityRenderableSeries;
 
-    private List<PredictionResponse> _monitorings;
+    private List<BaseMonitoringResponse> _monitorings;
 
     private HubConnection? _monitoringConnection;
 
@@ -58,7 +58,7 @@
         if (authState.User.Identity.IsAuthenticated)
         {
             _config = await ConfigService.GetConfigAsync();
-            _monitorings = (await MicroclimateService.GetMonitoringsAsync(_recordsRequsetBeginningIndex, _recordsCount))
+            _monitorings = (await MicroclimateService.GetBaseMonitoringsAsync(_recordsRequestBeginningIndex, _recordsCount))
             .ToList();
             _monitorings.Capacity = _recordsCount;
 
@@ -76,12 +76,12 @@
             .WithAutomaticReconnect()
             .Build();
 
-        _monitoringConnection.On<MonitoringResponse>("GetMonitoringResponse", (newData) => MonitoringDataArrived(newData));
+        _monitoringConnection.On<MonitoringWithEventsResponse>("GetMonitoringResponse", (newData) => MonitoringDataArrived(newData));
 
         await _monitoringConnection.StartAsync();
     }
 
-    private async Task MonitoringDataArrived(MonitoringResponse monitoring)
+    private async Task MonitoringDataArrived(MonitoringWithEventsResponse arrivedMonitoring)
     {
         try
         {
@@ -95,23 +95,26 @@
             if (_monitorings.Any())
             {
                 var lastMonitoring = _monitorings.Last();
-                lastMonitoring = UpdateMonitoringWithSensorsData(monitoring, lastMonitoring);
+                lastMonitoring = UpdateMonitoringWithSensorsData(arrivedMonitoring, lastMonitoring);
                 predictedTime = lastMonitoring.MeasurementTime;
             }
             else
             {
-                var firstMonitroing = UpdateMonitoringWithSensorsData(monitoring, new PredictionResponse());
+                var firstMonitroing = UpdateMonitoringWithSensorsData(arrivedMonitoring, new BaseMonitoringResponse());
                 _monitorings.Add(firstMonitroing);
                 predictedTime = DateTimeOffset.Now;
             }
 
-            _ = Task.Run(() => TemperatureEventArrived(monitoring));
-            _ = Task.Run(() => HumidityEventArrived(monitoring));
+            if (arrivedMonitoring is MonitoringWithEventsResponse eventMonitroing)
+            {
+                _ = Task.Run(() => TemperatureEventArrived(eventMonitroing));
+                _ = Task.Run(() => HumidityEventArrived(eventMonitroing));
+            }
 
-            var newMonitoring = new PredictionResponse()
+            var newMonitoring = new BaseMonitoringResponse()
                 {
-                    PredictedFutureHumidity = monitoring.HumidityPredictionForFuture,
-                    PredictedFutureTemperature = monitoring.TemperaturePredictionForFuture,
+                    HumidityPredictionForFuture = arrivedMonitoring.HumidityPredictionForFuture,
+                    TemperaturePredictionForFuture = arrivedMonitoring.TemperaturePredictionForFuture,
                     MeasurementTime = predictedTime.Value.AddSeconds(_config.PredictionTimeIntervalSeconds)
                 };
 
@@ -127,25 +130,15 @@
         }
     }
 
-    private PredictionResponse UpdateMonitoringWithSensorsData(MonitoringResponse newMonitoring, PredictionResponse existingMonitoring)
+    BaseMonitoringResponse UpdateMonitoringWithSensorsData(BaseMonitoringResponse newMonitoring, BaseMonitoringResponse existingMonitoring)
     {
-        existingMonitoring.CurrentRealTemperature = newMonitoring.MeasuredTemperature;
-        existingMonitoring.CurrentRealHumidity = newMonitoring.MeasuredHumidity;
-
-        if (newMonitoring.PreviousHumidityPredicitionAccuracy.HasValue)
-        {
-            existingMonitoring.PredictedHumidityAccuracy = newMonitoring.PreviousHumidityPredicitionAccuracy;
-        }
-
-        if (newMonitoring.PreviousTemperaturePredictionAccuracy.HasValue)
-        {
-            existingMonitoring.PredictedTemperatureAccuracy = newMonitoring.PreviousTemperaturePredictionAccuracy;
-        }
+        existingMonitoring.MeasuredTemperature = newMonitoring.MeasuredTemperature;
+        existingMonitoring.MeasuredHumidity = newMonitoring.MeasuredHumidity;
 
         return existingMonitoring;
     }
 
-    private async Task TemperatureEventArrived(MonitoringResponse monitoring)
+    private async Task TemperatureEventArrived(MonitoringWithEventsResponse monitoring)
     {
         try
         {
@@ -167,7 +160,7 @@
         }
     }
 
-    private async Task HumidityEventArrived(MonitoringResponse monitoring)
+    private async Task HumidityEventArrived(MonitoringWithEventsResponse monitoring)
     {
         try
         {
@@ -236,33 +229,35 @@
         await _humidityChart.ChangeData(_humidityRenderableSeries);
     }
 
-    private string GetTemperatureAlertMessage(TemperatureEventResponse tempEvent, DateTimeOffset eventTime)
+    private string GetTemperatureAlertMessage(TemperatureEventResponse tempEvent, DateTimeOffset? eventTime)
     {
         string alertMessage = "";
+        DateTimeOffset time = eventTime.HasValue ? eventTime.Value : DateTimeOffset.Now;
 
         if (tempEvent.Value > 0)
         {
-            alertMessage += $"{eventTime.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается превышение температуры выше допустимого предела!";
+            alertMessage += $"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается превышение температуры выше допустимого предела!";
         }
         else if (tempEvent.Value < 0)
         {
-            alertMessage += $"{eventTime.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается понижение температуры ниже допустимого предела!";
+            alertMessage += $"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается понижение температуры ниже допустимого предела!";
         }
 
         return alertMessage;
     }
 
-    private string GetHumidityAlertMessage(HumidityEventResponse humEvent, DateTimeOffset eventTime)
+    private string GetHumidityAlertMessage(HumidityEventResponse humEvent, DateTimeOffset? eventTime)
     {
         string alertMessage = "";
+        DateTimeOffset time = eventTime.HasValue ? eventTime.Value : DateTimeOffset.Now;
 
         if (humEvent.Value > 0)
         {
-            alertMessage += $"{eventTime.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается превышение влажности выше допустимого предела!";
+            alertMessage += $"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается превышение влажности выше допустимого предела!";
         }
         else if (humEvent.Value < 0)
         {
-            alertMessage += $"{eventTime.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается понижение влажности ниже допустимого предела!";
+            alertMessage += $"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается понижение влажности ниже допустимого предела!";
         }
 
         return alertMessage;

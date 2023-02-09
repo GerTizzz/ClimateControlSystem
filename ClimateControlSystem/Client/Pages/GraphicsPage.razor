@@ -24,7 +24,7 @@
             <br />
 
             <PaginationComponent RecordsCount=@_monitoringsRecordsCount
-                RecordsPerPage=@RecordsPerGraphic
+                RecordsPerPage=@_recordsCount
                 PageChanged=@OnPageChanged />
 
             <br />
@@ -36,11 +36,12 @@
 </AuthorizeView>
 
 @code{
-    private const int RecordsPerGraphic = 15;
+    private const int _recordsCount = 15;
+    private const int _recordsRequestBeginningIndex = 0;
 
     private ConfigResponse _config;
 
-    private List<PredictionResponse> _predictions;
+    private List<MonitoringWithAccuracyResponse> _predictions;
 
     private Line _temperatureChart;
     private Line _humidityChart;
@@ -62,7 +63,7 @@
 
         _monitoringsRecordsCount = await MicroclimateService.GetMonitoringsCount();
 
-        _predictions = (await MicroclimateService.GetMonitoringsAsync(0, RecordsPerGraphic)).ToList();
+        _predictions = (await MicroclimateService.GetMonitoringsWithAccuracyAsync(_recordsRequestBeginningIndex, _recordsCount)).ToList();
 
         UpdateGraphics();
     }
@@ -84,7 +85,7 @@
 
     private async Task OnPageChanged(RecordsRequest request)
     {
-        _predictions = (await MicroclimateService.GetMonitoringsAsync(request.RecordsOffset, request.RecordsCount)).ToList();
+        _predictions = (await MicroclimateService.GetMonitoringsWithAccuracyAsync(request.RecordsOffset, request.RecordsCount)).ToList();
 
         UpdateGraphics();
     }

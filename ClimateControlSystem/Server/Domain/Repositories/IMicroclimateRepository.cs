@@ -17,7 +17,7 @@ namespace ClimateControlSystem.Server.Domain.Repositories
 
         Task<int> GetMonitoringsCountAsync();
 
-        Task<PredictionResponse[]> GetMonitoringsAsync(int start, int count);
+        Task<IEnumerable<BaseMonitoring>> GetBaseMonitoringsAsync(int start, int count);
 
         Task<MicroclimateResponse[]> GetMicroclimatesAsync(int start, int count);
 

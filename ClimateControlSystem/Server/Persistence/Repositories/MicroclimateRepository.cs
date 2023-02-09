@@ -19,37 +19,34 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             _mapper = mapper;
         }
 
-        public async Task<PredictionResponse[]> GetMonitoringsAsync(int start, int count)
+        public async Task<IEnumerable<BaseMonitoring>> GetBaseMonitoringsAsync(int start, int count)
         {
             try
             {
                 var monitorings = await _context.Microclimates
                     .Include(micro => micro.Prediction)
                     .Include(micro => micro.SensorData)
-                    .Include(micro => micro.Accuracy)
                     .OrderByDescending(micro => micro.Id)
                     .Skip(start)
                     .Take(count)
                     .ToArrayAsync();
 
                 var result = monitorings.Select(monitor =>
-                    new PredictionResponse()
+                    new BaseMonitoring()
                     {
                         MeasurementTime = monitor.SensorData?.MeasurementTime,
-                        PredictedFutureTemperature = monitor.Prediction?.PredictedTemperature,
-                        PredictedFutureHumidity = monitor.Prediction?.PredictedHumidity,
-                        CurrentRealTemperature = monitor.SensorData?.CurrentRealTemperature,
-                        CurrentRealHumidity = monitor.SensorData?.CurrentRealHumidity,
-                        PredictedTemperatureAccuracy = monitor.Accuracy?.PredictedTemperatureAccuracy,
-                        PredictedHumidityAccuracy = monitor.Accuracy?.PredictedHumidityAccuracy
+                        TemperaturePredictionForFuture = monitor.Prediction?.PredictedTemperature,
+                        HumidityPredictionForFuture = monitor.Prediction?.PredictedHumidity,
+                        MeasuredTemperature = monitor.SensorData?.CurrentRealTemperature,
+                        MeasuredHumidity = monitor.SensorData?.CurrentRealHumidity
                     })
-                    .ToArray();
+                    .ToList();
 
                 return result;
             }
             catch (Exception exc)
             {
-                return Array.Empty<PredictionResponse>();
+                return new List<BaseMonitoring>();
             }
         }
 
@@ -143,11 +140,9 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
         {
             try
             {
-                var lastMicroclimate = await _context.Microclimates
+                var id = (await _context.Microclimates
                     .OrderBy(record => record.Id)
-                    .LastOrDefaultAsync();
-
-                var id = lastMicroclimate?.PredictionId;
+                    .LastAsync()).PredictionId;
 
                 PredictionRecord? lastRecord = await _context.Predictions
                     .FirstOrDefaultAsync(prediction => prediction.Id == id);

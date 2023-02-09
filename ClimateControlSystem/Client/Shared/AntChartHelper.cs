@@ -2,7 +2,6 @@
 using ClimateControlSystem.Client.Resources;
 using ClimateControlSystem.Shared.Common;
 using ClimateControlSystem.Shared.SendToClient;
-using System;
 
 namespace ClimateControlSystem.Client.Shared
 {
@@ -11,7 +10,7 @@ namespace ClimateControlSystem.Client.Shared
         private const float AccuracyUpperLimit = 100f;
         private const int MaxGraphicsDataPerMonitoringResponse = 4;
 
-        private static List<GraphicData> GetNewTemperatureGraphicData(PredictionResponse newResonse, ConfigResponse config)
+        private static List<GraphicData> GetNewTemperatureGraphicData(BaseMonitoringResponse newResonse, ConfigResponse config)
         {
             try
             {
@@ -19,10 +18,10 @@ namespace ClimateControlSystem.Client.Shared
 
                 string time = newResonse.MeasurementTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
 
-                if (newResonse.PredictedFutureTemperature is not null)
+                if (newResonse.TemperaturePredictionForFuture is not null)
                 {
                     graphicsData.Add(new GraphicData(time,
-                        newResonse.PredictedFutureTemperature.Value, "Спрогнозированная"));
+                        newResonse.TemperaturePredictionForFuture.Value, "Спрогнозированная"));
                 }
 
                 graphicsData.Add(new GraphicData(time,
@@ -30,10 +29,10 @@ namespace ClimateControlSystem.Client.Shared
                 graphicsData.Add(new GraphicData(time,
                     config.LowerTemperatureWarningLimit, "Нижний лимит"));
 
-                if (newResonse.CurrentRealTemperature.HasValue)
+                if (newResonse.MeasuredTemperature.HasValue)
                 {
                     graphicsData.Add(new GraphicData(time,
-                        newResonse.CurrentRealTemperature.Value, "Действительная"));
+                        newResonse.MeasuredTemperature.Value, "Действительная"));
                 }
 
                 return graphicsData;
@@ -44,7 +43,7 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        private static List<GraphicData> GetNewHumidityGraphicsData(PredictionResponse newResonse, ConfigResponse config)
+        private static List<GraphicData> GetNewHumidityGraphicsData(BaseMonitoringResponse newResonse, ConfigResponse config)
         {
             try
             {
@@ -52,10 +51,10 @@ namespace ClimateControlSystem.Client.Shared
 
                 string time = newResonse.MeasurementTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
 
-                if (newResonse.PredictedFutureHumidity is not null)
+                if (newResonse.HumidityPredictionForFuture is not null)
                 {
                     graphicsData.Add(new GraphicData(time,
-                        newResonse.PredictedFutureHumidity.Value, "Спрогнозированная"));
+                        newResonse.HumidityPredictionForFuture.Value, "Спрогнозированная"));
                 }
 
                 graphicsData.Add(new GraphicData(time,
@@ -63,10 +62,10 @@ namespace ClimateControlSystem.Client.Shared
                 graphicsData.Add(new GraphicData(time,
                     config.LowerHumidityWarningLimit, "Нижний лимит"));
 
-                if (newResonse.CurrentRealHumidity.HasValue)
+                if (newResonse.MeasuredHumidity.HasValue)
                 {
                     graphicsData.Add(new GraphicData(time,
-                        newResonse.CurrentRealHumidity.Value, "Действительная"));
+                        newResonse.MeasuredHumidity.Value, "Действительная"));
                 }
 
                 return graphicsData;
@@ -77,7 +76,7 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        public static List<GraphicData> GetAccuracyData(List<PredictionResponse> monitorings)
+        public static List<GraphicData> GetAccuracyData(List<MonitoringWithAccuracyResponse> monitorings)
         {
             try
             {
@@ -87,13 +86,13 @@ namespace ClimateControlSystem.Client.Shared
                 {
                     string time = monitorings[i].MeasurementTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
 
-                    if (monitorings[i].PredictedHumidityAccuracy.HasValue)
+                    if (monitorings[i].PreviousHumidityPredicitionAccuracy.HasValue)
                     {
-                        temperatureAccuracy.Add(new GraphicData(time, monitorings[i].PredictedHumidityAccuracy.Value, "Влажность"));
+                        temperatureAccuracy.Add(new GraphicData(time, monitorings[i].PreviousHumidityPredicitionAccuracy.Value, "Влажность"));
                     }             
-                    if (monitorings[i].PredictedTemperatureAccuracy.HasValue)
+                    if (monitorings[i].PreviousTemperaturePredictionAccuracy.HasValue)
                     {
-                        temperatureAccuracy.Add(new GraphicData(time, monitorings[i].PredictedTemperatureAccuracy.Value, "Температура"));
+                        temperatureAccuracy.Add(new GraphicData(time, monitorings[i].PreviousTemperaturePredictionAccuracy.Value, "Температура"));
                     }
 
                     temperatureAccuracy.Add(new GraphicData(time, AccuracyUpperLimit, "Лимит"));
@@ -108,7 +107,7 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        public static List<GraphicData> GetTemperatureData(List<PredictionResponse> monitorings, ConfigResponse config)
+        public static List<GraphicData> GetTemperatureData<T>(List<T> monitorings, ConfigResponse config) where T : BaseMonitoringResponse
         {
             try
             {
@@ -120,7 +119,10 @@ namespace ClimateControlSystem.Client.Shared
                 {
                     if (monitorings[i].MeasurementTime is null)
                     {
-                        TrySetDateTime(monitorings, i, config);
+                        if (TrySetDateTimeBasedOnNeighbors(monitorings, i, config) is false)
+                        {
+                            monitorings[i].MeasurementTime = DateTimeOffset.Now;
+                        }
                     }
 
                     var graphicsData = GetNewTemperatureGraphicData(monitorings[i], config);
@@ -137,7 +139,7 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        private static void TrySetDateTime(List<PredictionResponse> monitorings, int index, ConfigResponse config)
+        private static bool TrySetDateTimeBasedOnNeighbors<T>(List<T> monitorings, int index, ConfigResponse config) where T : BaseMonitoringResponse
         {
             var firstMonWithTime = monitorings.FirstOrDefault(mon => mon.MeasurementTime.HasValue);
             
@@ -149,13 +151,15 @@ namespace ClimateControlSystem.Client.Shared
 
                 monitorings[index].MeasurementTime = resultTime;
 
-                return;
+                return true;
             }
-
-            throw new ArgumentNullException(nameof(PredictionResponse.MeasurementTime));
+            else
+            {
+                return false;
+            }
         }
 
-        public static List<GraphicData> GetHumidityData(List<PredictionResponse> monitorings, ConfigResponse config)
+        public static List<GraphicData> GetHumidityData<T>(List<T> monitorings, ConfigResponse config) where T : BaseMonitoringResponse
         {
             try
             {
@@ -167,7 +171,10 @@ namespace ClimateControlSystem.Client.Shared
                 {
                     if (monitorings[i].MeasurementTime is null)
                     {
-                        TrySetDateTime(monitorings, i, config);
+                        if (TrySetDateTimeBasedOnNeighbors(monitorings, i, config) is false)
+                        {
+                            monitorings[i].MeasurementTime = DateTimeOffset.Now;
+                        }
                     }
 
                     var graphicsData = GetNewHumidityGraphicsData(monitorings[i], config);

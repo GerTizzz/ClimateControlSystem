@@ -1,4 +1,5 @@
-﻿using ClimateControlSystem.Server.Domain.Repositories;
+﻿using AutoMapper;
+using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Shared.SendToClient;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +12,12 @@ namespace ClimateControlSystem.Server.Controllers
     public class MicroclimateController : ControllerBase
     {
         private readonly IMicroclimateRepository _microclimateRepository;
+        private readonly IMapper _mapper;
 
-        public MicroclimateController(IMicroclimateRepository predictionRepository)
+        public MicroclimateController(IMicroclimateRepository predictionRepository, IMapper mapper)
         {
             _microclimateRepository = predictionRepository;
+            _mapper = mapper;
         }
 
         [HttpGet("monitoringscount")]
@@ -25,12 +28,14 @@ namespace ClimateControlSystem.Server.Controllers
             return Ok(recordsCount);
         }
 
-        [HttpGet("monitorings/{start:int}/{count:int:range(1, 25)}")]
-        public async Task<ActionResult<List<PredictionResponse>>> GetMonitorings(int start, int count)
+        [HttpGet("basemonitorings/{start:int}/{count:int:range(1, 25)}")]
+        public async Task<ActionResult<List<BaseMonitoringResponse>>> GetBaseMonitorings(int start, int count)
         {
-            var records = await _microclimateRepository.GetMonitoringsAsync(start, count);
+            var records = await _microclimateRepository.GetBaseMonitoringsAsync(start, count);
 
-            return Ok(records);
+            var result = records.Select(rec => _mapper.Map<BaseMonitoringResponse>(rec)).ToList();
+
+            return Ok(result);
         }
 
         [HttpGet("microclimatescount")]

@@ -96,11 +96,13 @@ namespace ClimateControlSystem.Server.Mapping
 
             CreateMap<Config, ConfigResponse>();
 
-            CreateMap<MonitoringData, MonitoringResponse>();
+            CreateMap<MonitoringWithEvents, MonitoringWithEventsResponse>();
 
             CreateMap<TemperatureEvent, TemperatureEventResponse>();
 
             CreateMap<HumidityEvent, HumidityEventResponse>();
+
+            CreateMap<BaseMonitoring, BaseMonitoringResponse>();
 
             #endregion
         }

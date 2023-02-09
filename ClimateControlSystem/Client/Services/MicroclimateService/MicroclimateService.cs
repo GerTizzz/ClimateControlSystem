@@ -53,13 +53,13 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             return 0;
         }
 
-        public async Task<IReadOnlyCollection<PredictionResponse>> GetMonitoringsAsync(int start = 0, int count = 25)
+        public async Task<List<BaseMonitoringResponse>> GetBaseMonitoringsAsync(int start = 0, int count = 25)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<PredictionResponse>>($"api/microclimate/monitorings/{start}/{count}");
+                var result = await _httpClient.GetFromJsonAsync<List<BaseMonitoringResponse>>($"api/microclimate/basemonitorings/{start}/{count}");
 
-                return result.Reverse<PredictionResponse>().ToList();
+                return result.Reverse<BaseMonitoringResponse>().ToList();
             }
             catch (HttpRequestException e)
             {
@@ -69,10 +69,29 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
             
-            return new List<PredictionResponse>();
+            return new List<BaseMonitoringResponse>();
         }
 
-        public async Task<IReadOnlyCollection<MicroclimateResponse>> GetMicroclimatesAsync(int offsetFromTheEnd, int count)
+        public async Task<List<MonitoringWithAccuracyResponse>> GetMonitoringsWithAccuracyAsync(int start = 0, int count = 25)
+        {
+            try
+            {
+                var result = await _httpClient.GetFromJsonAsync<List<MonitoringWithAccuracyResponse>>($"api/microclimate/basemonitorings/{start}/{count}");
+
+                return result.Reverse<MonitoringWithAccuracyResponse>().ToList();
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode.HasValue && e.StatusCode.Value == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await _authService.Logout();
+                }
+            }
+
+            return new List<MonitoringWithAccuracyResponse>();
+        }
+
+        public async Task<List<MicroclimateResponse>> GetMicroclimatesAsync(int offsetFromTheEnd, int count)
         {
             try
             {
@@ -90,7 +109,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             return new List<MicroclimateResponse>();
         }
 
-        public async Task<IReadOnlyCollection<TemperatureEventResponse>> GetTemperatureEventsAsync(int start = 0, int count = 25)
+        public async Task<List<TemperatureEventResponse>> GetTemperatureEventsAsync(int start = 0, int count = 25)
         {
             try
             {
@@ -108,7 +127,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             return new List<TemperatureEventResponse>();
         }
 
-        public async Task<IReadOnlyCollection<HumidityEventResponse>> GetHumidityEventsAsync(int start = 0, int count = 25)
+        public async Task<List<HumidityEventResponse>> GetHumidityEventsAsync(int start = 0, int count = 25)
         {
             try
             {
