@@ -18,10 +18,10 @@ namespace ClimateControlSystem.Client.Shared
 
                 string time = newResonse.MeasurementTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
 
-                if (newResonse.TemperaturePredictionForFuture is not null)
+                if (newResonse.PredictedTemperature is not null)
                 {
                     graphicsData.Add(new GraphicData(time,
-                        newResonse.TemperaturePredictionForFuture.Value, "Спрогнозированная"));
+                        newResonse.PredictedTemperature.Value, "Спрогнозированная"));
                 }
 
                 graphicsData.Add(new GraphicData(time,
@@ -51,10 +51,10 @@ namespace ClimateControlSystem.Client.Shared
 
                 string time = newResonse.MeasurementTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
 
-                if (newResonse.HumidityPredictionForFuture is not null)
+                if (newResonse.PredictedHumidity is not null)
                 {
                     graphicsData.Add(new GraphicData(time,
-                        newResonse.HumidityPredictionForFuture.Value, "Спрогнозированная"));
+                        newResonse.PredictedHumidity.Value, "Спрогнозированная"));
                 }
 
                 graphicsData.Add(new GraphicData(time,
@@ -76,7 +76,7 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        public static List<GraphicData> GetAccuracyData(List<MonitoringWithAccuracyResponse> monitorings)
+        public static List<GraphicData> GetAccuracyData(List<MonitoringWithAccuraciesResponse> monitorings)
         {
             try
             {
@@ -86,13 +86,13 @@ namespace ClimateControlSystem.Client.Shared
                 {
                     string time = monitorings[i].MeasurementTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
 
-                    if (monitorings[i].PreviousHumidityPredicitionAccuracy.HasValue)
+                    if (monitorings[i].PredictedHumidityAccuracy.HasValue)
                     {
-                        temperatureAccuracy.Add(new GraphicData(time, monitorings[i].PreviousHumidityPredicitionAccuracy.Value, "Влажность"));
+                        temperatureAccuracy.Add(new GraphicData(time, monitorings[i].PredictedHumidityAccuracy.Value, "Влажность"));
                     }             
-                    if (monitorings[i].PreviousTemperaturePredictionAccuracy.HasValue)
+                    if (monitorings[i].PredictedTemperatureAccuracy.HasValue)
                     {
-                        temperatureAccuracy.Add(new GraphicData(time, monitorings[i].PreviousTemperaturePredictionAccuracy.Value, "Температура"));
+                        temperatureAccuracy.Add(new GraphicData(time, monitorings[i].PredictedTemperatureAccuracy.Value, "Температура"));
                     }
 
                     temperatureAccuracy.Add(new GraphicData(time, AccuracyUpperLimit, "Лимит"));

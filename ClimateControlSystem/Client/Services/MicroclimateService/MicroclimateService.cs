@@ -57,7 +57,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<BaseMonitoringResponse>>($"api/microclimate/basemonitorings/{start}/{count}");
+                var result = await _httpClient.GetFromJsonAsync<List<BaseMonitoringResponse>>($"api/microclimate/monitorings/{start}/{count}");
 
                 return result.Reverse<BaseMonitoringResponse>().ToList();
             }
@@ -72,13 +72,13 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             return new List<BaseMonitoringResponse>();
         }
 
-        public async Task<List<MonitoringWithAccuracyResponse>> GetMonitoringsWithAccuracyAsync(int start = 0, int count = 25)
+        public async Task<List<MonitoringWithAccuraciesResponse>> GetMonitoringsWithAccuraciesAsync(int start = 0, int count = 25)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<MonitoringWithAccuracyResponse>>($"api/microclimate/basemonitorings/{start}/{count}");
+                var result = await _httpClient.GetFromJsonAsync<List<MonitoringWithAccuraciesResponse>>($"api/microclimate/monitoringswithaccuracies/{start}/{count}");
 
-                return result.Reverse<MonitoringWithAccuracyResponse>().ToList();
+                return result.Reverse<MonitoringWithAccuraciesResponse>().ToList();
             }
             catch (HttpRequestException e)
             {
@@ -88,7 +88,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
 
-            return new List<MonitoringWithAccuracyResponse>();
+            return new List<MonitoringWithAccuraciesResponse>();
         }
 
         public async Task<List<MicroclimateResponse>> GetMicroclimatesAsync(int offsetFromTheEnd, int count)
@@ -109,11 +109,11 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             return new List<MicroclimateResponse>();
         }
 
-        public async Task<List<TemperatureEventResponse>> GetTemperatureEventsAsync(int start = 0, int count = 25)
+        public async Task<List<MonitoringEventsResponse>> GetMonitoringEventsAsync(int start = 0, int count = 25)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<TemperatureEventResponse>>($"api/microclimate/temperatureevents/{start}/{count}") ?? new List<TemperatureEventResponse>();
+                var result = await _httpClient.GetFromJsonAsync<List<MonitoringEventsResponse>>($"api/microclimate/monitoringevents/{start}/{count}") ?? new List<MonitoringEventsResponse>();
                 return result;
             }
             catch (HttpRequestException e)
@@ -124,25 +124,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
 
-            return new List<TemperatureEventResponse>();
-        }
-
-        public async Task<List<HumidityEventResponse>> GetHumidityEventsAsync(int start = 0, int count = 25)
-        {
-            try
-            {
-                var result = await _httpClient.GetFromJsonAsync<List<HumidityEventResponse>>($"api/microclimate/humidityevents/{start}/{count}") ?? new List<HumidityEventResponse>();
-                return result;
-            }
-            catch (HttpRequestException e)
-            {
-                if (e.StatusCode.HasValue && e.StatusCode.Value == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    await _authService.Logout();
-                }
-            }
-
-            return new List<HumidityEventResponse>();
+            return new List<MonitoringEventsResponse>();
         }
     }
 }

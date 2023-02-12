@@ -41,7 +41,7 @@
 
     private ConfigResponse _config;
 
-    private List<MonitoringWithAccuracyResponse> _predictions;
+    private List<MonitoringWithAccuraciesResponse> _predictions;
 
     private Line _temperatureChart;
     private Line _humidityChart;
@@ -63,7 +63,7 @@
 
         _monitoringsRecordsCount = await MicroclimateService.GetMonitoringsCount();
 
-        _predictions = (await MicroclimateService.GetMonitoringsWithAccuracyAsync(_recordsRequestBeginningIndex, _recordsCount)).ToList();
+        _predictions = (await MicroclimateService.GetMonitoringsWithAccuraciesAsync(_recordsRequestBeginningIndex, _recordsCount)).ToList();
 
         UpdateGraphics();
     }
@@ -85,7 +85,7 @@
 
     private async Task OnPageChanged(RecordsRequest request)
     {
-        _predictions = (await MicroclimateService.GetMonitoringsWithAccuracyAsync(request.RecordsOffset, request.RecordsCount)).ToList();
+        _predictions = (await MicroclimateService.GetMonitoringsWithAccuraciesAsync(request.RecordsOffset, request.RecordsCount)).ToList();
 
         UpdateGraphics();
     }

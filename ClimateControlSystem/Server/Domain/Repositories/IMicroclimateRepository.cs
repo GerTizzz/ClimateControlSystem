@@ -17,12 +17,12 @@ namespace ClimateControlSystem.Server.Domain.Repositories
 
         Task<int> GetMonitoringsCountAsync();
 
-        Task<IEnumerable<BaseMonitoring>> GetBaseMonitoringsAsync(int start, int count);
+        Task<IEnumerable<Monitoring>> GetMonitoringsAsync(int start, int count);
 
-        Task<MicroclimateResponse[]> GetMicroclimatesAsync(int start, int count);
+        Task<IEnumerable<Monitoring>> GetMonitoringsWithAccuraciesAsync(int start, int count);
 
-        Task<TemperatureEvent[]> GetTemperatureEventsAsync(int start, int count);
+        Task<IEnumerable<MicroclimateResponse>> GetMicroclimatesAsync(int start, int count);
 
-        Task<HumidityEvent[]> GetHumidityEventsAsync(int start, int count);
+        Task<IEnumerable<Monitoring>> GetMonitoringEventsAsync(int start, int count);
     }
 }

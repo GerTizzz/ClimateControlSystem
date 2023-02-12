@@ -113,8 +113,8 @@
 
             var newMonitoring = new BaseMonitoringResponse()
                 {
-                    HumidityPredictionForFuture = arrivedMonitoring.HumidityPredictionForFuture,
-                    TemperaturePredictionForFuture = arrivedMonitoring.TemperaturePredictionForFuture,
+                    PredictedHumidity = arrivedMonitoring.PredictedHumidity,
+                    PredictedTemperature = arrivedMonitoring.PredictedTemperature,
                     MeasurementTime = predictedTime.Value.AddSeconds(_config.PredictionTimeIntervalSeconds)
                 };
 

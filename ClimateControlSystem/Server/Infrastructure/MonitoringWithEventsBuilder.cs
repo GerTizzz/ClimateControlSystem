@@ -2,19 +2,19 @@
 
 namespace ClimateControlSystem.Server.Infrastructure
 {
-    public sealed class MonitoringWithEventsBuilder
+    public sealed class MonitoringBuilder
     {
-        private readonly MonitoringWithEvents _monitoringData = new MonitoringWithEvents();
+        private readonly Monitoring _monitoringData = new Monitoring();
 
-        public MonitoringWithEventsBuilder AddPredictionData(PredictionResult prediction)
+        public MonitoringBuilder AddPredictionData(PredictionResult prediction)
         {
-            _monitoringData.HumidityPredictionForFuture = prediction.PredictedHumidity;
-            _monitoringData.TemperaturePredictionForFuture = prediction.PredictedTemperature;
+            _monitoringData.PredictedHumidity = prediction.PredictedHumidity;
+            _monitoringData.PredictedTemperature = prediction.PredictedTemperature;
 
             return this;
         }
 
-        public MonitoringWithEventsBuilder AddSensorsData(SensorsData sensors)
+        public MonitoringBuilder AddSensorsData(SensorsData sensors)
         {
             _monitoringData.MeasuredHumidity = sensors.CurrentRealHumidity;
             _monitoringData.MeasuredTemperature = sensors.CurrentRealTemperature;
@@ -23,21 +23,21 @@ namespace ClimateControlSystem.Server.Infrastructure
             return this;
         }
 
-        public MonitoringWithEventsBuilder AddTemperatureEvent(TemperatureEvent? temperatureEvent)
+        public MonitoringBuilder AddTemperatureEvent(TemperatureEvent? temperatureEvent)
         {
             _monitoringData.TemperaturePredictionEvent = temperatureEvent;
 
             return this;
         }
 
-        public MonitoringWithEventsBuilder AddHumidityEvent(HumidityEvent? humidityEvent)
+        public MonitoringBuilder AddHumidityEvent(HumidityEvent? humidityEvent)
         {
             _monitoringData.HumidityPredictionEvent = humidityEvent;
 
             return this;
         }
 
-        public MonitoringWithEvents Build()
+        public Monitoring Build()
         {
             return _monitoringData;
         }

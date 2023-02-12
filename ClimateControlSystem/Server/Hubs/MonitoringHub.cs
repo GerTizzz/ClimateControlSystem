@@ -14,9 +14,9 @@ namespace ClimateControlSystem.Server.Hubs
             _mapper = mapper;
         }
 
-        public async Task SendMonitoringToWebClients(MonitoringWithEvents monitoring)
+        public async Task SendMonitoringToWebClients(Monitoring monitoring)
         {
-            var dataToSend = _mapper.Map<MonitoringWithAccuracyResponse>(monitoring);
+            var dataToSend = _mapper.Map<MonitoringWithAccuraciesResponse>(monitoring);
 
             if (Clients is not null)
             {

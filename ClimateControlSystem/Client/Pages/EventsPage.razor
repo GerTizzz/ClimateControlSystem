@@ -9,7 +9,7 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_temperatureEvents is null && _humidityEvents is null)
+        @if (_monitoringEvents is null)
         {
             <p><em>Загрузка...</em></p>
         }
@@ -24,7 +24,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var _tempEvent in _temperatureEvents)
+                    @foreach (var _tempEvent in _monitoringEvents.Select(monEv => monEv.TemperatureEvent).ToList())
                     {
                         <tr>
                             <td style="font-size:small"><span class="oi oi-warning ico" aria-hidden="true" style="color:red"></span></td>
@@ -43,7 +43,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var _humEvent in _humidityEvents)
+                    @foreach (var _humEvent in _monitoringEvents.Select(monEv => monEv.HumidityEvent).ToList())
                     {
                         <tr>
                             <td style="font-size:small"><span class="oi oi-warning" aria-hidden="true" style="color:red"></span></td>
@@ -60,10 +60,12 @@
 </AuthorizeView>
 
 @code {
+    private const int _recordsCount = 20;
+    private const int _recordsRequestBeginningIndex = 0;
+
     private ConfigResponse _config;
 
-    private IReadOnlyCollection<TemperatureEventResponse> _temperatureEvents;
-    private IReadOnlyCollection<HumidityEventResponse> _humidityEvents;
+    private List<MonitoringEventsResponse> _monitoringEvents;
 
     private float _temperatureDeviation = 0;
     private float _humidityDeviation = 0;
@@ -73,9 +75,7 @@
         _config = await ConfigService.GetConfigAsync();
 
         _temperatureDeviation = _config.UpperTemperatureWarningLimit - _config.LowerTemperatureWarningLimit;
-        _humidityDeviation = _config.UpperHumidityWarningLimit - _config.LowerHumidityWarningLimit;
 
-        _temperatureEvents = await MicroclimateService.GetTemperatureEventsAsync(0, 20);
-        _humidityEvents = await MicroclimateService.GetHumidityEventsAsync(0, 20);
+        _monitoringEvents = await MicroclimateService.GetMonitoringEventsAsync(_recordsRequestBeginningIndex, _recordsCount);
     }
 }

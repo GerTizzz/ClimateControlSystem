@@ -5,6 +5,6 @@ namespace ClimateControlSystem.Server.Services.MediatR.Commands
 {
     public class SendMonitoringCommand : IRequest<bool>
     {
-        public MonitoringWithEvents Monitoring { get; init; }
+        public Monitoring Monitoring { get; init; }
     }
 }

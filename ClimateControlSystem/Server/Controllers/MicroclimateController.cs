@@ -28,12 +28,22 @@ namespace ClimateControlSystem.Server.Controllers
             return Ok(recordsCount);
         }
 
-        [HttpGet("basemonitorings/{start:int}/{count:int:range(1, 25)}")]
-        public async Task<ActionResult<List<BaseMonitoringResponse>>> GetBaseMonitorings(int start, int count)
+        [HttpGet("monitorings/{start:int}/{count:int:range(1, 25)}")]
+        public async Task<ActionResult<List<BaseMonitoringResponse>>> GetMonitorings(int start, int count)
         {
-            var records = await _microclimateRepository.GetBaseMonitoringsAsync(start, count);
+            var records = await _microclimateRepository.GetMonitoringsAsync(start, count);
 
             var result = records.Select(rec => _mapper.Map<BaseMonitoringResponse>(rec)).ToList();
+
+            return Ok(result);
+        }
+
+        [HttpGet("monitoringswithaccuracies/{start:int}/{count:int:range(1, 25)}")]
+        public async Task<ActionResult<List<MonitoringWithAccuraciesResponse>>> GetMonitoringsWithAccuracies(int start, int count)
+        {
+            var records = await _microclimateRepository.GetMonitoringsWithAccuraciesAsync(start, count);
+
+            var result = records.Select(rec => _mapper.Map<MonitoringWithAccuraciesResponse>(rec)).ToList();
 
             return Ok(result);
         }
@@ -51,21 +61,13 @@ namespace ClimateControlSystem.Server.Controllers
         {
             var records = await _microclimateRepository.GetMicroclimatesAsync(offsetFromTheEnd, count);
 
-            return Ok(records);
+            return Ok(records.ToList());
         }
 
-        [HttpGet("temperatureevents/{start:int}/{count:int:range(1, 25)}")]
-        public async Task<ActionResult<List<MicroclimateResponse>>> GetTemperatureEvents(int start, int count)
+        [HttpGet("monitoringevents/{start:int}/{count:int:range(1, 25)}")]
+        public async Task<ActionResult<List<MonitoringEventsResponse>>> GetMonitoringEvents(int start, int count)
         {
-            var records = await _microclimateRepository.GetTemperatureEventsAsync(start, count);
-
-            return Ok(records);
-        }
-
-        [HttpGet("humidityevents/{start:int}/{count:int:range(1, 25)}")]
-        public async Task<ActionResult<List<MicroclimateResponse>>> GetHumidityEvents(int start, int count)
-        {
-            var records = await _microclimateRepository.GetHumidityEventsAsync(start, count);
+            var records = await _microclimateRepository.GetMonitoringEventsAsync(start, count);
 
             return Ok(records);
         }

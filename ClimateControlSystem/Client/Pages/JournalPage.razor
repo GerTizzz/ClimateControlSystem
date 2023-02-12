@@ -41,10 +41,14 @@
                     @foreach (var record in _climatesData)
                     {
                         <tr>
-                            @if (record.MeasurementTime.HasValue)
-                            {
-                                <td style="font-size:small; text-align:center">@record.MeasurementTime.Value.ToString("HH:mm:ss")<br/>@record.MeasurementTime.Value.ToString("dd:MM:yyyy")</td>
-                            }
+                            <td style="font-size:small; text-align:center">
+                                @if (record.MeasurementTime.HasValue)
+                                {
+                                    @record.MeasurementTime.Value.ToString("HH:mm:ss")
+                                    <br/>
+                                    @record.MeasurementTime.Value.ToString("dd:MM:yyyy")
+                                }
+                            </td>
                             <td style="font-size:small; text-align:center">@record.ClusterLoad</td>
                             <td style="font-size:small; text-align:center">@record.CpuUsage</td>
                             <td style="font-size:small; text-align:center">@record.ClusterTemperature</td>

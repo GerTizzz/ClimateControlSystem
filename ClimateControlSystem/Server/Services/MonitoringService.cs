@@ -43,7 +43,7 @@ namespace ClimateControlSystem.Server.Services
 
             await WriteNewMonitroingToDb(prediction, temperatureEvent, humidityEvent);
 
-            MonitoringWithEvents monitoring = new MonitoringWithEventsBuilder()
+            Monitoring monitoring = new MonitoringBuilder()
                 .AddSensorsData(sensorsData)
                 .AddPredictionData(prediction)
                 .AddTemperatureEvent(temperatureEvent)
@@ -53,7 +53,7 @@ namespace ClimateControlSystem.Server.Services
             await SendMonitoringToClients(monitoring);
         }
 
-        private async Task SendMonitoringToClients(MonitoringWithEvents monitoring)
+        private async Task SendMonitoringToClients(Monitoring monitoring)
         {
             await _mediator.Send(new SendMonitoringCommand()
             {

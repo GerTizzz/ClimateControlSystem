@@ -19,7 +19,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<BaseMonitoring>> GetBaseMonitoringsAsync(int start, int count)
+        public async Task<IEnumerable<Monitoring>> GetMonitoringsAsync(int start, int count)
         {
             try
             {
@@ -32,11 +32,11 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                     .ToArrayAsync();
 
                 var result = monitorings.Select(monitor =>
-                    new BaseMonitoring()
+                    new Monitoring()
                     {
                         MeasurementTime = monitor.SensorData?.MeasurementTime,
-                        TemperaturePredictionForFuture = monitor.Prediction?.PredictedTemperature,
-                        HumidityPredictionForFuture = monitor.Prediction?.PredictedHumidity,
+                        PredictedTemperature = monitor.Prediction?.PredictedTemperature,
+                        PredictedHumidity = monitor.Prediction?.PredictedHumidity,
                         MeasuredTemperature = monitor.SensorData?.CurrentRealTemperature,
                         MeasuredHumidity = monitor.SensorData?.CurrentRealHumidity
                     })
@@ -46,11 +46,45 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
             catch (Exception exc)
             {
-                return new List<BaseMonitoring>();
+                return Enumerable.Empty<Monitoring>();
             }
         }
 
-        public async Task<MicroclimateResponse[]> GetMicroclimatesAsync(int start, int count)
+        public async Task<IEnumerable<Monitoring>> GetMonitoringsWithAccuraciesAsync(int start, int count)
+        {
+            try
+            {
+                var monitorings = await _context.Microclimates
+                    .Include(micro => micro.Prediction)
+                    .Include(micro => micro.SensorData)
+                    .Include(micro => micro.Accuracy)
+                    .OrderByDescending(micro => micro.Id)
+                    .Skip(start)
+                    .Take(count)
+                    .ToArrayAsync();
+
+                var result = monitorings.Select(monitor =>
+                    new Monitoring()
+                    {
+                        MeasurementTime = monitor.SensorData?.MeasurementTime,
+                        PredictedTemperature = monitor.Prediction?.PredictedTemperature,
+                        PredictedHumidity = monitor.Prediction?.PredictedHumidity,
+                        MeasuredTemperature = monitor.SensorData?.CurrentRealTemperature,
+                        MeasuredHumidity = monitor.SensorData?.CurrentRealHumidity,
+                        PredictedTemperatureAccuracy = monitor.Accuracy?.PredictedTemperatureAccuracy,
+                        PredictedHumidityAccuracy = monitor.Accuracy?.PredictedHumidityAccuracy
+                    })
+                    .ToList();
+
+                return result;
+            }
+            catch (Exception exc)
+            {
+                return Enumerable.Empty<Monitoring>();
+            }
+        }
+
+        public async Task<IEnumerable<MicroclimateResponse>> GetMicroclimatesAsync(int start, int count)
         {
             try
             {
@@ -90,39 +124,37 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
             catch (Exception exc)
             {
-                return Array.Empty<MicroclimateResponse>();
+                return Enumerable.Empty<MicroclimateResponse>();
             }
         }
 
-        public async Task<TemperatureEvent[]> GetTemperatureEventsAsync(int start, int count)
+        public async Task<IEnumerable<Monitoring>> GetMonitoringEventsAsync(int start, int count)
         {
             try
             {
-                return await _context.TemperatureEvents
-                    .OrderBy(tempEv => tempEv.Id)
-                    .TakeLast(count)
-                    .Select(tempEv => _mapper.Map<TemperatureEvent>(tempEv))
+                var monitorings = await _context.Microclimates
+                    .Include(micro => micro.Prediction)
+                    .Include(micro => micro.SensorData)
+                    .Include(micro => micro.Accuracy)
+                    .OrderByDescending(micro => micro.Id)
+                    .Skip(start)
+                    .Take(count)
                     .ToArrayAsync();
-            }
-            catch (Exception exc)
-            {
-                return Array.Empty<TemperatureEvent>();
-            }
-        }
 
-        public async Task<HumidityEvent[]> GetHumidityEventsAsync(int start, int count)
-        {
-            try
-            {
-                return await _context.HumidityEvents
-                    .OrderBy(humEv => humEv.Id)
-                    .TakeLast(count)
-                    .Select(humEv => _mapper.Map<HumidityEvent>(humEv))
-                    .ToArrayAsync();
+                var result = monitorings.Select(monitor =>
+                    new Monitoring()
+                    {
+                        MeasurementTime = monitor.SensorData?.MeasurementTime,
+                        TemperaturePredictionEvent = monitor.TemperatureEvent,
+                        HumidityPredictionEvent = monitor.HumidityEvent
+                    })
+                    .ToList();
+
+                return result;
             }
             catch (Exception exc)
             {
-                return Array.Empty<HumidityEvent>();
+                return Enumerable.Empty<Monitoring>();
             }
         }
 
