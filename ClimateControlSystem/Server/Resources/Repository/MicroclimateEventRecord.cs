@@ -2,10 +2,11 @@
 
 namespace ClimateControlSystem.Server.Resources.RepositoryResources
 {
-    public class HumidityEventRecord
+    public sealed class MicroclimateEventRecord
     {
         [Key]
         public int Id { get; set; }
-        public float Value { get; set; }
+        public float? TempertatureValue { get; set; }
+        public float? HumidityValue { get; set; }
     }
 }

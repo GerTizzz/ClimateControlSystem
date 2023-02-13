@@ -3,8 +3,8 @@ using MediatR;
 
 namespace ClimateControlSystem.Server.Services.MediatR.Commands
 {
-    public class AddAccuracyCommand : IRequest<bool>
+    public sealed class SaveMonitoringCommand : IRequest<bool>
     {
-        public PredictionAccuracy Accuracy { get; init; }
+        public Monitoring Monitoring { get; init; }
     }
 }

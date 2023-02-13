@@ -3,7 +3,7 @@ using MediatR;
 
 namespace ClimateControlSystem.Server.Services.Queries
 {
-    public record PredictQuery() : IRequest<PredictionResult>
+    public sealed class PredictQuery : IRequest<Prediction>
     {
         public SensorsData Data { get; init; }
     }

@@ -4,6 +4,6 @@ namespace ClimateControlSystem.Server.Domain.Services
 {
     public interface IMonitoringService
     {
-        public Task<PredictionResult> Predict(SensorsData incomingRequest);
+        public Task<Prediction> Predict(SensorsData incomingRequest);
     }
 }

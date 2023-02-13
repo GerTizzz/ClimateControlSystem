@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace ClimateControlSystem.Server.Services.MediatR.Handlers
 {
-    public class SendMonitoringHandler : IRequestHandler<SendMonitoringCommand, bool>
+    public sealed class SendMonitoringHandler : IRequestHandler<SendMonitoringCommand, bool>
     {
         private readonly IHubContext<MonitoringHub> _monitoringHub;
         private readonly IMapper _mapper;

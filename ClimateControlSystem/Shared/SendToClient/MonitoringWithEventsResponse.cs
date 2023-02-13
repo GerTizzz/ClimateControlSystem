@@ -2,7 +2,7 @@
 {
     public sealed record class MonitoringWithEventsResponse : BaseMonitoringResponse
     {
-        public TemperatureEventResponse? TemperaturePredictionEvent { get; set; }
-        public HumidityEventResponse? HumidityPredictionEvent { get; set; }
+        public float? TemperatureValue { get; init; }
+        public float? HumidityValue { get; init; }
     }
 }

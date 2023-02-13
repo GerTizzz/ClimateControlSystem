@@ -11,12 +11,11 @@ namespace ClimateControlSystem.Server.Persistence.Context
 
         public DbSet<ConfigRecord> Configs { get; set; }
 
-        public DbSet<MicroclimateRecord> Microclimates { get; set; }
+        public DbSet<MonitoringRecord> Monitorings { get; set; }
         public DbSet<SensorsDataRecord> SensorsData { get; set; }
         public DbSet<AccuracyRecord> Accuracies { get; set; }
         public DbSet<PredictionRecord> Predictions { get; set; }
-        public DbSet<TemperatureEventRecord> TemperatureEvents { get; set; }
-        public DbSet<HumidityEventRecord> HumidityEvents { get; set; }
+        public DbSet<MicroclimateEventRecord> MicroclimatesEvents { get; set; }
 
         public PredictionsDbContext(DbContextOptions options) : base(options)
         {
@@ -40,8 +39,8 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 UpperTemperatureWarningLimit = 24f,
                 LowerTemperatureWarningLimit = 16f,
 
-                UpperHumidityWarningLimit = 21f,
-                LowerHumidityWarningLimit = 10f,
+                UpperHumidityWarningLimit = 22f,
+                LowerHumidityWarningLimit = 14f,
 
                 PredictionTimeIntervalSeconds = 5
             };

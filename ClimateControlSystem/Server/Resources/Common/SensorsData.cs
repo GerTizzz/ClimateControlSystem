@@ -6,8 +6,8 @@
         public float ClusterLoad { get; set; }
         public float CpuUsage { get; set; }
         public float ClusterTemperature { get; set; }
-        public float CurrentRealTemperature { get; set; }
-        public float CurrentRealHumidity { get; set; }
+        public float MeasuredTemperature { get; set; }
+        public float MeasuredHumidity { get; set; }
         public float AirHumidityOutside { get; set; }
         public float AirDryTemperatureOutside { get; set; }
         public float AirWetTemperatureOutside { get; set; }

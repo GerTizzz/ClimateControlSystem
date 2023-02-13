@@ -31,7 +31,7 @@ namespace ClimateControlSystem.Server.Services
 
             Task.WaitAll(config);
 
-            _ = _configSingleton.TrySetInitialConfig(config.Result);
+            _configSingleton.TrySetInitialConfig(config.Result);
         }
 
         public async Task<bool> UpdateConfig(Config config)

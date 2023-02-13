@@ -16,14 +16,12 @@ namespace ClimateControlSystem.Server.Services
             return Task.CompletedTask;
         }
 
-        public Task TrySetInitialConfig(Config config)
+        public void TrySetInitialConfig(Config config)
         {
             if (_config is null)
             {
                 _config = config;
             }
-
-            return Task.CompletedTask;
         }
     }
 }

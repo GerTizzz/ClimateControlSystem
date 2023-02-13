@@ -2,7 +2,7 @@
 
 namespace ClimateControlSystem.Server.Resources.RepositoryResources
 {
-    public sealed class MicroclimateRecord
+    public sealed class MonitoringRecord
     {
         [Key]
         public int Id { get; set; }
@@ -12,9 +12,7 @@ namespace ClimateControlSystem.Server.Resources.RepositoryResources
         public SensorsDataRecord? SensorData { get; set; }
         public int? AccuracyId { get; set; }
         public AccuracyRecord? Accuracy { get; set; }
-        public int? TemperatureEventId { get; set; }
-        public TemperatureEventRecord? TemperatureEvent { get; set; }
-        public int? HumidityEventId { get; set; }
-        public HumidityEventRecord? HumidityEvent { get; set; }
+        public int? MicroclimateEventId { get; set; }
+        public MicroclimateEventRecord? MicroclimateEvent { get; set; }
     }
 }

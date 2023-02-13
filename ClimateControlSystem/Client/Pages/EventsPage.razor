@@ -24,12 +24,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var _tempEvent in _monitoringEvents.Select(monEv => monEv.TemperatureEvent).ToList())
+                    @foreach (var _tempEvent in _monitoringEvents.Select(monEv => monEv.TemperatureValue).ToList())
                     {
                         <tr>
                             <td style="font-size:small"><span class="oi oi-warning ico" aria-hidden="true" style="color:red"></span></td>
-                            <td>Ожидается критическое значение температуры! На @_tempEvent.Value, °C!</td>
-                        </tr>
+@*                            <td>Ожидается критическое значение температуры! На @_tempEvent.TemperatureValue, °C!</td>
+*@                        </tr>
                     }
                 </tbody>
             </table>       
@@ -43,12 +43,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var _humEvent in _monitoringEvents.Select(monEv => monEv.HumidityEvent).ToList())
+                    @foreach (var _humEvent in _monitoringEvents.Select(monEv => monEv.HumidityValue).ToList())
                     {
                         <tr>
                             <td style="font-size:small"><span class="oi oi-warning" aria-hidden="true" style="color:red"></span></td>
-                            <td>Ожидается критическое значение влажности! На @_humEvent.Value, %!</td>
-                        </tr>
+@*                            <td>Ожидается критическое значение влажности! На @_humEvent.Value, %!</td>
+*@                        </tr>
                     }
                 </tbody>
             </table>

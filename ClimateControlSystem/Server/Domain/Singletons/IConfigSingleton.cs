@@ -8,6 +8,6 @@ namespace ClimateControlSystem.Server.Domain.Singletons
 
         Task UpdateConfig(Config config);
 
-        Task TrySetInitialConfig(Config config);
+        void TrySetInitialConfig(Config config);
     }
 }

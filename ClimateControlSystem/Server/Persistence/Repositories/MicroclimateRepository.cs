@@ -23,7 +23,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
         {
             try
             {
-                var monitorings = await _context.Microclimates
+                var monitorings = await _context.Monitorings
                     .Include(micro => micro.Prediction)
                     .Include(micro => micro.SensorData)
                     .OrderByDescending(micro => micro.Id)
@@ -35,10 +35,8 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                     new Monitoring()
                     {
                         MeasurementTime = monitor.SensorData?.MeasurementTime,
-                        PredictedTemperature = monitor.Prediction?.PredictedTemperature,
-                        PredictedHumidity = monitor.Prediction?.PredictedHumidity,
-                        MeasuredTemperature = monitor.SensorData?.CurrentRealTemperature,
-                        MeasuredHumidity = monitor.SensorData?.CurrentRealHumidity
+                        Prediction = _mapper.Map<Prediction>(monitor.Prediction),
+                        MeasuredData = _mapper.Map<MeasuredData>(monitor.SensorData)
                     })
                     .ToList();
 
@@ -54,7 +52,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
         {
             try
             {
-                var monitorings = await _context.Microclimates
+                var monitorings = await _context.Monitorings
                     .Include(micro => micro.Prediction)
                     .Include(micro => micro.SensorData)
                     .Include(micro => micro.Accuracy)
@@ -67,12 +65,9 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                     new Monitoring()
                     {
                         MeasurementTime = monitor.SensorData?.MeasurementTime,
-                        PredictedTemperature = monitor.Prediction?.PredictedTemperature,
-                        PredictedHumidity = monitor.Prediction?.PredictedHumidity,
-                        MeasuredTemperature = monitor.SensorData?.CurrentRealTemperature,
-                        MeasuredHumidity = monitor.SensorData?.CurrentRealHumidity,
-                        PredictedTemperatureAccuracy = monitor.Accuracy?.PredictedTemperatureAccuracy,
-                        PredictedHumidityAccuracy = monitor.Accuracy?.PredictedHumidityAccuracy
+                        Prediction = _mapper.Map<Prediction>(monitor.Prediction),
+                        MeasuredData = _mapper.Map<MeasuredData>(monitor.SensorData),
+                        Accuracy = _mapper.Map<Accuracy>(monitor.Accuracy)
                     })
                     .ToList();
 
@@ -88,7 +83,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
         {
             try
             {
-                var microclimates = await _context.Microclimates
+                var microclimates = await _context.Monitorings
                     .Include(micro => micro.SensorData)
                     .Include(micro => micro.Prediction)
                     .Include(micro => micro.Accuracy)
@@ -132,7 +127,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
         {
             try
             {
-                var monitorings = await _context.Microclimates
+                var monitorings = await _context.Monitorings
                     .Include(micro => micro.Prediction)
                     .Include(micro => micro.SensorData)
                     .Include(micro => micro.Accuracy)
@@ -145,8 +140,11 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                     new Monitoring()
                     {
                         MeasurementTime = monitor.SensorData?.MeasurementTime,
-                        TemperaturePredictionEvent = monitor.TemperatureEvent,
-                        HumidityPredictionEvent = monitor.HumidityEvent
+                        MicroclimateEvent = new MicroclimateEvent()
+                        {
+                            TemperatureValue = monitor.MicroclimateEvent?.TempertatureValue,
+                            HumidityValue = monitor.MicroclimateEvent?.HumidityValue
+                        }
                     })
                     .ToList();
 
@@ -160,7 +158,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
 
         public async Task<int> GetMicroclimatesCountAsync()
         {
-            return await _context.Microclimates.CountAsync();
+            return await _context.Monitorings.CountAsync();
         }
 
         public async Task<int> GetMonitoringsCountAsync()
@@ -168,48 +166,32 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             return await _context.Predictions.CountAsync();
         }
 
-        public async Task<PredictionResult> GetLastPredictionAsync()
+        public async Task<Prediction> GetLastPredictionAsync()
         {
             try
             {
-                var id = (await _context.Microclimates
+                var id = (await _context.Monitorings
                     .OrderBy(record => record.Id)
                     .LastAsync()).PredictionId;
 
                 PredictionRecord? lastRecord = await _context.Predictions
                     .FirstOrDefaultAsync(prediction => prediction.Id == id);
 
-                return _mapper.Map<PredictionResult>(lastRecord);
+                return _mapper.Map<Prediction>(lastRecord);
             }
             catch (Exception exc)
             {
-                return new PredictionResult();
+                return new Prediction();
             }
         }
 
-        public async Task<bool> AddSensorsDataAsync(SensorsData sensorsData)
+        public async Task<bool> SaveMonitoringAsync(Monitoring monitoring)
         {
             try
             {
-                var record = _mapper.Map<SensorsDataRecord>(sensorsData);
+                var monitoringRecord = _mapper.Map<MonitoringRecord>(monitoring);
 
-                if (await _context.Microclimates.AnyAsync() is false)
-                {
-                    var firstRecord = new MicroclimateRecord()
-                    {
-                        SensorData = record
-                    };
-
-                    await AddMicroclimateRecord(firstRecord);
-
-                    return true;
-                }
-
-                var microclimate = await _context.Microclimates
-                    .OrderBy(pred => pred.Id)
-                    .LastAsync();
-
-                microclimate.SensorData = record;
+                await _context.Monitorings.AddAsync(monitoringRecord);
 
                 await _context.SaveChangesAsync();
 
@@ -219,67 +201,24 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             {
                 return false;
             }
-        }
-
-        public async Task<bool> AddAccuracyAsync(PredictionAccuracy accuracyData)
+        }    
+        
+        public async Task<bool> SaveOrUpdateSensorsDataAsync(SensorsData sensorsData)
         {
             try
             {
-                AccuracyRecord accuracyRecord = _mapper.Map<AccuracyRecord>(accuracyData);
+                var monitoringRecord = _mapper.Map<MonitoringRecord>(monitoring);
 
-                var microclimate = await _context.Microclimates
-                    .OrderBy(pred => pred.Id)
-                    .LastOrDefaultAsync();
+                await _context.Monitorings.AddAsync(monitoringRecord);
 
-                if (microclimate != null)
-                {
-                    await _context.Accuracies.AddAsync(accuracyRecord);
+                await _context.SaveChangesAsync();
 
-                    microclimate.Accuracy = accuracyRecord;
-
-                    await _context.SaveChangesAsync();
-
-                    return true;
-                }
+                return true;
             }
             catch
             {
                 return false;
             }
-
-            return true;
-        }
-
-        public async Task<bool> AddPredictionAsync(PredictionResult prediction, TemperatureEvent temperatureEvent, HumidityEvent humidityEvent)
-        {
-            try
-            {
-                PredictionRecord predictionRecord = _mapper.Map<PredictionRecord>(prediction);
-                TemperatureEventRecord temperatureEventRecord = _mapper.Map<TemperatureEventRecord>(temperatureEvent);
-                HumidityEventRecord humidityEventRecord = _mapper.Map<HumidityEventRecord>(humidityEvent);
-
-                MicroclimateRecord microclimateRecord = new MicroclimateRecord()
-                {
-                    Prediction = predictionRecord,
-                    TemperatureEvent = temperatureEventRecord,
-                    HumidityEvent = humidityEventRecord
-                };
-
-                await AddMicroclimateRecord(microclimateRecord);
-            }
-            catch
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private async Task AddMicroclimateRecord(MicroclimateRecord microclimateRecord)
-        {
-            await _context.Microclimates.AddAsync(microclimateRecord);
-
-            await _context.SaveChangesAsync();
         }
     }
 }

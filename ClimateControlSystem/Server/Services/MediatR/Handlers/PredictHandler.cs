@@ -5,7 +5,7 @@ using MediatR;
 
 namespace ClimateControlSystem.Server.Services.Handlers
 {
-    public class PredictHandler : IRequestHandler<PredictQuery, PredictionResult>
+    public sealed class PredictHandler : IRequestHandler<PredictQuery, Prediction>
     {
         private readonly IMonitoringService _predictionService;
 
@@ -14,7 +14,7 @@ namespace ClimateControlSystem.Server.Services.Handlers
             _predictionService = predictionService;
         }
 
-        public async Task<PredictionResult> Handle(PredictQuery request, CancellationToken cancellationToken)
+        public async Task<Prediction> Handle(PredictQuery request, CancellationToken cancellationToken)
         {
             return await _predictionService.Predict(request.Data);
         }

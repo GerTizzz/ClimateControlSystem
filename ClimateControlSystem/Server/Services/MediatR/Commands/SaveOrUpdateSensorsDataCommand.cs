@@ -3,8 +3,8 @@ using MediatR;
 
 namespace ClimateControlSystem.Server.Services.MediatR.Commands
 {
-    public class AddSensorsDataCommand : IRequest<bool>
+    public sealed class SaveOrUpdateSensorsDataCommand : IRequest<bool>
     {
-        public SensorsData SensorData { get; init; }
+        public SensorsData SensorsData { get; init; }
     }
 }

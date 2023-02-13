@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.SignalR.Client
 @using ClimateControlSystem.Client.Resources
+@using System.Text;
 @inject NavigationManager NavigationManager
 @inject IMicroclimateService MicroclimateService
 @inject IConfigService ConfigService
@@ -107,8 +108,7 @@
 
             if (arrivedMonitoring is MonitoringWithEventsResponse eventMonitroing)
             {
-                _ = Task.Run(() => TemperatureEventArrived(eventMonitroing));
-                _ = Task.Run(() => HumidityEventArrived(eventMonitroing));
+                _ = Task.Run(() => MicroclimateEventArrived(eventMonitroing));
             }
 
             var newMonitoring = new BaseMonitoringResponse()
@@ -138,38 +138,23 @@
         return existingMonitoring;
     }
 
-    private async Task TemperatureEventArrived(MonitoringWithEventsResponse monitoring)
+    private async Task MicroclimateEventArrived(MonitoringWithEventsResponse monitoring)
     {
         try
         {
-            if (monitoring.TemperaturePredictionEvent is null)
+            StringBuilder messageBuilder = new StringBuilder();
+
+            if (monitoring.TemperatureValue is not null)
             {
-                return;
+                messageBuilder.Append(GetTemperatureAlertMessage(monitoring.TemperatureValue.Value, monitoring.MeasurementTime));
             }
 
-            string alertMessage = GetTemperatureAlertMessage(monitoring.TemperaturePredictionEvent, monitoring.MeasurementTime);
-
-            if (string.IsNullOrEmpty(alertMessage) is false)
+            if (monitoring.HumidityValue is not null)
             {
-                await JsRuntime.InvokeVoidAsync("Alert", alertMessage);
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-        }
-    }
-
-    private async Task HumidityEventArrived(MonitoringWithEventsResponse monitoring)
-    {
-        try
-        {
-            if (monitoring.HumidityPredictionEvent is null)
-            {
-                return;
+                messageBuilder.Append(GetHumidityAlertMessage(monitoring.HumidityValue.Value, monitoring.MeasurementTime));
             }
 
-            string alertMessage = GetHumidityAlertMessage(monitoring.HumidityPredictionEvent, monitoring.MeasurementTime);
+            string alertMessage = messageBuilder.ToString();
 
             if (string.IsNullOrEmpty(alertMessage) is false)
             {
@@ -229,16 +214,16 @@
         await _humidityChart.ChangeData(_humidityRenderableSeries);
     }
 
-    private string GetTemperatureAlertMessage(TemperatureEventResponse tempEvent, DateTimeOffset? eventTime)
+    private string GetTemperatureAlertMessage(float tempValue, DateTimeOffset? eventTime)
     {
         string alertMessage = "";
         DateTimeOffset time = eventTime.HasValue ? eventTime.Value : DateTimeOffset.Now;
 
-        if (tempEvent.Value > 0)
+        if (tempValue > 0)
         {
             alertMessage += $"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается превышение температуры выше допустимого предела!";
         }
-        else if (tempEvent.Value < 0)
+        else if (tempValue < 0)
         {
             alertMessage += $"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается понижение температуры ниже допустимого предела!";
         }
@@ -246,16 +231,16 @@
         return alertMessage;
     }
 
-    private string GetHumidityAlertMessage(HumidityEventResponse humEvent, DateTimeOffset? eventTime)
+    private string GetHumidityAlertMessage(float humValue, DateTimeOffset? eventTime)
     {
         string alertMessage = "";
         DateTimeOffset time = eventTime.HasValue ? eventTime.Value : DateTimeOffset.Now;
 
-        if (humEvent.Value > 0)
+        if (humValue > 0)
         {
             alertMessage += $"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается превышение влажности выше допустимого предела!";
         }
-        else if (humEvent.Value < 0)
+        else if (humValue < 0)
         {
             alertMessage += $"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается понижение влажности ниже допустимого предела!";
         }

@@ -4,35 +4,43 @@ namespace ClimateControlSystem.Server.Infrastructure
 {
     public sealed class MonitoringBuilder
     {
-        private readonly Monitoring _monitoringData = new Monitoring();
+        private readonly Monitoring _monitoringData;
 
-        public MonitoringBuilder AddPredictionData(PredictionResult prediction)
+        public MonitoringBuilder()
         {
-            _monitoringData.PredictedHumidity = prediction.PredictedHumidity;
-            _monitoringData.PredictedTemperature = prediction.PredictedTemperature;
+            _monitoringData = new Monitoring();
+        }
+
+        public MonitoringBuilder AddPredictionData(Prediction prediction)
+        {
+            _monitoringData.Prediction = prediction;
 
             return this;
         }
 
         public MonitoringBuilder AddSensorsData(SensorsData sensors)
         {
-            _monitoringData.MeasuredHumidity = sensors.CurrentRealHumidity;
-            _monitoringData.MeasuredTemperature = sensors.CurrentRealTemperature;
+            _monitoringData.MeasuredData = new MeasuredData()
+            {
+                MeasuredTemperature = sensors.MeasuredTemperature,
+                MeasuredHumidity = sensors.MeasuredHumidity,
+            };
+
             _monitoringData.MeasurementTime = sensors.MeasurementTime;
 
             return this;
         }
 
-        public MonitoringBuilder AddTemperatureEvent(TemperatureEvent? temperatureEvent)
+        public MonitoringBuilder AddAccuracy(Accuracy? accuracy)
         {
-            _monitoringData.TemperaturePredictionEvent = temperatureEvent;
+            _monitoringData.Accuracy = accuracy;
 
             return this;
         }
 
-        public MonitoringBuilder AddHumidityEvent(HumidityEvent? humidityEvent)
+        public MonitoringBuilder AddMicroclimateEvent(MicroclimateEvent? temperatureEvent)
         {
-            _monitoringData.HumidityPredictionEvent = humidityEvent;
+            _monitoringData.MicroclimateEvent = temperatureEvent;
 
             return this;
         }

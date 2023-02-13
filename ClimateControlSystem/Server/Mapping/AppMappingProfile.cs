@@ -29,8 +29,8 @@ namespace ClimateControlSystem.Server.Mapping
                         property.ClusterLoad,
                         property.CpuUsage,
                         property.ClusterTemperature,
-                        property.CurrentRealTemperature,
-                        property.CurrentRealHumidity,
+                        property.MeasuredTemperature,
+                        property.MeasuredHumidity,
                         property.AirHumidityOutside,
                         property.AirDryTemperatureOutside,
                         property.AirWetTemperatureOutside,
@@ -40,7 +40,7 @@ namespace ClimateControlSystem.Server.Mapping
                         property.MeanCoolingValue
                     }));
 
-            CreateMap<TensorPredictionResult, PredictionResult>()
+            CreateMap<TensorPredictionResult, Prediction>()
                 .ForMember(result => result.PredictedTemperature, tensor => tensor
                     .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[0]))
                 .ForMember(result => result.PredictedHumidity, tensor => tensor
@@ -54,25 +54,31 @@ namespace ClimateControlSystem.Server.Mapping
 
             CreateMap<SensorsDataRecord, SensorsData>();
 
-            CreateMap<AccuracyRecord, PredictionAccuracy>();
 
-            CreateMap<PredictionAccuracy, AccuracyRecord>();
+            CreateMap<AccuracyRecord, Accuracy>();
 
-            CreateMap<PredictionRecord, PredictionResult>();
+            CreateMap<Accuracy, AccuracyRecord>();
 
-            CreateMap<PredictionResult, PredictionRecord>();
+
+            CreateMap<PredictionRecord, Prediction>();
+
+            CreateMap<Prediction, PredictionRecord>();
+
 
             CreateMap<Config, ConfigRecord>();
 
             CreateMap<ConfigRecord, Config>();
 
-            CreateMap<TemperatureEventRecord, TemperatureEvent>();
 
-            CreateMap<TemperatureEvent, TemperatureEventRecord>();
+            CreateMap<MicroclimateEventRecord, MicroclimateEvent>();
 
-            CreateMap<HumidityEventRecord, HumidityEvent>();
+            CreateMap<MicroclimateEvent, MicroclimateEventRecord>();
 
-            CreateMap<HumidityEvent, HumidityEventRecord>();
+
+            CreateMap<MeasuredData, SensorsData>();
+
+            CreateMap<SensorsData, MeasuredData>();
+
 
             CreateMap<UserRecord, UserModelWithCredentials>()
                 .ForMember(dto => dto.Name, auth => auth
@@ -96,15 +102,15 @@ namespace ClimateControlSystem.Server.Mapping
 
             CreateMap<Config, ConfigResponse>();
 
+
+            CreateMap<Monitoring, BaseMonitoringResponse>();
+
             CreateMap<Monitoring, MonitoringWithEventsResponse>();
 
             CreateMap<Monitoring, MonitoringWithAccuraciesResponse>();
 
-            CreateMap<TemperatureEvent, TemperatureEventResponse>();
 
-            CreateMap<HumidityEvent, HumidityEventResponse>();
-
-            CreateMap<Monitoring, BaseMonitoringResponse>();
+            CreateMap<MicroclimateEvent, MicroclimateEventResponse>();
 
             #endregion
         }
