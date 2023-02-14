@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using ClimateControlSystem.Server.Domain.Repositories;
+﻿using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Persistence.Context;
-using ClimateControlSystem.Server.Resources.Common;
-using ClimateControlSystem.Server.Resources.RepositoryResources;
-using ClimateControlSystem.Shared.SendToClient;
+using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClimateControlSystem.Server.Persistence.Repositories
@@ -11,32 +8,31 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
     public class MicroclimateRepository : IMicroclimateRepository
     {
         private readonly PredictionsDbContext _context;
-        private readonly IMapper _mapper;
 
-        public MicroclimateRepository(PredictionsDbContext context, IMapper mapper)
+        public MicroclimateRepository(PredictionsDbContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Monitoring>> GetMonitoringsAsync(int start, int count)
+        public async Task<IEnumerable<MonitoringsEntity>> GetMonitoringsAsync(int start, int count)
         {
             try
             {
                 var monitorings = await _context.Monitorings
                     .Include(micro => micro.Prediction)
-                    .Include(micro => micro.SensorData)
+                    .Include(micro => micro.SensorsData)
                     .OrderByDescending(micro => micro.Id)
                     .Skip(start)
                     .Take(count)
                     .ToArrayAsync();
 
                 var result = monitorings.Select(monitor =>
-                    new Monitoring()
+                    new MonitoringsEntity()
                     {
-                        MeasurementTime = monitor.SensorData?.MeasurementTime,
-                        Prediction = _mapper.Map<Prediction>(monitor.Prediction),
-                        MeasuredData = _mapper.Map<MeasuredData>(monitor.SensorData)
+                        MeasurementTime = monitor.MeasurementTime,
+                        Prediction = monitor.Prediction,
+                        //Measured
+                        SensorsData = monitor.SensorsData
                     })
                     .ToList();
 
@@ -44,17 +40,17 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
             catch (Exception exc)
             {
-                return Enumerable.Empty<Monitoring>();
+                return Enumerable.Empty<MonitoringsEntity>();
             }
         }
 
-        public async Task<IEnumerable<Monitoring>> GetMonitoringsWithAccuraciesAsync(int start, int count)
+        public async Task<IEnumerable<MonitoringsEntity>> GetMonitoringsWithAccuraciesAsync(int start, int count)
         {
             try
             {
                 var monitorings = await _context.Monitorings
                     .Include(micro => micro.Prediction)
-                    .Include(micro => micro.SensorData)
+                    .Include(micro => micro.SensorsData)
                     .Include(micro => micro.Accuracy)
                     .OrderByDescending(micro => micro.Id)
                     .Skip(start)
@@ -62,12 +58,13 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                     .ToArrayAsync();
 
                 var result = monitorings.Select(monitor =>
-                    new Monitoring()
+                    new MonitoringsEntity()
                     {
-                        MeasurementTime = monitor.SensorData?.MeasurementTime,
-                        Prediction = _mapper.Map<Prediction>(monitor.Prediction),
-                        MeasuredData = _mapper.Map<MeasuredData>(monitor.SensorData),
-                        Accuracy = _mapper.Map<Accuracy>(monitor.Accuracy)
+                        MeasurementTime = monitor.MeasurementTime,
+                        Prediction = monitor.Prediction,
+                        //Measured
+                        SensorsData = monitor.SensorsData,
+                        Accuracy = monitor.Accuracy
                     })
                     .ToList();
 
@@ -75,16 +72,16 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
             catch (Exception exc)
             {
-                return Enumerable.Empty<Monitoring>();
+                return Enumerable.Empty<MonitoringsEntity>();
             }
         }
 
-        public async Task<IEnumerable<MicroclimateResponse>> GetMicroclimatesAsync(int start, int count)
+        public async Task<IEnumerable<MonitoringsEntity>> GetMicroclimatesAsync(int start, int count)
         {
             try
             {
                 var microclimates = await _context.Monitorings
-                    .Include(micro => micro.SensorData)
+                    .Include(micro => micro.SensorsData)
                     .Include(micro => micro.Prediction)
                     .Include(micro => micro.Accuracy)
                     .OrderByDescending(micro => micro.Id)
@@ -93,25 +90,12 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                     .ToArrayAsync();
 
                 var result = microclimates.Select(micro => 
-                    new MicroclimateResponse()
+                    new MonitoringsEntity()
                     {
-                            MeasurementTime = micro.SensorData?.MeasurementTime,
-                            ClusterLoad = micro.SensorData?.ClusterLoad,
-                            CpuUsage = micro.SensorData?.CpuUsage,
-                            ClusterTemperature = micro.SensorData?.ClusterTemperature,
-                            CurrentRealTemperature = micro.SensorData?.CurrentRealTemperature,
-                            CurrentRealHumidity = micro.SensorData?.CurrentRealHumidity,
-                            AirHumidityOutside = micro.SensorData?.AirHumidityOutside,
-                            AirDryTemperatureOutside = micro.SensorData?.AirDryTemperatureOutside,
-                            AirWetTemperatureOutside = micro.SensorData?.AirWetTemperatureOutside,
-                            WindSpeed = micro.SensorData?.WindSpeed,
-                            WindDirection = micro.SensorData?.WindDirection,
-                            WindEnthalpy = micro.SensorData?.WindEnthalpy,
-                            MeanCoolingValue = micro.SensorData?.MeanCoolingValue,
-                            PredictedFutureTemperature = micro.Prediction?.PredictedTemperature,
-                            PredictedFutureHumidity = micro.Prediction?.PredictedHumidity,
-                            PredictedTemperatureAccuracy = micro.Accuracy?.PredictedTemperatureAccuracy,
-                            PredictedHumidityAccuracy = micro.Accuracy?.PredictedHumidityAccuracy
+                        MeasurementTime = micro.MeasurementTime,
+                        SensorsData = micro.SensorsData,
+                        Prediction = micro.Prediction,
+                        Accuracy = micro.Accuracy
                     })
                     .ToArray();
 
@@ -119,32 +103,27 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
             catch (Exception exc)
             {
-                return Enumerable.Empty<MicroclimateResponse>();
+                return Enumerable.Empty<MonitoringsEntity>();
             }
         }
 
-        public async Task<IEnumerable<Monitoring>> GetMonitoringEventsAsync(int start, int count)
+        public async Task<IEnumerable<MonitoringsEntity>> GetMonitoringEventsAsync(int start, int count)
         {
             try
             {
                 var monitorings = await _context.Monitorings
                     .Include(micro => micro.Prediction)
-                    .Include(micro => micro.SensorData)
-                    .Include(micro => micro.Accuracy)
+                    .Include(micro => micro.MicroclimatesEvent)
                     .OrderByDescending(micro => micro.Id)
                     .Skip(start)
                     .Take(count)
                     .ToArrayAsync();
 
                 var result = monitorings.Select(monitor =>
-                    new Monitoring()
+                    new MonitoringsEntity()
                     {
-                        MeasurementTime = monitor.SensorData?.MeasurementTime,
-                        MicroclimateEvent = new MicroclimateEvent()
-                        {
-                            TemperatureValue = monitor.MicroclimateEvent?.TempertatureValue,
-                            HumidityValue = monitor.MicroclimateEvent?.HumidityValue
-                        }
+                        MeasurementTime = monitor.MeasurementTime,
+                        MicroclimatesEvent = monitor.MicroclimatesEvent
                     })
                     .ToList();
 
@@ -152,7 +131,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
             catch (Exception exc)
             {
-                return Enumerable.Empty<Monitoring>();
+                return Enumerable.Empty<MonitoringsEntity>();
             }
         }
 
@@ -166,32 +145,30 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             return await _context.Predictions.CountAsync();
         }
 
-        public async Task<Prediction> GetLastPredictionAsync()
+        public async Task<PredictionsEntity?> GetLastPredictionAsync()
         {
             try
             {
                 var id = (await _context.Monitorings
                     .OrderBy(record => record.Id)
-                    .LastAsync()).PredictionId;
+                    .LastAsync()).PredictionsId;
 
-                PredictionRecord? lastRecord = await _context.Predictions
+                PredictionsEntity? lastRecord = await _context.Predictions
                     .FirstOrDefaultAsync(prediction => prediction.Id == id);
 
-                return _mapper.Map<Prediction>(lastRecord);
+                return lastRecord;
             }
             catch (Exception exc)
             {
-                return new Prediction();
+                return null;
             }
         }
 
-        public async Task<bool> SaveMonitoringAsync(Monitoring monitoring)
+        public async Task<bool> SaveMonitoringAsync(MonitoringsEntity monitoring)
         {
             try
             {
-                var monitoringRecord = _mapper.Map<MonitoringRecord>(monitoring);
-
-                await _context.Monitorings.AddAsync(monitoringRecord);
+                await _context.Monitorings.AddAsync(monitoring);
 
                 await _context.SaveChangesAsync();
 
@@ -203,13 +180,27 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
         }    
         
-        public async Task<bool> SaveOrUpdateSensorsDataAsync(SensorsData sensorsData)
+        public async Task<bool> SaveSensorsDataAsync(SensorsDataEntity sensorsData)
         {
             try
             {
-                var monitoringRecord = _mapper.Map<MonitoringRecord>(monitoring);
+                if (await _context.Monitorings.AnyAsync())
+                {
+                    var monitoringRecord = new MonitoringsEntity()
+                    {
+                        SensorsData = sensorsData
+                    };
 
-                await _context.Monitorings.AddAsync(monitoringRecord);
+                    await _context.Monitorings.AddAsync(monitoringRecord);
+
+                    await _context.SaveChangesAsync();
+
+                    return true;
+                }
+
+                var lastMonitoringRecord = await _context.Monitorings.LastAsync();
+
+                lastMonitoringRecord.SensorsData = sensorsData;
 
                 await _context.SaveChangesAsync();
 

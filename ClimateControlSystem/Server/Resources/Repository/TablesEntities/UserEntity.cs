@@ -1,9 +1,9 @@
 ﻿using ClimateControlSystem.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace ClimateControlSystem.Server.Resources.RepositoryResources
+namespace ClimateControlSystem.Server.Resources.Repository.TablesEntities
 {
-    public sealed class UserRecord
+    public sealed class UserEntity
     {
         [Key]
         public int Id { get; set; }

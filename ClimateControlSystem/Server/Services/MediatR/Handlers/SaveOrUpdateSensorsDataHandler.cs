@@ -1,21 +1,27 @@
-﻿using ClimateControlSystem.Server.Domain.Repositories;
+﻿using AutoMapper;
+using ClimateControlSystem.Server.Domain.Repositories;
+using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 using ClimateControlSystem.Server.Services.MediatR.Commands;
 using MediatR;
 
 namespace ClimateControlSystem.Server.Services.MediatR.Handlers
 {
-    public sealed class SaveOrUpdateSensorsDataHandler : IRequestHandler<SaveOrUpdateSensorsDataCommand, bool>
+    public sealed class SaveSensorsDataHandler : IRequestHandler<SaveSensorsDataCommand, bool>
     {
         private readonly IMicroclimateRepository _predictionRepository;
+        private readonly IMapper _mapper;
 
-        public SaveOrUpdateSensorsDataHandler(IMicroclimateRepository predictionRepository)
+        public SaveSensorsDataHandler(IMicroclimateRepository predictionRepository, IMapper mapper)
         {
             _predictionRepository = predictionRepository;
+            _mapper = mapper;
         }
 
-        public async Task<bool> Handle(SaveOrUpdateSensorsDataCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(SaveSensorsDataCommand request, CancellationToken cancellationToken)
         {
-            return await _predictionRepository.SaveOrUpdateSensorsDataAsync(request.SensorsData);
+            var sensorsDataRecord = _mapper.Map<SensorsDataEntity>(request.SensorsData);
+
+            return await _predictionRepository.SaveSensorsDataAsync(sensorsDataRecord);
         }
     }
 }

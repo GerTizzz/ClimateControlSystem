@@ -1,13 +1,13 @@
 ﻿using ClimateControlSystem.Server.Resources.Common;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.Queries
+namespace ClimateControlSystem.Server.Services.MediatR.Commands
 {
-    public sealed class PredictQuery : IRequest<Prediction>
+    public sealed class SaveSensorsDataCommand : IRequest<bool>
     {
         public SensorsData SensorsData { get; }
 
-        public PredictQuery(SensorsData sensorsData)
+        public SaveSensorsDataCommand(SensorsData sensorsData)
         {
             SensorsData = sensorsData;
         }

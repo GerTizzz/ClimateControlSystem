@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ClimateControlSystem.Server.Resources.RepositoryResources
+namespace ClimateControlSystem.Server.Resources.Repository.TablesEntities
 {
-    public sealed class AccuracyRecord
+    public sealed class AccuracysEntity
     {
         [Key]
         public int Id { get; set; }

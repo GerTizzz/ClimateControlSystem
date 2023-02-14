@@ -11,6 +11,13 @@ namespace ClimateControlSystem.Server.Infrastructure
             _monitoringData = new Monitoring();
         }
 
+        public MonitoringBuilder AddMeasurementTime(DateTimeOffset? time)
+        {
+            _monitoringData.MeasurementTime = time;
+
+            return this;
+        }
+
         public MonitoringBuilder AddPredictionData(Prediction prediction)
         {
             _monitoringData.Prediction = prediction;

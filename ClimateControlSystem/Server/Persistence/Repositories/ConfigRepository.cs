@@ -2,7 +2,7 @@
 using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Persistence.Context;
 using ClimateControlSystem.Server.Resources.Common;
-using ClimateControlSystem.Server.Resources.RepositoryResources;
+using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClimateControlSystem.Server.Persistence.Repositories
@@ -22,7 +22,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
         {
             try
             {
-                ConfigRecord existingConfig = await _context.Configs.OrderBy(config => config.Id).FirstAsync();
+                ConfigEntity existingConfig = await _context.Configs.OrderBy(config => config.Id).FirstAsync();
 
                 existingConfig.UpperTemperatureWarningLimit = configToUpdate.UpperTemperatureWarningLimit;
                 existingConfig.LowerTemperatureWarningLimit = configToUpdate.LowerTemperatureWarningLimit;

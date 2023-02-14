@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Protos;
 using ClimateControlSystem.Server.Resources.Common;
-using ClimateControlSystem.Server.Resources.RepositoryResources;
+using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
 using ClimateControlSystem.Shared.Common;
 using ClimateControlSystem.Shared.SendToClient;
@@ -50,29 +50,29 @@ namespace ClimateControlSystem.Server.Mapping
             
             #region Repository
 
-            CreateMap<SensorsData, SensorsDataRecord>();
+            CreateMap<SensorsData, SensorsDataEntity>();
 
-            CreateMap<SensorsDataRecord, SensorsData>();
-
-
-            CreateMap<AccuracyRecord, Accuracy>();
-
-            CreateMap<Accuracy, AccuracyRecord>();
+            CreateMap<SensorsDataEntity, SensorsData>();
 
 
-            CreateMap<PredictionRecord, Prediction>();
+            CreateMap<AccuracysEntity, Accuracy>();
 
-            CreateMap<Prediction, PredictionRecord>();
-
-
-            CreateMap<Config, ConfigRecord>();
-
-            CreateMap<ConfigRecord, Config>();
+            CreateMap<Accuracy, AccuracysEntity>();
 
 
-            CreateMap<MicroclimateEventRecord, MicroclimateEvent>();
+            CreateMap<PredictionsEntity, Prediction>();
 
-            CreateMap<MicroclimateEvent, MicroclimateEventRecord>();
+            CreateMap<Prediction, PredictionsEntity>();
+
+
+            CreateMap<Config, ConfigEntity>();
+
+            CreateMap<ConfigEntity, Config>();
+
+
+            CreateMap<MicroclimatesEventsEntity, MicroclimateEvent>();
+
+            CreateMap<MicroclimateEvent, MicroclimatesEventsEntity>();
 
 
             CreateMap<MeasuredData, SensorsData>();
@@ -80,7 +80,7 @@ namespace ClimateControlSystem.Server.Mapping
             CreateMap<SensorsData, MeasuredData>();
 
 
-            CreateMap<UserRecord, UserModelWithCredentials>()
+            CreateMap<UserEntity, UserModelWithCredentials>()
                 .ForMember(dto => dto.Name, auth => auth
                     .MapFrom(authSrc => authSrc.Name))
                 .ForMember(dto => dto.Role, auth => auth
@@ -88,7 +88,7 @@ namespace ClimateControlSystem.Server.Mapping
                 .ForMember(dto => dto.Id, auth => auth
                     .MapFrom(authSrc => authSrc.Id));
 
-            CreateMap<UserModelWithCredentials, UserRecord>()
+            CreateMap<UserModelWithCredentials, UserEntity>()
                 .ForMember(auth => auth.Name, dto => dto
                     .MapFrom(dtoSrc => dtoSrc.Name))
                 .ForMember(auth => auth.Role, dto => dto

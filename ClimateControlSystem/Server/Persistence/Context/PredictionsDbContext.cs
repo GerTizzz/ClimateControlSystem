@@ -1,4 +1,4 @@
-﻿using ClimateControlSystem.Server.Resources.RepositoryResources;
+﻿using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 using ClimateControlSystem.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -7,15 +7,15 @@ namespace ClimateControlSystem.Server.Persistence.Context
 {
     public class PredictionsDbContext : DbContext
     {
-        public DbSet<UserRecord> Users { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
 
-        public DbSet<ConfigRecord> Configs { get; set; }
+        public DbSet<ConfigEntity> Configs { get; set; }
 
-        public DbSet<MonitoringRecord> Monitorings { get; set; }
-        public DbSet<SensorsDataRecord> SensorsData { get; set; }
-        public DbSet<AccuracyRecord> Accuracies { get; set; }
-        public DbSet<PredictionRecord> Predictions { get; set; }
-        public DbSet<MicroclimateEventRecord> MicroclimatesEvents { get; set; }
+        public DbSet<MonitoringsEntity> Monitorings { get; set; }
+        public DbSet<SensorsDataEntity> SensorsData { get; set; }
+        public DbSet<AccuracysEntity> Accuracies { get; set; }
+        public DbSet<PredictionsEntity> Predictions { get; set; }
+        public DbSet<MicroclimatesEventsEntity> MicroclimatesEvents { get; set; }
 
         public PredictionsDbContext(DbContextOptions options) : base(options)
         {
@@ -24,7 +24,7 @@ namespace ClimateControlSystem.Server.Persistence.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            UserRecord initializedAdminUser = new()
+            UserEntity initializedAdminUser = new()
             {
                 Id = 1,
                 Name = "admin",
@@ -33,7 +33,7 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 Role = UserType.Admin
             };
 
-            ConfigRecord initializedConfig = new()
+            ConfigEntity initializedConfig = new()
             {
                 Id = 1,
                 UpperTemperatureWarningLimit = 24f,
@@ -45,14 +45,14 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 PredictionTimeIntervalSeconds = 5
             };
 
-            modelBuilder.Entity<ConfigRecord>()
+            modelBuilder.Entity<ConfigEntity>()
                 .HasData(initializedConfig);
 
-            modelBuilder.Entity<UserRecord>()
+            modelBuilder.Entity<UserEntity>()
                 .Property(user => user.Role)
                 .HasConversion(new EnumToStringConverter<UserType>());
 
-            modelBuilder.Entity<UserRecord>()
+            modelBuilder.Entity<UserEntity>()
                 .HasData(initializedAdminUser);
         }
     }

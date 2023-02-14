@@ -88,26 +88,17 @@ namespace ClimateControlSystem.Server.Services
 
         private async Task SendMonitoringToClients(Monitoring monitoring)
         {
-            await _mediator.Send(new SendMonitoringCommand()
-            {
-                Monitoring = monitoring
-            });
+            await _mediator.Send(new SendMonitoringCommand(monitoring));
         }
 
         private async Task SaveOrUpdateSensorsData(SensorsData sensorsData)
         {
-            await _mediator.Send(new SaveOrUpdateSensorsDataCommand()
-            {
-                SensorsData = sensorsData
-            });
+            await _mediator.Send(new SaveSensorsDataCommand(sensorsData));
         }
 
         private async Task SaveMonitoring(Monitoring monitoring)
         {
-            await _mediator.Send(new SaveMonitoringCommand()
-            {
-                Monitoring = monitoring
-            });
+            await _mediator.Send(new SaveMonitoringCommand(monitoring));
         }
 
         private Task<MicroclimateEvent?> GetMicroclimateEvent(Prediction prediction, Config config)

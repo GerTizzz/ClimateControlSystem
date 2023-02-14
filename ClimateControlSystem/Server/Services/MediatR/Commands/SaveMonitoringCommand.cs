@@ -5,6 +5,11 @@ namespace ClimateControlSystem.Server.Services.MediatR.Commands
 {
     public sealed class SaveMonitoringCommand : IRequest<bool>
     {
-        public Monitoring Monitoring { get; init; }
+        public Monitoring Monitoring { get; }
+
+        public SaveMonitoringCommand(Monitoring monitoring)
+        {
+            Monitoring = monitoring;
+        }
     }
 }

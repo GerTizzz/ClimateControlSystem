@@ -1,18 +1,18 @@
-﻿using ClimateControlSystem.Server.Resources.RepositoryResources;
+﻿using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 
 namespace ClimateControlSystem.Server.Domain.Repositories
 {
     public interface IUserRepository
     {
-        Task<List<UserRecord>> GetUsers();
+        Task<List<UserEntity>> GetUsers();
 
-        Task<UserRecord> GetUser(int id);
+        Task<UserEntity> GetUser(int id);
 
-        Task<bool> Create(UserRecord newUser);
+        Task<bool> Create(UserEntity newUser);
 
-        Task<UserRecord?> GetUserByName(string userName);
+        Task<UserEntity?> GetUserByName(string userName);
 
-        Task<bool> UpdateUser(UserRecord updateUser, int id);
+        Task<bool> UpdateUser(UserEntity updateUser, int id);
 
         Task<bool> DeleteUser(int id);
     }

@@ -2,7 +2,7 @@
 using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Domain.Services;
 using ClimateControlSystem.Server.Resources.Authentication;
-using ClimateControlSystem.Server.Resources.RepositoryResources;
+using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 using ClimateControlSystem.Shared.Common;
 
 namespace ClimateControlSystem.Server.Services
@@ -38,7 +38,7 @@ namespace ClimateControlSystem.Server.Services
         {
             TokenHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            UserRecord newUser = _mapper.Map<UserRecord>(user);
+            UserEntity newUser = _mapper.Map<UserEntity>(user);
 
             newUser.PasswordHash = passwordHash;
             newUser.PasswordSalt = passwordSalt;
@@ -48,7 +48,7 @@ namespace ClimateControlSystem.Server.Services
 
         public Task<bool> UpdateUser(UserModelWithCredentials user, int id)
         {
-            UserRecord authUser = _mapper.Map<UserRecord>(user);
+            UserEntity authUser = _mapper.Map<UserEntity>(user);
 
             TokenHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
@@ -63,7 +63,7 @@ namespace ClimateControlSystem.Server.Services
             return _userRepository.DeleteUser(id);
         }
 
-        public Task<UserRecord> GetUserByName(string name)
+        public Task<UserEntity> GetUserByName(string name)
         {
             return _userRepository.GetUserByName(name);
         }

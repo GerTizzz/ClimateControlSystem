@@ -1,4 +1,4 @@
-﻿using ClimateControlSystem.Server.Resources.RepositoryResources;
+﻿using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 using ClimateControlSystem.Shared.Common;
 
 namespace ClimateControlSystem.Server.Domain.Services
@@ -11,7 +11,7 @@ namespace ClimateControlSystem.Server.Domain.Services
 
         Task<bool> CreateUser(UserModelWithCredentials user);
 
-        Task<UserRecord> GetUserByName(string name);
+        Task<UserEntity> GetUserByName(string name);
 
         Task<bool> UpdateUser(UserModelWithCredentials user, int id);
 
