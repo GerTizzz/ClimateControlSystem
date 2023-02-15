@@ -1,4 +1,3 @@
-using AutoMapper;
 using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Domain.Services;
 using ClimateControlSystem.Server.Domain.Singletons;
@@ -25,7 +24,7 @@ string _predictionDbConnectionString = builder.Configuration.GetConnectionString
 builder.Services.AddSingleton<IConfigSingleton, ConfigSingleton>();
 
 builder.Services.AddSingleton<IPredictionEngineService>(sp =>
-    new PredictionEngineService(sp.GetService<IMapper>(), _modelLocation));
+    new PredictionEngineService(_modelLocation));
 
 builder.Services.AddScoped<IMicroclimateRepository, MicroclimateRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();

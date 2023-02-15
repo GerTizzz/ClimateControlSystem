@@ -14,9 +14,7 @@ namespace ClimateControlSystem.Server.Mapping
         {
             #region gRPC communication
 
-            CreateMap<ClimateMonitoringRequest, SensorsData>()
-                .ForMember(data => data.MeasurementTime, request => request
-                    .MapFrom(requestSrc => requestSrc.MeasurementTime.ToDateTimeOffset().ToLocalTime()));
+            CreateMap<ClimateMonitoringRequest, SensorsData>();
 
             #endregion
 

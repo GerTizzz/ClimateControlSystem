@@ -27,13 +27,25 @@ namespace ClimateControlSystem.Server.Infrastructure
 
         public MonitoringBuilder AddSensorsData(SensorsData sensors)
         {
+            _monitoringData.SensorsData = sensors;
+
+            return this;
+        }
+
+        public MonitoringBuilder AddMeasuredData(SensorsData sensors)
+        {
             _monitoringData.MeasuredData = new MeasuredData()
             {
                 MeasuredTemperature = sensors.MeasuredTemperature,
                 MeasuredHumidity = sensors.MeasuredHumidity,
             };
 
-            _monitoringData.MeasurementTime = sensors.MeasurementTime;
+            return this;
+        }
+
+        public MonitoringBuilder AddMeasuredData(MeasuredData measured)
+        {
+            _monitoringData.MeasuredData = measured;
 
             return this;
         }

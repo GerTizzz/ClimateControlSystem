@@ -2,7 +2,6 @@
 {
     public sealed class SensorsData
     {
-        public DateTimeOffset MeasurementTime { get; set; }
         public float ClusterLoad { get; set; }
         public float CpuUsage { get; set; }
         public float ClusterTemperature { get; set; }
@@ -15,5 +14,26 @@
         public float WindDirection { get; set; }
         public float WindEnthalpy { get; set; }
         public float MeanCoolingValue { get; set; }
+
+        public SensorsData Clone()
+        {
+            var clone = new SensorsData()
+            {
+                ClusterLoad = ClusterLoad,
+                CpuUsage = CpuUsage,
+                ClusterTemperature = ClusterTemperature,
+                MeasuredTemperature = MeasuredTemperature,
+                MeasuredHumidity = MeasuredHumidity,
+                AirHumidityOutside = AirHumidityOutside,
+                AirDryTemperatureOutside = AirDryTemperatureOutside,
+                AirWetTemperatureOutside = AirWetTemperatureOutside,
+                WindSpeed = WindSpeed,
+                WindDirection = WindDirection,
+                WindEnthalpy = WindEnthalpy,
+                MeanCoolingValue = MeanCoolingValue
+            };
+
+            return clone;
+        }
     }
 }

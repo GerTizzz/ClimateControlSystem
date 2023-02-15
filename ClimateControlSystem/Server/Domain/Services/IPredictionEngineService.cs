@@ -1,10 +1,9 @@
-﻿using ClimateControlSystem.Server.Resources.Common;
-using ClimateControlSystem.Shared;
+﻿using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
 
 namespace ClimateControlSystem.Server.Domain.Services
 {
     public interface IPredictionEngineService
     {
-        Task<Prediction> Predict(SensorsData inputData);
+        Task<TensorPredictionResult> Predict(TensorPredictionRequest features);
     }
 }

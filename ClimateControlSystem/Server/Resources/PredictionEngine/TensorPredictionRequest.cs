@@ -2,7 +2,7 @@
 
 namespace ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources
 {
-    internal sealed class TensorPredictionRequest
+    public sealed class TensorPredictionRequest
     {
         [VectorType(12)]
         public float[] serving_default_input_1 { get; set; }

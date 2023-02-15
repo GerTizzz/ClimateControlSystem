@@ -10,12 +10,10 @@ namespace ClimateControlSystem.Server.Services.gRPC
     public sealed class ClimateDataReciever : ClimateMonitoring.ClimateMonitoringBase
     {
         private readonly IMediator _mediatr;
-        private readonly IMapper _mapper;
 
-        public ClimateDataReciever(IMediator mediatr, IMapper mapper)
+        public ClimateDataReciever(IMediator mediatr)
         {
             _mediatr = mediatr;
-            _mapper = mapper;
         }
 
         public override async Task<ClimateMonitoringReply> SendDataToPredict(ClimateMonitoringRequest grpcRequest, ServerCallContext context)
@@ -24,8 +22,7 @@ namespace ClimateControlSystem.Server.Services.gRPC
             
             try
             {
-                SensorsData sensorsData = _mapper.Map<SensorsData>(grpcRequest);
-                Prediction predictionResult = await _mediatr.Send(new PredictQuery(sensorsData));
+                Prediction predictionResult = await _mediatr.Send(new ProcessMicroclimateQuery(grpcRequest));
                 reply.Reply = $"[Status: Success][Time: {DateTime.Now.ToString("HH:mm:ss dd:MM:yyyy")}][Data: {predictionResult.PredictedTemperature}, {predictionResult.PredictedHumidity}]";
             }
             catch
@@ -46,9 +43,8 @@ namespace ClimateControlSystem.Server.Services.gRPC
 
                     try
                     {
-                        SensorsData sensorsData = _mapper.Map<SensorsData>(request);
-                        Prediction predictionResult = await _mediatr.Send(new PredictQuery(sensorsData));
-                        reply.Reply = $"[Status: Success][Time: {sensorsData.MeasurementTime.ToString("HH:mm:ss dd:MM:yyyy")}][Data: {predictionResult.PredictedTemperature}, {predictionResult.PredictedHumidity}]";
+                        Prediction predictionResult = await _mediatr.Send(new ProcessMicroclimateQuery(request));
+                        reply.Reply = $"[Status: Success][Time: {DateTime.Now.ToString("HH:mm:ss dd:MM:yyyy")}][Data: {predictionResult.PredictedTemperature}, {predictionResult.PredictedHumidity}]";
                     }
                     catch
                     {

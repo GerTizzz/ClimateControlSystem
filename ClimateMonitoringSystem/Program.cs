@@ -1,5 +1,4 @@
 ﻿using ClimateMonitoringSystem.Protos;
-using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.VisualBasic.FileIO;
@@ -89,12 +88,11 @@ namespace ClimateMonitoringSystem
 
             ClimateMonitoringRequest request = new ClimateMonitoringRequest()
             {
-                MeasurementTime = DateTimeOffset.Now.ToTimestamp(),
                 ClusterLoad = requestData[0],
                 CpuUsage = requestData[1],
                 ClusterTemperature = requestData[2],
-                CurrentRealTemperature = requestData[3],
-                CurrentRealHumidity = requestData[4],
+                MeasuredTemperature = requestData[3],
+                MeasuredHumidity = requestData[4],
                 AirHumidityOutside = requestData[5],
                 AirDryTemperatureOutside = requestData[6],
                 AirWetTemperatureOutside = requestData[7],

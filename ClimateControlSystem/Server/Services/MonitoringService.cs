@@ -9,22 +9,19 @@ namespace ClimateControlSystem.Server.Services
 {
     public class MonitoringService : IMonitoringService
     {
-        private readonly IPredictionEngineService _predictionEngine;
         private readonly IMediator _mediator;
         private readonly IConfigManager _configManager;
 
-        public MonitoringService(IPredictionEngineService predictionEngine,
-                                 IMediator mediator,
+        public MonitoringService(IMediator mediator,
                                  IConfigManager configManager)
         {
             _mediator = mediator;
-            _predictionEngine = predictionEngine;
             _configManager = configManager;
         }
 
         public async Task<Prediction> Predict(SensorsData sensorsData)
         {
-            Prediction prediction = await _predictionEngine.Predict(sensorsData);
+            Prediction prediction = await GetPrediction(sensorsData);
 
             await ProcessMonitoringData(sensorsData, prediction);
 
@@ -50,18 +47,13 @@ namespace ClimateControlSystem.Server.Services
             await SaveMonitoring(monitoringToSave);
 
             Monitoring monitoringToSend = new MonitoringBuilder()
-                .AddSensorsData(sensorsData)
+                .AddMeasuredData(sensorsData)
                 .AddAccuracy(accuracy)
                 .AddMicroclimateEvent(microclimateEvent)
                 .AddPredictionData(prediction)
                 .Build();
 
             await SendMonitoringToClients(monitoringToSend);
-        }
-
-        private async Task<Prediction?> GetLastPrediction()
-        {
-            return await _mediator.Send(new GetLastPredictionQuery());
         }
 
         private Accuracy? CalculateLastPredictionAccuracy(SensorsData sensorData, Prediction? prediction)
@@ -84,21 +76,6 @@ namespace ClimateControlSystem.Server.Services
             };
 
             return accuracy;
-        }
-
-        private async Task SendMonitoringToClients(Monitoring monitoring)
-        {
-            await _mediator.Send(new SendMonitoringCommand(monitoring));
-        }
-
-        private async Task SaveOrUpdateSensorsData(SensorsData sensorsData)
-        {
-            await _mediator.Send(new SaveSensorsDataCommand(sensorsData));
-        }
-
-        private async Task SaveMonitoring(Monitoring monitoring)
-        {
-            await _mediator.Send(new SaveMonitoringCommand(monitoring));
         }
 
         private Task<MicroclimateEvent?> GetMicroclimateEvent(Prediction prediction, Config config)
@@ -125,5 +102,30 @@ namespace ClimateControlSystem.Server.Services
 
             return Task.FromResult(microclimateEventBuilder.Build());
         }
+
+        private async Task<Prediction> GetPrediction(SensorsData sensorsData)
+        {
+            return await _mediator.Send(new GetPredictionQuery(sensorsData));
+        }
+
+        private async Task<Prediction?> GetLastPrediction()
+        {
+            return await _mediator.Send(new GetLastPredictionQuery());
+        }
+
+        private async Task SendMonitoringToClients(Monitoring monitoring)
+        {
+            await _mediator.Send(new SendMonitoringCommand(monitoring));
+        }
+
+        private async Task SaveOrUpdateSensorsData(SensorsData sensorsData)
+        {
+            await _mediator.Send(new SaveSensorsDataCommand(sensorsData));
+        }
+
+        private async Task SaveMonitoring(Monitoring monitoring)
+        {
+            await _mediator.Send(new SaveMonitoringCommand(monitoring));
+        }        
     }
 }
