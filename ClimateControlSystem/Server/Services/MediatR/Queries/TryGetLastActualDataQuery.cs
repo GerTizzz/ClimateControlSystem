@@ -3,7 +3,7 @@ using MediatR;
 
 namespace ClimateControlSystem.Server.Services.MediatR.Queries
 {
-    public sealed class GetLastPredictionQuery : IRequest<Prediction>
+    public sealed class TryGetLastActualDataQuery : IRequest<ActualData>
     {
     }
 }

@@ -22,7 +22,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
         {
             try
             {
-                ConfigEntity existingConfig = await _context.Configs.OrderBy(config => config.Id).FirstAsync();
+                ConfigsEntity existingConfig = await _context.Configs.OrderBy(config => config.Id).FirstAsync();
 
                 existingConfig.UpperTemperatureWarningLimit = configToUpdate.UpperTemperatureWarningLimit;
                 existingConfig.LowerTemperatureWarningLimit = configToUpdate.LowerTemperatureWarningLimit;

@@ -2,7 +2,7 @@
 
 namespace ClimateControlSystem.Server.Resources.Repository.TablesEntities
 {
-    public sealed class SensorsDataEntity
+    public sealed class FeaturesDataEntity
     {
         [Key]
         public int Id { get; set; }

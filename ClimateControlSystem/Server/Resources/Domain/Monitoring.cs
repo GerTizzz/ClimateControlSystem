@@ -2,23 +2,21 @@
 {
     public class Monitoring
     {
-        public DateTimeOffset? MeasurementTime { get; set; }
-        public MeasuredData MeasuredData { get; set; }
+        public DateTimeOffset? TracedTime { get; set; }
+        public ActualData ActualData { get; set; }
         public Prediction Prediction { get; set; }
-        public MicroclimateEvent? MicroclimateEvent { get; set; }
+        public MicroclimatesEvents? MicroclimatesEvents { get; set; }
         public Accuracy? Accuracy { get; set; }
-        public SensorsData? SensorsData { get; set; }
 
         public Monitoring Clone()
         {
             var clone = new Monitoring()
             {
-                MeasurementTime = MeasurementTime,
-                MeasuredData = MeasuredData.Clone(),
+                TracedTime = TracedTime,
+                ActualData = ActualData.Clone(),
                 Prediction = Prediction.Clone(),
-                MicroclimateEvent = MicroclimateEvent?.Clone(),
+                MicroclimatesEvents = MicroclimatesEvents?.Clone(),
                 Accuracy = Accuracy?.Clone(),
-                SensorsData = SensorsData?.Clone()
             };
 
             return clone;

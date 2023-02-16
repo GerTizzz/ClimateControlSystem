@@ -10,18 +10,18 @@ namespace ClimateControlSystem.Client.Shared
         private const float AccuracyUpperLimit = 100f;
         private const int MaxGraphicsDataPerMonitoringResponse = 4;
 
-        private static List<GraphicData> GetNewTemperatureGraphicData(BaseMonitoringResponse newResonse, ConfigResponse config)
+        private static List<GraphicData> GetNewTemperatureGraphicData(BaseMonitoringResponse monitoring, ConfigResponse config)
         {
             try
             {
                 List<GraphicData> graphicsData = new List<GraphicData>(MaxGraphicsDataPerMonitoringResponse);
 
-                string time = newResonse.MeasurementTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
+                string time = monitoring.MeasurementTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
 
-                if (newResonse.PredictedTemperature is not null)
+                if (monitoring.Prediction is not null)
                 {
                     graphicsData.Add(new GraphicData(time,
-                        newResonse.PredictedTemperature.Value, "Спрогнозированная"));
+                        monitoring.Prediction.Temperature, "Спрогнозированная"));
                 }
 
                 graphicsData.Add(new GraphicData(time,
@@ -29,10 +29,10 @@ namespace ClimateControlSystem.Client.Shared
                 graphicsData.Add(new GraphicData(time,
                     config.LowerTemperatureWarningLimit, "Нижний лимит"));
 
-                if (newResonse.MeasuredTemperature.HasValue)
+                if (monitoring.ActualData is not null)
                 {
                     graphicsData.Add(new GraphicData(time,
-                        newResonse.MeasuredTemperature.Value, "Действительная"));
+                        monitoring.ActualData.Temperature, "Действительная"));
                 }
 
                 return graphicsData;
@@ -43,18 +43,18 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        private static List<GraphicData> GetNewHumidityGraphicsData(BaseMonitoringResponse newResonse, ConfigResponse config)
+        private static List<GraphicData> GetNewHumidityGraphicsData(BaseMonitoringResponse monitoring, ConfigResponse config)
         {
             try
             {
                 List<GraphicData> graphicsData = new List<GraphicData>(MaxGraphicsDataPerMonitoringResponse);
 
-                string time = newResonse.MeasurementTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
+                string time = monitoring.MeasurementTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
 
-                if (newResonse.PredictedHumidity is not null)
+                if (monitoring.Prediction is not null)
                 {
                     graphicsData.Add(new GraphicData(time,
-                        newResonse.PredictedHumidity.Value, "Спрогнозированная"));
+                        monitoring.Prediction.Humidity, "Спрогнозированная"));
                 }
 
                 graphicsData.Add(new GraphicData(time,
@@ -62,10 +62,10 @@ namespace ClimateControlSystem.Client.Shared
                 graphicsData.Add(new GraphicData(time,
                     config.LowerHumidityWarningLimit, "Нижний лимит"));
 
-                if (newResonse.MeasuredHumidity.HasValue)
+                if (monitoring.ActualData is not null)
                 {
                     graphicsData.Add(new GraphicData(time,
-                        newResonse.MeasuredHumidity.Value, "Действительная"));
+                        monitoring.ActualData.Humidity, "Действительная"));
                 }
 
                 return graphicsData;

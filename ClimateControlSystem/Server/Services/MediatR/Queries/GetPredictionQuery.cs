@@ -5,11 +5,11 @@ namespace ClimateControlSystem.Server.Services.MediatR.Queries
 {
     public sealed class GetPredictionQuery : IRequest<Prediction>
     {
-        public SensorsData sensorsData { get; }
+        public FeaturesData FeaturesData { get; }
 
-        public GetPredictionQuery(SensorsData sensorsData)
+        public GetPredictionQuery(FeaturesData featuresData)
         {
-            this.sensorsData = sensorsData;
+            FeaturesData = featuresData;
         }
     }
 }

@@ -19,9 +19,9 @@ namespace ClimateControlSystem.Server.Services.Handlers
 
         public async Task<Prediction> Handle(ProcessMicroclimateQuery request, CancellationToken cancellationToken)
         {
-            var sensorsData = _mapper.Map<SensorsData>(request.MonitoringRequest);
+            var featuresData = _mapper.Map<FeaturesData>(request.MonitoringRequest);
 
-            return await _predictionService.Predict(sensorsData);
+            return await _predictionService.Predict(featuresData);
         }
     }
 }

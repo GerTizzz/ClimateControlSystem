@@ -4,69 +4,51 @@ namespace ClimateControlSystem.Server.Infrastructure
 {
     public sealed class MonitoringBuilder
     {
-        private readonly Monitoring _monitoringData;
+        private readonly Monitoring _monitoring;
 
         public MonitoringBuilder()
         {
-            _monitoringData = new Monitoring();
+            _monitoring = new Monitoring();
         }
 
-        public MonitoringBuilder AddMeasurementTime(DateTimeOffset? time)
+        public MonitoringBuilder AddTracedTime(DateTimeOffset? time)
         {
-            _monitoringData.MeasurementTime = time;
+            _monitoring.TracedTime = time;
 
             return this;
         }
 
-        public MonitoringBuilder AddPredictionData(Prediction prediction)
+        public MonitoringBuilder AddPrediction(Prediction prediction)
         {
-            _monitoringData.Prediction = prediction;
+            _monitoring.Prediction = prediction;
 
             return this;
         }
 
-        public MonitoringBuilder AddSensorsData(SensorsData sensors)
+        public MonitoringBuilder AddActualData(ActualData actualData)
         {
-            _monitoringData.SensorsData = sensors;
-
-            return this;
-        }
-
-        public MonitoringBuilder AddMeasuredData(SensorsData sensors)
-        {
-            _monitoringData.MeasuredData = new MeasuredData()
-            {
-                MeasuredTemperature = sensors.MeasuredTemperature,
-                MeasuredHumidity = sensors.MeasuredHumidity,
-            };
-
-            return this;
-        }
-
-        public MonitoringBuilder AddMeasuredData(MeasuredData measured)
-        {
-            _monitoringData.MeasuredData = measured;
+            _monitoring.ActualData = actualData;
 
             return this;
         }
 
         public MonitoringBuilder AddAccuracy(Accuracy? accuracy)
         {
-            _monitoringData.Accuracy = accuracy;
+            _monitoring.Accuracy = accuracy;
 
             return this;
         }
 
-        public MonitoringBuilder AddMicroclimateEvent(MicroclimateEvent? temperatureEvent)
+        public MonitoringBuilder AddMicroclimatesEvents(MicroclimatesEvents? microclimatesEvents)
         {
-            _monitoringData.MicroclimateEvent = temperatureEvent;
+            _monitoring.MicroclimatesEvents = microclimatesEvents;
 
             return this;
         }
 
         public Monitoring Build()
         {
-            return _monitoringData;
+            return _monitoring;
         }
     }
 }

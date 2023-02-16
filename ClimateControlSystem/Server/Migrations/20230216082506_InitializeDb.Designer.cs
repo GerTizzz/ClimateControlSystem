@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClimateControlSystem.Server.Migrations
 {
     [DbContext(typeof(PredictionsDbContext))]
-    [Migration("20230215045852_InitializeDb")]
+    [Migration("20230216082506_InitializeDb")]
     partial class InitializeDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,7 +43,26 @@ namespace ClimateControlSystem.Server.Migrations
                     b.ToTable("Accuracies");
                 });
 
-            modelBuilder.Entity("ClimateControlSystem.Server.Resources.Repository.TablesEntities.ConfigEntity", b =>
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.Repository.TablesEntities.ActualDataEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<float>("Humidity")
+                        .HasColumnType("real");
+
+                    b.Property<float>("Temperature")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ActualData");
+                });
+
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.Repository.TablesEntities.ConfigsEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -82,90 +101,7 @@ namespace ClimateControlSystem.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ClimateControlSystem.Server.Resources.Repository.TablesEntities.MicroclimatesEventsEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<float?>("HumidityValue")
-                        .HasColumnType("real");
-
-                    b.Property<float?>("TempertatureValue")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MicroclimatesEvents");
-                });
-
-            modelBuilder.Entity("ClimateControlSystem.Server.Resources.Repository.TablesEntities.MonitoringsEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int?>("AccuracyId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("AccuracysId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("MeasurementTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int?>("MicroclimatesEventId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MicroclimatesEventsId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PredictionId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PredictionsId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SensorsDataId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccuracyId");
-
-                    b.HasIndex("MicroclimatesEventId");
-
-                    b.HasIndex("PredictionId");
-
-                    b.HasIndex("SensorsDataId");
-
-                    b.ToTable("Monitorings");
-                });
-
-            modelBuilder.Entity("ClimateControlSystem.Server.Resources.Repository.TablesEntities.PredictionsEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<float>("PredictedHumidity")
-                        .HasColumnType("real");
-
-                    b.Property<float>("PredictedTemperature")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Predictions");
-                });
-
-            modelBuilder.Entity("ClimateControlSystem.Server.Resources.Repository.TablesEntities.SensorsDataEntity", b =>
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.Repository.TablesEntities.FeaturesDataEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -211,7 +147,89 @@ namespace ClimateControlSystem.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SensorsData");
+                    b.ToTable("FeaturesData");
+                });
+
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.Repository.TablesEntities.MicroclimatesEventsEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<float?>("HumidityValue")
+                        .HasColumnType("real");
+
+                    b.Property<float?>("TempertatureValue")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MicroclimatesEvents");
+                });
+
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.Repository.TablesEntities.MonitoringsEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("AccuracyId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ActualDataId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MicroclimatesEventId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PredictionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("TracedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccuracyId");
+
+                    b.HasIndex("ActualDataId");
+
+                    b.HasIndex("MicroclimatesEventId");
+
+                    b.HasIndex("PredictionId");
+
+                    b.ToTable("Monitorings");
+                });
+
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.Repository.TablesEntities.PredictionsEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("FeaturesDataId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FeaturesId")
+                        .HasColumnType("int");
+
+                    b.Property<float>("Humidity")
+                        .HasColumnType("real");
+
+                    b.Property<float>("Temperature")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FeaturesId");
+
+                    b.ToTable("Predictions");
                 });
 
             modelBuilder.Entity("ClimateControlSystem.Server.Resources.Repository.TablesEntities.UserEntity", b =>
@@ -259,6 +277,10 @@ namespace ClimateControlSystem.Server.Migrations
                         .WithMany()
                         .HasForeignKey("AccuracyId");
 
+                    b.HasOne("ClimateControlSystem.Server.Resources.Repository.TablesEntities.ActualDataEntity", "ActualData")
+                        .WithMany()
+                        .HasForeignKey("ActualDataId");
+
                     b.HasOne("ClimateControlSystem.Server.Resources.Repository.TablesEntities.MicroclimatesEventsEntity", "MicroclimatesEvent")
                         .WithMany()
                         .HasForeignKey("MicroclimatesEventId");
@@ -267,17 +289,24 @@ namespace ClimateControlSystem.Server.Migrations
                         .WithMany()
                         .HasForeignKey("PredictionId");
 
-                    b.HasOne("ClimateControlSystem.Server.Resources.Repository.TablesEntities.SensorsDataEntity", "SensorsData")
-                        .WithMany()
-                        .HasForeignKey("SensorsDataId");
-
                     b.Navigation("Accuracy");
+
+                    b.Navigation("ActualData");
 
                     b.Navigation("MicroclimatesEvent");
 
                     b.Navigation("Prediction");
+                });
 
-                    b.Navigation("SensorsData");
+            modelBuilder.Entity("ClimateControlSystem.Server.Resources.Repository.TablesEntities.PredictionsEntity", b =>
+                {
+                    b.HasOne("ClimateControlSystem.Server.Resources.Repository.TablesEntities.FeaturesDataEntity", "Features")
+                        .WithMany()
+                        .HasForeignKey("FeaturesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Features");
                 });
 #pragma warning restore 612, 618
         }

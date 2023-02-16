@@ -4,18 +4,18 @@ namespace ClimateControlSystem.Server.Infrastructure
 {
     public sealed class MicroclimateEventBuilder
     {
-        private readonly MicroclimateEvent _microclimateEvent;
+        private readonly MicroclimatesEvents _microclimatesEvents;
 
         private bool _isAnyEvents;
 
         public MicroclimateEventBuilder()
         {
-            _microclimateEvent = new MicroclimateEvent();
+            _microclimatesEvents = new MicroclimatesEvents();
         }
 
         public MicroclimateEventBuilder AddTemperatureEvent(float value)
         {
-            _microclimateEvent.TemperatureValue = value;
+            _microclimatesEvents.TemperatureValue = value;
 
             _isAnyEvents = true;
 
@@ -24,18 +24,18 @@ namespace ClimateControlSystem.Server.Infrastructure
 
         public MicroclimateEventBuilder AddHumidityEvent(float value)
         {
-            _microclimateEvent.HumidityValue = value;
+            _microclimatesEvents.HumidityValue = value;
 
             _isAnyEvents = true;
 
             return this;
         }
 
-        public MicroclimateEvent? Build()
+        public MicroclimatesEvents? Build()
         {
             if (_isAnyEvents)
             {
-                return _microclimateEvent;
+                return _microclimatesEvents;
             }
 
             return null;

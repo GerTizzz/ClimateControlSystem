@@ -20,7 +20,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             {
                 var monitorings = await _context.Monitorings
                     .Include(micro => micro.Prediction)
-                    .Include(micro => micro.SensorsData)
+                    .Include(micro => micro.ActualData)
                     .OrderByDescending(micro => micro.Id)
                     .Skip(start)
                     .Take(count)
@@ -29,10 +29,9 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                 var result = monitorings.Select(monitor =>
                     new MonitoringsEntity()
                     {
-                        MeasurementTime = monitor.MeasurementTime,
+                        TracedTime = monitor.TracedTime,
                         Prediction = monitor.Prediction,
-                        //Measured
-                        SensorsData = monitor.SensorsData
+                        ActualData = monitor.ActualData
                     })
                     .ToList();
 
@@ -50,7 +49,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             {
                 var monitorings = await _context.Monitorings
                     .Include(micro => micro.Prediction)
-                    .Include(micro => micro.SensorsData)
+                    .Include(micro => micro.ActualData)
                     .Include(micro => micro.Accuracy)
                     .OrderByDescending(micro => micro.Id)
                     .Skip(start)
@@ -60,10 +59,9 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                 var result = monitorings.Select(monitor =>
                     new MonitoringsEntity()
                     {
-                        MeasurementTime = monitor.MeasurementTime,
+                        TracedTime = monitor.TracedTime,
                         Prediction = monitor.Prediction,
-                        //Measured
-                        SensorsData = monitor.SensorsData,
+                        ActualData = monitor.ActualData,
                         Accuracy = monitor.Accuracy
                     })
                     .ToList();
@@ -81,8 +79,8 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             try
             {
                 var microclimates = await _context.Monitorings
-                    .Include(micro => micro.SensorsData)
                     .Include(micro => micro.Prediction)
+                        .ThenInclude(prediction => prediction.Features)
                     .Include(micro => micro.Accuracy)
                     .OrderByDescending(micro => micro.Id)
                     .Skip(start)
@@ -92,8 +90,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                 var result = microclimates.Select(micro => 
                     new MonitoringsEntity()
                     {
-                        MeasurementTime = micro.MeasurementTime,
-                        SensorsData = micro.SensorsData,
+                        TracedTime = micro.TracedTime,
                         Prediction = micro.Prediction,
                         Accuracy = micro.Accuracy
                     })
@@ -122,7 +119,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                 var result = monitorings.Select(monitor =>
                     new MonitoringsEntity()
                     {
-                        MeasurementTime = monitor.MeasurementTime,
+                        TracedTime = monitor.TracedTime,
                         MicroclimatesEvent = monitor.MicroclimatesEvent
                     })
                     .ToList();
@@ -145,18 +142,15 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             return await _context.Predictions.CountAsync();
         }
 
-        public async Task<PredictionsEntity?> GetLastPredictionAsync()
+        public async Task<ActualDataEntity?> TryGetLastActualDataAsync()
         {
             try
             {
-                var id = (await _context.Monitorings
+                var actualData = (await _context.Monitorings
                     .OrderBy(record => record.Id)
-                    .LastAsync()).PredictionsId;
+                    .LastAsync()).ActualData;
 
-                PredictionsEntity? lastRecord = await _context.Predictions
-                    .FirstOrDefaultAsync(prediction => prediction.Id == id);
-
-                return lastRecord;
+                return actualData;
             }
             catch (Exception exc)
             {
@@ -168,39 +162,28 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
         {
             try
             {
-                await _context.Monitorings.AddAsync(monitoring);
-
-                await _context.SaveChangesAsync();
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }    
-        
-        public async Task<bool> SaveSensorsDataAsync(SensorsDataEntity sensorsData)
-        {
-            try
-            {
-                if (await _context.Monitorings.AnyAsync())
+                if (await _context.Monitorings.AnyAsync() is false)
                 {
-                    var monitoringRecord = new MonitoringsEntity()
+                    _context.Monitorings.Add(new MonitoringsEntity()
                     {
-                        SensorsData = sensorsData
-                    };
+                        ActualData = monitoring.ActualData,
+                        TracedTime = monitoring.TracedTime
+                    });
+                }
+                else
+                {
+                    var lastMonitoring = await _context.Monitorings
+                        .OrderBy(monit => monit.Id)
+                        .LastAsync();
 
-                    await _context.Monitorings.AddAsync(monitoringRecord);
-
-                    await _context.SaveChangesAsync();
-
-                    return true;
+                    lastMonitoring.ActualData = monitoring.ActualData;
+                    lastMonitoring.TracedTime = monitoring.TracedTime;
                 }
 
-                var lastMonitoringRecord = await _context.Monitorings.LastAsync();
+                monitoring.ActualData = null;
+                monitoring.TracedTime = null;
 
-                lastMonitoringRecord.SensorsData = sensorsData;
+                await _context.Monitorings.AddAsync(monitoring);
 
                 await _context.SaveChangesAsync();
 

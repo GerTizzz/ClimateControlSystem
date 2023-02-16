@@ -86,41 +86,12 @@
     {
         try
         {
-            if (_monitorings is null)
-            {
-                return;
-            }
-
-            DateTimeOffset? predictedTime = null;
-
-            if (_monitorings.Any())
-            {
-                var lastMonitoring = _monitorings.Last();
-                lastMonitoring = UpdateMonitoringWithSensorsData(arrivedMonitoring, lastMonitoring);
-                predictedTime = lastMonitoring.MeasurementTime;
-            }
-            else
-            {
-                var firstMonitroing = UpdateMonitoringWithSensorsData(arrivedMonitoring, new BaseMonitoringResponse());
-                _monitorings.Add(firstMonitroing);
-                predictedTime = DateTimeOffset.Now;
-            }
-
             if (arrivedMonitoring is MonitoringWithEventsResponse eventMonitroing)
             {
                 _ = Task.Run(() => MicroclimateEventArrived(eventMonitroing));
             }
 
-            var newMonitoring = new BaseMonitoringResponse()
-                {
-                    PredictedHumidity = arrivedMonitoring.PredictedHumidity,
-                    PredictedTemperature = arrivedMonitoring.PredictedTemperature,
-                    MeasurementTime = predictedTime.Value.AddSeconds(_config.PredictionTimeIntervalSeconds)
-                };
-
-            _monitorings.Add(newMonitoring);
-
-            RemoveExtraMonitroingElementsFromBeginning();
+            AddNewMonitoring((BaseMonitoringResponse)arrivedMonitoring);
 
             await UpdateCharts();
         }
@@ -130,28 +101,54 @@
         }
     }
 
-    BaseMonitoringResponse UpdateMonitoringWithSensorsData(BaseMonitoringResponse newMonitoring, BaseMonitoringResponse existingMonitoring)
+    private void AddNewMonitoring(BaseMonitoringResponse monitoring)
     {
-        existingMonitoring.MeasuredTemperature = newMonitoring.MeasuredTemperature;
-        existingMonitoring.MeasuredHumidity = newMonitoring.MeasuredHumidity;
+        if (_monitorings is null)
+        {
+            return;
+        }
 
-        return existingMonitoring;
+        if (_monitorings.Any())
+        {
+            var lastMonitoring = _monitorings.Last();
+            lastMonitoring.ActualData = monitoring.ActualData;
+            lastMonitoring.MeasurementTime = monitoring.MeasurementTime;
+        }
+        else
+        {
+            _monitorings.Add(monitoring.CloneWithMeasuredAndTime());
+        }
+
+        _monitorings.Add(monitoring.CloneWithPrediction());
+
+        RemoveExtraMonitroingElementsFromBeginning();
     }
 
     private async Task MicroclimateEventArrived(MonitoringWithEventsResponse monitoring)
     {
         try
         {
-            StringBuilder messageBuilder = new StringBuilder();
-
-            if (monitoring.TemperatureValue is not null)
+            if (monitoring.MicroclimatesEvent is null)
             {
-                messageBuilder.Append(GetTemperatureAlertMessage(monitoring.TemperatureValue.Value, monitoring.MeasurementTime));
+                return;
             }
 
-            if (monitoring.HumidityValue is not null)
+            StringBuilder messageBuilder = new StringBuilder();
+
+            if (monitoring.MicroclimatesEvent.TemperatureValue is not null)
             {
-                messageBuilder.Append(GetHumidityAlertMessage(monitoring.HumidityValue.Value, monitoring.MeasurementTime));
+                messageBuilder.Append(
+                    GetAlertMessage(
+                        monitoring.MicroclimatesEvent.TemperatureValue.Value,
+                        monitoring.MeasurementTime, "температуры"));
+            }
+
+            if (monitoring.MicroclimatesEvent.HumidityValue is not null)
+            {
+                messageBuilder.Append(
+                    GetAlertMessage(
+                        monitoring.MicroclimatesEvent.HumidityValue.Value,
+                        monitoring.MeasurementTime, "влажности"));
             }
 
             string alertMessage = messageBuilder.ToString();
@@ -167,12 +164,22 @@
         }
     }
 
-    public async ValueTask DisposeAsync()
+    private string GetAlertMessage(float value, DateTimeOffset? eventTime, string format)
     {
-        if (_monitoringConnection is not null)
+        var alertMessageBuilder = new StringBuilder();
+
+        DateTimeOffset time = eventTime.HasValue ? eventTime.Value : DateTimeOffset.Now;
+
+        if (value > 0)
         {
-            await _monitoringConnection.DisposeAsync();
+            alertMessageBuilder.Append($"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается превышение {format} выше допустимого предела!");
         }
+        else if (value < 0)
+        {
+            alertMessageBuilder.AppendLine($"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается понижение температуры ниже допустимого предела!");
+        }
+
+        return alertMessageBuilder.ToString();
     }
 
     private void RemoveExtraMonitroingElementsFromBeginning()
@@ -214,37 +221,12 @@
         await _humidityChart.ChangeData(_humidityRenderableSeries);
     }
 
-    private string GetTemperatureAlertMessage(float tempValue, DateTimeOffset? eventTime)
+    public async ValueTask DisposeAsync()
     {
-        string alertMessage = "";
-        DateTimeOffset time = eventTime.HasValue ? eventTime.Value : DateTimeOffset.Now;
-
-        if (tempValue > 0)
+        if (_monitoringConnection is not null)
         {
-            alertMessage += $"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается превышение температуры выше допустимого предела!";
+            await _monitoringConnection.DisposeAsync();
         }
-        else if (tempValue < 0)
-        {
-            alertMessage += $"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается понижение температуры ниже допустимого предела!";
-        }
-
-        return alertMessage;
     }
 
-    private string GetHumidityAlertMessage(float humValue, DateTimeOffset? eventTime)
-    {
-        string alertMessage = "";
-        DateTimeOffset time = eventTime.HasValue ? eventTime.Value : DateTimeOffset.Now;
-
-        if (humValue > 0)
-        {
-            alertMessage += $"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается превышение влажности выше допустимого предела!";
-        }
-        else if (humValue < 0)
-        {
-            alertMessage += $"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается понижение влажности ниже допустимого предела!";
-        }
-
-        return alertMessage;
-    }
 }

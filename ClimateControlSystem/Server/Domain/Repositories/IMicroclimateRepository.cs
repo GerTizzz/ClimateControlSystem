@@ -1,6 +1,4 @@
-﻿using ClimateControlSystem.Server.Resources.Common;
-using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
-using ClimateControlSystem.Shared.SendToClient;
+﻿using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 
 namespace ClimateControlSystem.Server.Domain.Repositories
 {
@@ -8,13 +6,11 @@ namespace ClimateControlSystem.Server.Domain.Repositories
     {
         Task<bool> SaveMonitoringAsync(MonitoringsEntity monitoring);
 
-        Task<bool> SaveSensorsDataAsync(SensorsDataEntity sensorsData);
-
         Task<int> GetMicroclimatesCountAsync();
 
         Task<int> GetMonitoringsCountAsync();
 
-        Task<PredictionsEntity> GetLastPredictionAsync();
+        Task<ActualDataEntity?> TryGetLastActualDataAsync();
 
         Task<IEnumerable<MonitoringsEntity>> GetMonitoringsAsync(int start, int count);
 

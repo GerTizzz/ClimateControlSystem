@@ -23,7 +23,7 @@ namespace ClimateControlSystem.Server.Services.gRPC
             try
             {
                 Prediction predictionResult = await _mediatr.Send(new ProcessMicroclimateQuery(grpcRequest));
-                reply.Reply = $"[Status: Success][Time: {DateTime.Now.ToString("HH:mm:ss dd:MM:yyyy")}][Data: {predictionResult.PredictedTemperature}, {predictionResult.PredictedHumidity}]";
+                reply.Reply = $"[Status: Success][Time: {DateTime.Now.ToString("HH:mm:ss dd:MM:yyyy")}][Data: {predictionResult.Temperature}, {predictionResult.Humidity}]";
             }
             catch
             {
@@ -44,7 +44,7 @@ namespace ClimateControlSystem.Server.Services.gRPC
                     try
                     {
                         Prediction predictionResult = await _mediatr.Send(new ProcessMicroclimateQuery(request));
-                        reply.Reply = $"[Status: Success][Time: {DateTime.Now.ToString("HH:mm:ss dd:MM:yyyy")}][Data: {predictionResult.PredictedTemperature}, {predictionResult.PredictedHumidity}]";
+                        reply.Reply = $"[Status: Success][Time: {DateTime.Now.ToString("HH:mm:ss dd:MM:yyyy")}][Data: {predictionResult.Temperature}, {predictionResult.Humidity}]";
                     }
                     catch
                     {

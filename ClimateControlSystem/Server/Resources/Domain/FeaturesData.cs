@@ -1,6 +1,6 @@
 ﻿namespace ClimateControlSystem.Server.Resources.Common
 {
-    public sealed class SensorsData
+    public sealed class FeaturesData
     {
         public float ClusterLoad { get; set; }
         public float CpuUsage { get; set; }
@@ -15,9 +15,9 @@
         public float WindEnthalpy { get; set; }
         public float MeanCoolingValue { get; set; }
 
-        public SensorsData Clone()
+        public FeaturesData Clone()
         {
-            var clone = new SensorsData()
+            var clone = new FeaturesData()
             {
                 ClusterLoad = ClusterLoad,
                 CpuUsage = CpuUsage,

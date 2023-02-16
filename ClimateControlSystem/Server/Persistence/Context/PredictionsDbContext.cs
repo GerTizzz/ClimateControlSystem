@@ -9,12 +9,13 @@ namespace ClimateControlSystem.Server.Persistence.Context
     {
         public DbSet<UserEntity> Users { get; set; }
 
-        public DbSet<ConfigEntity> Configs { get; set; }
+        public DbSet<ConfigsEntity> Configs { get; set; }
 
         public DbSet<MonitoringsEntity> Monitorings { get; set; }
-        public DbSet<SensorsDataEntity> SensorsData { get; set; }
+        public DbSet<FeaturesDataEntity> FeaturesData { get; set; }
         public DbSet<AccuracysEntity> Accuracies { get; set; }
         public DbSet<PredictionsEntity> Predictions { get; set; }
+        public DbSet<ActualDataEntity> ActualData { get; set; }
         public DbSet<MicroclimatesEventsEntity> MicroclimatesEvents { get; set; }
 
         public PredictionsDbContext(DbContextOptions options) : base(options)
@@ -33,7 +34,7 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 Role = UserType.Admin
             };
 
-            ConfigEntity initializedConfig = new()
+            ConfigsEntity initializedConfig = new()
             {
                 Id = 1,
                 UpperTemperatureWarningLimit = 24f,
@@ -45,7 +46,7 @@ namespace ClimateControlSystem.Server.Persistence.Context
                 PredictionTimeIntervalSeconds = 5
             };
 
-            modelBuilder.Entity<ConfigEntity>()
+            modelBuilder.Entity<ConfigsEntity>()
                 .HasData(initializedConfig);
 
             modelBuilder.Entity<UserEntity>()

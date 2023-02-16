@@ -2,7 +2,7 @@
 {
     public record class MicroclimateEventResponse
     {
-        public float TemperatureValue { get; init; }
-        public float HumidityValue { get; init; }
+        public float? TemperatureValue { get; init; }
+        public float? HumidityValue { get; init; }
     }
 }

@@ -7,14 +7,14 @@ namespace ClimateControlSystem.Server.Resources.Repository.TablesEntities
         [Key]
         public int Id { get; set; }
 
-        public DateTimeOffset? MeasurementTime { get; set; }
-        public int? PredictionsId { get; set; }
+        public DateTimeOffset? TracedTime { get; set; }
+        public int? PredictionId { get; set; }
         public PredictionsEntity? Prediction { get; set; }
-        public int? SensorsDataId { get; set; }
-        public SensorsDataEntity? SensorsData { get; set; }
-        public int? AccuracysId { get; set; }
-        public AccuracysEntity? Accuracy { get; set; }
-        public int? MicroclimatesEventsId { get; set; }
+        public int? AccuracyId { get; set; }
+        public AccuracysEntity? Accuracy { get; set; }  
+        public int? ActualDataId { get; set; }
+        public ActualDataEntity? ActualData { get; set; }
+        public int? MicroclimatesEventId { get; set; }
         public MicroclimatesEventsEntity? MicroclimatesEvent { get; set; }
     }
 }

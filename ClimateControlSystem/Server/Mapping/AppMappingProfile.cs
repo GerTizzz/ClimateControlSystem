@@ -5,6 +5,7 @@ using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
 using ClimateControlSystem.Shared.Common;
 using ClimateControlSystem.Shared.SendToClient;
+using System.Threading;
 
 namespace ClimateControlSystem.Server.Mapping
 {
@@ -14,13 +15,13 @@ namespace ClimateControlSystem.Server.Mapping
         {
             #region gRPC communication
 
-            CreateMap<ClimateMonitoringRequest, SensorsData>();
+            CreateMap<ClimateMonitoringRequest, FeaturesData>();
 
             #endregion
 
             #region PredictEngine
 
-            CreateMap<SensorsData, TensorPredictionRequest>()
+            CreateMap<FeaturesData, TensorPredictionRequest>()
                 .ForMember(tensor => tensor.serving_default_input_1, opt => opt
                     .MapFrom(property => new float[]
                     {
@@ -39,18 +40,23 @@ namespace ClimateControlSystem.Server.Mapping
                     }));
 
             CreateMap<TensorPredictionResult, Prediction>()
-                .ForMember(result => result.PredictedTemperature, tensor => tensor
+                .ForMember(result => result.Temperature, tensor => tensor
                     .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[0]))
-                .ForMember(result => result.PredictedHumidity, tensor => tensor
+                .ForMember(result => result.Humidity, tensor => tensor
                     .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[1]));
 
             #endregion
-            
+
             #region Repository
 
-            CreateMap<SensorsData, SensorsDataEntity>();
+            CreateMap<Monitoring, MonitoringsEntity>();
 
-            CreateMap<SensorsDataEntity, SensorsData>();
+            CreateMap<MonitoringsEntity, Monitoring>();
+
+
+            CreateMap<FeaturesData, FeaturesDataEntity>();
+
+            CreateMap<FeaturesDataEntity, FeaturesData>();
 
 
             CreateMap<AccuracysEntity, Accuracy>();
@@ -58,24 +64,29 @@ namespace ClimateControlSystem.Server.Mapping
             CreateMap<Accuracy, AccuracysEntity>();
 
 
+            CreateMap<ActualDataEntity, ActualData>();
+
+            CreateMap<ActualData, ActualDataEntity>();
+
+
             CreateMap<PredictionsEntity, Prediction>();
 
             CreateMap<Prediction, PredictionsEntity>();
 
 
-            CreateMap<Config, ConfigEntity>();
+            CreateMap<Config, ConfigsEntity>();
 
-            CreateMap<ConfigEntity, Config>();
-
-
-            CreateMap<MicroclimatesEventsEntity, MicroclimateEvent>();
-
-            CreateMap<MicroclimateEvent, MicroclimatesEventsEntity>();
+            CreateMap<ConfigsEntity, Config>();
 
 
-            CreateMap<MeasuredData, SensorsData>();
+            CreateMap<MicroclimatesEventsEntity, MicroclimatesEvents>();
 
-            CreateMap<SensorsData, MeasuredData>();
+            CreateMap<MicroclimatesEvents, MicroclimatesEventsEntity>();
+
+
+            CreateMap<ActualData, FeaturesData>();
+
+            CreateMap<FeaturesData, ActualData>();
 
 
             CreateMap<UserEntity, UserModelWithCredentials>()
@@ -101,6 +112,12 @@ namespace ClimateControlSystem.Server.Mapping
             CreateMap<Config, ConfigResponse>();
 
 
+            CreateMap<Prediction, PredictionResponse>();
+
+
+            CreateMap<ActualData, ActualDataResponse>();
+
+
             CreateMap<Monitoring, BaseMonitoringResponse>();
 
             CreateMap<Monitoring, MonitoringWithEventsResponse>();
@@ -108,7 +125,7 @@ namespace ClimateControlSystem.Server.Mapping
             CreateMap<Monitoring, MonitoringWithAccuraciesResponse>();
 
 
-            CreateMap<MicroclimateEvent, MicroclimateEventResponse>();
+            CreateMap<MicroclimatesEvents, MicroclimateEventResponse>();
 
             #endregion
         }

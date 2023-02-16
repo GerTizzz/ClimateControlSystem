@@ -1,13 +1,13 @@
 ﻿namespace ClimateControlSystem.Server.Resources.Common
 {
-    public sealed class MicroclimateEvent
+    public sealed class MicroclimatesEvents
     {
         public float? TemperatureValue { get; set; }
         public float? HumidityValue { get; set; }
 
-        public MicroclimateEvent Clone()
+        public MicroclimatesEvents Clone()
         {
-            var clone = new MicroclimateEvent()
+            var clone = new MicroclimatesEvents()
             {
                 TemperatureValue = TemperatureValue,
                 HumidityValue = HumidityValue
