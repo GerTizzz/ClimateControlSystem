@@ -45,7 +45,7 @@
     private List<GraphicData> _temperatureRenderableSeries;
     private List<GraphicData> _humidityRenderableSeries;
 
-    private List<BaseMonitoringResponse> _monitorings;
+    private List<BaseMonitoringDTO> _monitorings;
 
     private HubConnection? _monitoringConnection;
 
@@ -77,21 +77,21 @@
             .WithAutomaticReconnect()
             .Build();
 
-        _monitoringConnection.On<MonitoringWithEventsResponse>("GetMonitoringResponse", (newData) => MonitoringDataArrived(newData));
+        _monitoringConnection.On<MonitoringWithEventsDTO>("GetMonitoringResponse", (newData) => MonitoringDataArrived(newData));
 
         await _monitoringConnection.StartAsync();
     }
 
-    private async Task MonitoringDataArrived(MonitoringWithEventsResponse arrivedMonitoring)
+    private async Task MonitoringDataArrived(MonitoringWithEventsDTO arrivedMonitoring)
     {
         try
         {
-            if (arrivedMonitoring is MonitoringWithEventsResponse eventMonitroing)
+            if (arrivedMonitoring is MonitoringWithEventsDTO eventMonitroing)
             {
                 _ = Task.Run(() => MicroclimateEventArrived(eventMonitroing));
             }
 
-            AddNewMonitoring((BaseMonitoringResponse)arrivedMonitoring);
+            AddNewMonitoring((BaseMonitoringDTO)arrivedMonitoring);
 
             await UpdateCharts();
         }
@@ -101,7 +101,7 @@
         }
     }
 
-    private void AddNewMonitoring(BaseMonitoringResponse monitoring)
+    private void AddNewMonitoring(BaseMonitoringDTO monitoring)
     {
         if (_monitorings is null)
         {
@@ -112,7 +112,7 @@
         {
             var lastMonitoring = _monitorings.Last();
             lastMonitoring.ActualData = monitoring.ActualData;
-            lastMonitoring.MeasurementTime = monitoring.MeasurementTime;
+            lastMonitoring.TracedTime = monitoring.TracedTime;
         }
         else
         {
@@ -124,7 +124,7 @@
         RemoveExtraMonitroingElementsFromBeginning();
     }
 
-    private async Task MicroclimateEventArrived(MonitoringWithEventsResponse monitoring)
+    private async Task MicroclimateEventArrived(MonitoringWithEventsDTO monitoring)
     {
         try
         {
@@ -140,7 +140,7 @@
                 messageBuilder.Append(
                     GetAlertMessage(
                         monitoring.MicroclimatesEvent.TemperatureValue.Value,
-                        monitoring.MeasurementTime, "температуры"));
+                        monitoring.TracedTime, "температуры"));
             }
 
             if (monitoring.MicroclimatesEvent.HumidityValue is not null)
@@ -148,7 +148,7 @@
                 messageBuilder.Append(
                     GetAlertMessage(
                         monitoring.MicroclimatesEvent.HumidityValue.Value,
-                        monitoring.MeasurementTime, "влажности"));
+                        monitoring.TracedTime, "влажности"));
             }
 
             string alertMessage = messageBuilder.ToString();

@@ -53,13 +53,13 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             return 0;
         }
 
-        public async Task<List<BaseMonitoringResponse>> GetBaseMonitoringsAsync(int start = 0, int count = 25)
+        public async Task<List<BaseMonitoringDTO>> GetBaseMonitoringsAsync(int start = 0, int count = 25)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<BaseMonitoringResponse>>($"api/microclimate/monitorings/{start}/{count}");
+                var result = await _httpClient.GetFromJsonAsync<List<BaseMonitoringDTO>>($"api/microclimate/monitorings/{start}/{count}");
 
-                return result.Reverse<BaseMonitoringResponse>().ToList();
+                return result.Reverse<BaseMonitoringDTO>().ToList();
             }
             catch (HttpRequestException e)
             {
@@ -69,16 +69,16 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
             
-            return new List<BaseMonitoringResponse>();
+            return new List<BaseMonitoringDTO>();
         }
 
-        public async Task<List<MonitoringWithAccuraciesResponse>> GetMonitoringsWithAccuraciesAsync(int start = 0, int count = 25)
+        public async Task<List<MonitoringWithAccuraciesDTO>> GetMonitoringsWithAccuraciesAsync(int start = 0, int count = 25)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<MonitoringWithAccuraciesResponse>>($"api/microclimate/monitoringswithaccuracies/{start}/{count}");
+                var result = await _httpClient.GetFromJsonAsync<List<MonitoringWithAccuraciesDTO>>($"api/microclimate/monitoringswithaccuracies/{start}/{count}");
 
-                return result.Reverse<MonitoringWithAccuraciesResponse>().ToList();
+                return result.Reverse<MonitoringWithAccuraciesDTO>().ToList();
             }
             catch (HttpRequestException e)
             {
@@ -88,14 +88,14 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
 
-            return new List<MonitoringWithAccuraciesResponse>();
+            return new List<MonitoringWithAccuraciesDTO>();
         }
 
-        public async Task<List<MicroclimateResponse>> GetMicroclimatesAsync(int offsetFromTheEnd, int count)
+        public async Task<List<MicroclimateDTO>> GetMicroclimatesAsync(int offsetFromTheEnd, int count)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<MicroclimateResponse>>($"api/microclimate/microclimates/{offsetFromTheEnd}/{count}") ?? new List<MicroclimateResponse>();
+                var result = await _httpClient.GetFromJsonAsync<List<MicroclimateDTO>>($"api/microclimate/microclimates/{offsetFromTheEnd}/{count}") ?? new List<MicroclimateDTO>();
                 return result;
             }
             catch (HttpRequestException e)
@@ -106,14 +106,14 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
 
-            return new List<MicroclimateResponse>();
+            return new List<MicroclimateDTO>();
         }
 
-        public async Task<List<MonitoringEventsResponse>> GetMonitoringEventsAsync(int start = 0, int count = 25)
+        public async Task<List<MonitoringEventsDTO>> GetMonitoringEventsAsync(int start = 0, int count = 25)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<MonitoringEventsResponse>>($"api/microclimate/monitoringevents/{start}/{count}") ?? new List<MonitoringEventsResponse>();
+                var result = await _httpClient.GetFromJsonAsync<List<MonitoringEventsDTO>>($"api/microclimate/monitoringevents/{start}/{count}") ?? new List<MonitoringEventsDTO>();
                 return result;
             }
             catch (HttpRequestException e)
@@ -124,7 +124,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
 
-            return new List<MonitoringEventsResponse>();
+            return new List<MonitoringEventsDTO>();
         }
     }
 }

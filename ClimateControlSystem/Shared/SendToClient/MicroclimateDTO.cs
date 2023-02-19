@@ -1,6 +1,6 @@
 ﻿namespace ClimateControlSystem.Shared.SendToClient
 {
-    public record class MicroclimateResponse
+    public record class MicroclimateDTO
     {
         public DateTimeOffset? MeasurementTime { get; init; }
         public float? ClusterLoad { get; init; }

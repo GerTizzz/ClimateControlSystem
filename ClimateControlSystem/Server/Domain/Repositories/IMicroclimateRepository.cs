@@ -1,4 +1,5 @@
-﻿using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
+﻿using ClimateControlSystem.Server.Infrastructure;
+using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 
 namespace ClimateControlSystem.Server.Domain.Repositories
 {
@@ -10,14 +11,14 @@ namespace ClimateControlSystem.Server.Domain.Repositories
 
         Task<int> GetMonitoringsCountAsync();
 
-        Task<ActualDataEntity?> TryGetLastActualDataAsync();
+        Task<PredictionsEntity?> TryGetLastPredictionAsync();
 
-        Task<IEnumerable<MonitoringsEntity>> GetMonitoringsAsync(int start, int count);
+        Task<IEnumerable<MonitoringsEntity>> GetBaseMonitoringsAsync(RequestLimits requestLimits);
 
-        Task<IEnumerable<MonitoringsEntity>> GetMonitoringsWithAccuraciesAsync(int start, int count);
+        Task<IEnumerable<MonitoringsEntity>> GetMonitoringsWithAccuraciesAsync(RequestLimits requestLimits);
 
-        Task<IEnumerable<MonitoringsEntity>> GetMicroclimatesAsync(int start, int count);
+        Task<IEnumerable<MonitoringsEntity>> GetMicroclimatesAsync(RequestLimits requestLimits);
 
-        Task<IEnumerable<MonitoringsEntity>> GetMonitoringEventsAsync(int start, int count);
+        Task<IEnumerable<MonitoringsEntity>> GetMonitoringEventsAsync(RequestLimits requestLimits);
     }
 }

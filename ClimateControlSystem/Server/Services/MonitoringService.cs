@@ -32,7 +32,7 @@ namespace ClimateControlSystem.Server.Services
         {
             var actualData = GetActualDataFromFeaturesData(prediction.Features);
 
-            var accuracy = await TrGetPredictionAccuracy(prediction);
+            var accuracy = await TrGetPredictionAccuracy(actualData);
 
             var microclimatesEvent = await TryGetMicroclimatesEvents(prediction, config);
 
@@ -62,9 +62,9 @@ namespace ClimateControlSystem.Server.Services
             };
         }
 
-        private async Task<Accuracy?> TrGetPredictionAccuracy(Prediction prediction)
+        private async Task<Accuracy?> TrGetPredictionAccuracy(ActualData actualData)
         {
-            var actualData = await TryGetLastActualData();
+            var prediction = await TryGetLastPrediction();
 
             if (actualData is null || prediction is null)
             {
@@ -110,9 +110,9 @@ namespace ClimateControlSystem.Server.Services
             return await _mediator.Send(new GetPredictionQuery(featuresData));
         }
 
-        private async Task<ActualData?> TryGetLastActualData()
+        private async Task<Prediction?> TryGetLastPrediction()
         {
-            return await _mediator.Send(new TryGetLastActualDataQuery());
+            return await _mediator.Send(new TryGetLastPredictionQuery());
         }
 
         private async Task SendMonitoringToClients(Monitoring monitoring)

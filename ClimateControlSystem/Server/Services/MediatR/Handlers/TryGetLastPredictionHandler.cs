@@ -6,24 +6,24 @@ using MediatR;
 
 namespace ClimateControlSystem.Server.Services.MediatR.Handlers
 {
-    public sealed class TryGetLastActualDataHandler : IRequestHandler<TryGetLastActualDataQuery, ActualData>
+    public sealed class TryGetLastPredictionHandler : IRequestHandler<TryGetLastPredictionQuery, Prediction?>
     {
         private readonly IMicroclimateRepository _predictionRepository;
         private readonly IMapper _mapper;
 
-        public TryGetLastActualDataHandler(IMicroclimateRepository predictionRepository, IMapper mapper)
+        public TryGetLastPredictionHandler(IMicroclimateRepository predictionRepository, IMapper mapper)
         {
             _predictionRepository = predictionRepository;
             _mapper = mapper;
         }
 
-        public async Task<ActualData> Handle(TryGetLastActualDataQuery request, CancellationToken cancellationToken)
+        public async Task<Prediction?> Handle(TryGetLastPredictionQuery request, CancellationToken cancellationToken)
         {
-            var actualDataRecord = await _predictionRepository.TryGetLastActualDataAsync();
+            var predictionRecord = await _predictionRepository.TryGetLastPredictionAsync();
 
-            var actualData = _mapper.Map<ActualData>(actualDataRecord);
+            var prediction = _mapper.Map<Prediction>(predictionRecord);
 
-            return actualData;
+            return prediction;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using ClimateControlSystem.Server.Protos;
+﻿using ClimateControlSystem.Server.Protos;
 using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Services.Queries;
 using Grpc.Core;

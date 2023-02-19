@@ -211,9 +211,6 @@ namespace ClimateControlSystem.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("FeaturesDataId")
-                        .HasColumnType("int");
-
                     b.Property<int>("FeaturesId")
                         .HasColumnType("int");
 

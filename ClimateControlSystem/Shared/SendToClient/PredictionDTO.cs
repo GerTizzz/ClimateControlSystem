@@ -1,13 +1,13 @@
 ﻿namespace ClimateControlSystem.Shared.SendToClient
 {
-    public sealed class ActualDataResponse
+    public sealed class PredictionDTO
     {
         public float Temperature { get; set; }
         public float Humidity { get; set; }
 
-        public ActualDataResponse Clone()
+        public PredictionDTO Clone()
         {
-            return new ActualDataResponse
+            return new PredictionDTO
             {
                 Temperature = Temperature,
                 Humidity = Humidity

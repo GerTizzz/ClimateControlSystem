@@ -1,6 +1,6 @@
 ﻿namespace ClimateControlSystem.Shared.SendToClient
 {
-    public record class MonitoringEventsResponse
+    public record class MonitoringEventsDTO
     {
         public DateTimeOffset? Time { get; set; }
         public float? TemperatureValue { get; init; }

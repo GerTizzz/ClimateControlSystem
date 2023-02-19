@@ -10,16 +10,16 @@ namespace ClimateControlSystem.Client.Services.ClimateService
         /// <returns>Amount of microclimates records count</returns>
         Task<int> GetMicroclimatesCount();
 
-        Task<List<BaseMonitoringResponse>> GetBaseMonitoringsAsync(int start, int count);
+        Task<List<BaseMonitoringDTO>> GetBaseMonitoringsAsync(int start, int count);
 
-        Task<List<MonitoringWithAccuraciesResponse>> GetMonitoringsWithAccuraciesAsync(int start, int count);
+        Task<List<MonitoringWithAccuraciesDTO>> GetMonitoringsWithAccuraciesAsync(int start, int count);
 
         /// <summary>
         /// Returns microclimate records
         /// </summary>
         /// <param name="offsetFromTheEnd">Number of records to skip from the end</param>
-        Task<List<MicroclimateResponse>> GetMicroclimatesAsync(int offsetFromTheEnd, int count);
+        Task<List<MicroclimateDTO>> GetMicroclimatesAsync(int offsetFromTheEnd, int count);
 
-        Task<List<MonitoringEventsResponse>> GetMonitoringEventsAsync(int start, int count);
+        Task<List<MonitoringEventsDTO>> GetMonitoringEventsAsync(int start, int count);
     }
 }

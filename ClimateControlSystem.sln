@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateControlSystem.Shared
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateMonitoringSystem", "ClimateMonitoringSystem\ClimateMonitoringSystem.csproj", "{4D1B723A-DEA1-4A50-9A7B-8CFAF1A214C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateControlSystem.ServerInfrastructreTests", "ClimateControlSystem.ServerInfrastructreTests\ClimateControlSystem.ServerInfrastructreTests.csproj", "{FC387BE9-7969-4D3E-B8E5-8F0953CA4263}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AACB218D-321D-4D3D-A769-0E1022D7651C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,9 +37,16 @@ Global
 		{4D1B723A-DEA1-4A50-9A7B-8CFAF1A214C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D1B723A-DEA1-4A50-9A7B-8CFAF1A214C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D1B723A-DEA1-4A50-9A7B-8CFAF1A214C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC387BE9-7969-4D3E-B8E5-8F0953CA4263}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC387BE9-7969-4D3E-B8E5-8F0953CA4263}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC387BE9-7969-4D3E-B8E5-8F0953CA4263}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC387BE9-7969-4D3E-B8E5-8F0953CA4263}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FC387BE9-7969-4D3E-B8E5-8F0953CA4263} = {AACB218D-321D-4D3D-A769-0E1022D7651C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9E6E2880-688D-42C1-AA8B-0F546D080627}

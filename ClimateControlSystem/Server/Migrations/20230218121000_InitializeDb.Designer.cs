@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClimateControlSystem.Server.Migrations
 {
     [DbContext(typeof(PredictionsDbContext))]
-    [Migration("20230216082506_InitializeDb")]
+    [Migration("20230218121000_InitializeDb")]
     partial class InitializeDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -212,9 +212,6 @@ namespace ClimateControlSystem.Server.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("FeaturesDataId")
-                        .HasColumnType("int");
 
                     b.Property<int>("FeaturesId")
                         .HasColumnType("int");

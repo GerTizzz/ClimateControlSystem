@@ -10,13 +10,13 @@ namespace ClimateControlSystem.Client.Shared
         private const float AccuracyUpperLimit = 100f;
         private const int MaxGraphicsDataPerMonitoringResponse = 4;
 
-        private static List<GraphicData> GetNewTemperatureGraphicData(BaseMonitoringResponse monitoring, ConfigResponse config)
+        private static List<GraphicData> GetNewTemperatureGraphicData(BaseMonitoringDTO monitoring, ConfigResponse config)
         {
             try
             {
                 List<GraphicData> graphicsData = new List<GraphicData>(MaxGraphicsDataPerMonitoringResponse);
 
-                string time = monitoring.MeasurementTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
+                string time = monitoring.TracedTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
 
                 if (monitoring.Prediction is not null)
                 {
@@ -43,13 +43,13 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        private static List<GraphicData> GetNewHumidityGraphicsData(BaseMonitoringResponse monitoring, ConfigResponse config)
+        private static List<GraphicData> GetNewHumidityGraphicsData(BaseMonitoringDTO monitoring, ConfigResponse config)
         {
             try
             {
                 List<GraphicData> graphicsData = new List<GraphicData>(MaxGraphicsDataPerMonitoringResponse);
 
-                string time = monitoring.MeasurementTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
+                string time = monitoring.TracedTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
 
                 if (monitoring.Prediction is not null)
                 {
@@ -76,7 +76,7 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        public static List<GraphicData> GetAccuracyData(List<MonitoringWithAccuraciesResponse> monitorings)
+        public static List<GraphicData> GetAccuracyData(List<MonitoringWithAccuraciesDTO> monitorings)
         {
             try
             {
@@ -84,15 +84,12 @@ namespace ClimateControlSystem.Client.Shared
 
                 for (int i = 0; i < monitorings.Count; i++)
                 {
-                    string time = monitorings[i].MeasurementTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
+                    string time = monitorings[i].TracedTime.Value.ToString("HH:mm:ss dd.MM.yyyy");
 
-                    if (monitorings[i].PredictedHumidityAccuracy.HasValue)
+                    if (monitorings[i].Accuracy is not null)
                     {
-                        temperatureAccuracy.Add(new GraphicData(time, monitorings[i].PredictedHumidityAccuracy.Value, "Влажность"));
-                    }             
-                    if (monitorings[i].PredictedTemperatureAccuracy.HasValue)
-                    {
-                        temperatureAccuracy.Add(new GraphicData(time, monitorings[i].PredictedTemperatureAccuracy.Value, "Температура"));
+                        temperatureAccuracy.Add(new GraphicData(time, monitorings[i].Accuracy.Humidity, "Влажность"));
+                        temperatureAccuracy.Add(new GraphicData(time, monitorings[i].Accuracy.Temperature, "Температура"));
                     }
 
                     temperatureAccuracy.Add(new GraphicData(time, AccuracyUpperLimit, "Лимит"));
@@ -107,7 +104,7 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        public static List<GraphicData> GetTemperatureData<T>(List<T> monitorings, ConfigResponse config) where T : BaseMonitoringResponse
+        public static List<GraphicData> GetTemperatureData<T>(List<T> monitorings, ConfigResponse config) where T : BaseMonitoringDTO
         {
             try
             {
@@ -117,11 +114,11 @@ namespace ClimateControlSystem.Client.Shared
 
                 for (int i = 0; i < monitorings.Count; i++)
                 {
-                    if (monitorings[i].MeasurementTime is null)
+                    if (monitorings[i].TracedTime is null)
                     {
                         if (TrySetDateTimeBasedOnNeighbors(monitorings, i, config) is false)
                         {
-                            monitorings[i].MeasurementTime = DateTimeOffset.Now;
+                            monitorings[i].TracedTime = DateTimeOffset.Now;
                         }
                     }
 
@@ -139,17 +136,17 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        private static bool TrySetDateTimeBasedOnNeighbors<T>(List<T> monitorings, int index, ConfigResponse config) where T : BaseMonitoringResponse
+        private static bool TrySetDateTimeBasedOnNeighbors<T>(List<T> monitorings, int index, ConfigResponse config) where T : BaseMonitoringDTO
         {
-            var firstMonWithTime = monitorings.FirstOrDefault(mon => mon.MeasurementTime.HasValue);
+            var firstMonWithTime = monitorings.FirstOrDefault(mon => mon.TracedTime.HasValue);
             
             if (firstMonWithTime is not null)
             {
                 int elementWithTimeIndex = monitorings.IndexOf(firstMonWithTime);
 
-                var resultTime = firstMonWithTime.MeasurementTime.Value.AddSeconds((index - elementWithTimeIndex) * config.PredictionTimeIntervalSeconds);
+                var resultTime = firstMonWithTime.TracedTime.Value.AddSeconds((index - elementWithTimeIndex) * config.PredictionTimeIntervalSeconds);
 
-                monitorings[index].MeasurementTime = resultTime;
+                monitorings[index].TracedTime = resultTime;
 
                 return true;
             }
@@ -159,7 +156,7 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        public static List<GraphicData> GetHumidityData<T>(List<T> monitorings, ConfigResponse config) where T : BaseMonitoringResponse
+        public static List<GraphicData> GetHumidityData<T>(List<T> monitorings, ConfigResponse config) where T : BaseMonitoringDTO
         {
             try
             {
@@ -169,11 +166,11 @@ namespace ClimateControlSystem.Client.Shared
 
                 for (int i = 0; i < monitorings.Count; i++)
                 {
-                    if (monitorings[i].MeasurementTime is null)
+                    if (monitorings[i].TracedTime is null)
                     {
                         if (TrySetDateTimeBasedOnNeighbors(monitorings, i, config) is false)
                         {
-                            monitorings[i].MeasurementTime = DateTimeOffset.Now;
+                            monitorings[i].TracedTime = DateTimeOffset.Now;
                         }
                     }
 

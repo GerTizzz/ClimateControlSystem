@@ -116,7 +116,6 @@ namespace ClimateControlSystem.Server.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Temperature = table.Column<float>(type: "real", nullable: false),
                     Humidity = table.Column<float>(type: "real", nullable: false),
-                    FeaturesDataId = table.Column<int>(type: "int", nullable: false),
                     FeaturesId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

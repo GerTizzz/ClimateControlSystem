@@ -64,8 +64,6 @@ namespace ClimateMonitoringSystem
             {
                 await Task.Delay(5000);
                 await call.RequestStream.WriteAsync(GenerateRequest(dataSet));
-
-                Console.ReadLine();
             }
 
             await Task.Delay(3000);

@@ -5,7 +5,6 @@ using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
 using ClimateControlSystem.Shared.Common;
 using ClimateControlSystem.Shared.SendToClient;
-using System.Threading;
 
 namespace ClimateControlSystem.Server.Mapping
 {
@@ -105,27 +104,32 @@ namespace ClimateControlSystem.Server.Mapping
 
             #endregion
 
-            #region ClientCommunication
+            #region DTOs
 
             CreateMap<ConfigResponse, Config>();
 
             CreateMap<Config, ConfigResponse>();
 
 
-            CreateMap<Prediction, PredictionResponse>();
+            CreateMap<Prediction, PredictionDTO>();
 
 
-            CreateMap<ActualData, ActualDataResponse>();
+            CreateMap<ActualData, ActualDataDTO>();
 
 
-            CreateMap<Monitoring, BaseMonitoringResponse>();
+            CreateMap<Monitoring, BaseMonitoringDTO>();
 
-            CreateMap<Monitoring, MonitoringWithEventsResponse>();
+            CreateMap<Monitoring, MonitoringWithEventsDTO>();
 
-            CreateMap<Monitoring, MonitoringWithAccuraciesResponse>();
+            CreateMap<Monitoring, MonitoringWithAccuraciesDTO>();
 
 
-            CreateMap<MicroclimatesEvents, MicroclimateEventResponse>();
+            CreateMap<MicroclimatesEvents, MicroclimateEventDTO>();
+
+
+            CreateMap<MonitoringsEntity, BaseMonitoringDTO>();
+            CreateMap<PredictionsEntity, PredictionDTO>();
+            CreateMap<ActualDataEntity, ActualDataDTO>();
 
             #endregion
         }
