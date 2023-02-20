@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Infrastructure;
-using ClimateControlSystem.Server.Services.MediatR.Queries;
-using ClimateControlSystem.Shared.SendToClient;
+﻿using ClimateControlSystem.Server.Infrastructure;
+using ClimateControlSystem.Server.Services.MediatR.Queries.MicroclimateRepository;
+using ClimateControlSystem.Shared.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,21 +12,17 @@ namespace ClimateControlSystem.Server.Controllers
     [ApiController]
     public class MicroclimateController : ControllerBase
     {
-        private readonly IMicroclimateRepository _microclimateRepository;
-        private readonly IMapper _mapper;
         private readonly IMediator _mediator;
 
-        public MicroclimateController(IMicroclimateRepository predictionRepository, IMapper mapper, IMediator mediator)
+        public MicroclimateController(IMediator mediator)
         {
-            _microclimateRepository = predictionRepository;
-            _mapper = mapper;
             _mediator = mediator;
         }
 
         [HttpGet("monitoringscount")]
         public async Task<ActionResult<int>> GetMonitoringsCount()
         {
-            var recordsCount = await _microclimateRepository.GetMonitoringsCountAsync();
+            var recordsCount = await _mediator.Send(new GetMonitoringsCountQuery());
 
             return Ok(recordsCount);
         }
@@ -36,33 +30,23 @@ namespace ClimateControlSystem.Server.Controllers
         [HttpGet("monitorings/{start:int}/{count:int:range(1, 25)}")]
         public async Task<ActionResult<List<BaseMonitoringDTO>>> GetMonitorings(int start, int count)
         {
-            var records = await _mediator.Send(new GetBaseMonitoringsQuery(new RequestLimits()
-            {
-                Start = start,
-                Count = count
-            }));
+            var records = await _mediator.Send(new GetBaseMonitoringsQuery(new RequestLimits(start, count)));
 
             return Ok(records);
         }
 
         [HttpGet("monitoringswithaccuracies/{start:int}/{count:int:range(1, 25)}")]
-        public async Task<ActionResult<List<MonitoringWithAccuraciesDTO>>> GetMonitoringsWithAccuracies(int start, int count)
+        public async Task<ActionResult<List<MonitoringWithAccuracyDTO>>> GetMonitoringsWithAccuracies(int start, int count)
         {
-            var records = await _microclimateRepository.GetMonitoringsWithAccuraciesAsync(new RequestLimits()
-            {
-                Start = start,
-                Count = count
-            });
+            var records = await _mediator.Send(new GetMonitoringsWithAccuracyQuery(new RequestLimits(start, count)));
 
-            var result = records.Select(rec => _mapper.Map<MonitoringWithAccuraciesDTO>(rec)).ToList();
-
-            return Ok(result);
+            return Ok(records);
         }
 
         [HttpGet("microclimatescount")]
         public async Task<ActionResult<int>> GetMicroclimatesCount()
         {
-            var recordsCount = await _microclimateRepository.GetMicroclimatesCountAsync();
+            var recordsCount = await _mediator.Send(new GetMicroclimatesCountQuery());
 
             return Ok(recordsCount);
         }
@@ -70,23 +54,15 @@ namespace ClimateControlSystem.Server.Controllers
         [HttpGet("microclimates/{start:int}/{count:int:range(1, 25)}")]
         public async Task<ActionResult<List<MicroclimateDTO>>> GetMicroclimates(int start, int count)
         {
-            var records = await _microclimateRepository.GetMicroclimatesAsync(new RequestLimits()
-            {
-                Start = start,
-                Count = count
-            });
+            var records = await _mediator.Send(new GetMicroclimatesQuery(new RequestLimits(start, count)));
 
-            return Ok(records.ToList());
+            return Ok(records);
         }
 
         [HttpGet("monitoringevents/{start:int}/{count:int:range(1, 25)}")]
         public async Task<ActionResult<List<MonitoringEventsDTO>>> GetMonitoringEvents(int start, int count)
         {
-            var records = await _microclimateRepository.GetMonitoringEventsAsync(new RequestLimits()
-            {
-                Start = start,
-                Count = count
-            });
+            var records = await _mediator.Send(new GetMonitoringEventsQuery(new RequestLimits(start, count)));
 
             return Ok(records);
         }

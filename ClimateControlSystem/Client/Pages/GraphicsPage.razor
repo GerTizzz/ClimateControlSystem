@@ -1,7 +1,7 @@
 ﻿@page "/graphicspage"
-@using ClimateControlSystem.Client.PaginationNavigation;
-@using ClimateControlSystem.Client.Resources
-@using ClimateControlSystem.Client.Components
+@    using ClimateControlSystem.Client.PaginationNavigation;
+@    using ClimateControlSystem.Client.Resources
+@    using ClimateControlSystem.Client.Components
 @inject IMicroclimateService MicroclimateService
 @inject IConfigService ConfigService
 
@@ -39,9 +39,9 @@
     private const int _recordsCount = 15;
     private const int _recordsRequestBeginningIndex = 0;
 
-    private ConfigResponse _config;
+    private ConfigsDTO _config;
 
-    private List<MonitoringWithAccuraciesDTO> _predictions;
+    private List<MonitoringWithAccuracyDTO> _predictions;
 
     private Line _temperatureChart;
     private Line _humidityChart;

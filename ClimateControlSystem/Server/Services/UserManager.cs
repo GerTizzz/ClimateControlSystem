@@ -18,23 +18,23 @@ namespace ClimateControlSystem.Server.Services
             _mapper = mapper;
         }
 
-        public async Task<UserModelWithCredentials> GetUserById(int id)
+        public async Task<UserDTO> GetUserById(int id)
         {
             var user = await _userRepository.GetUser(id);
 
-            return _mapper.Map<UserModelWithCredentials>(user);
+            return _mapper.Map<UserDTO>(user);
         }
 
-        public async Task<List<UserModelWithCredentials>> GetUsers()
+        public async Task<List<UserDTO>> GetUsers()
         {
             var users = await _userRepository.GetUsers();
 
-            var result = users.Select(user => _mapper.Map<UserModelWithCredentials>(user)).ToList();
+            var result = users.Select(user => _mapper.Map<UserDTO>(user)).ToList();
 
             return result;
         }
 
-        public Task<bool> CreateUser(UserModelWithCredentials user)
+        public Task<bool> CreateUser(UserDTO user)
         {
             TokenHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
@@ -46,7 +46,7 @@ namespace ClimateControlSystem.Server.Services
             return _userRepository.Create(newUser);
         }
 
-        public Task<bool> UpdateUser(UserModelWithCredentials user, int id)
+        public Task<bool> UpdateUser(UserDTO user, int id)
         {
             UserEntity authUser = _mapper.Map<UserEntity>(user);
 

@@ -22,14 +22,14 @@ namespace ClimateControlSystem.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ConfigResponse>> GetConfig()
+        public async Task<ActionResult<ConfigsDTO>> GetConfig()
         {
-            var response = _mapper.Map<ConfigResponse>(_configManager.Config);
+            var response = _mapper.Map<ConfigsDTO>(_configManager.Config);
             return Ok(response);
         }
 
         [HttpPut]
-        public async Task<ActionResult<bool>> UpdateConfig(ConfigResponse newConfig)
+        public async Task<ActionResult<bool>> UpdateConfig(ConfigsDTO newConfig)
         {
             var config = _mapper.Map<Config>(newConfig);
 

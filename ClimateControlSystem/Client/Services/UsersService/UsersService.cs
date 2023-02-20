@@ -9,7 +9,7 @@ namespace ClimateControlSystem.Client.Services.UsersService
         private readonly HttpClient _httpClient;
         private readonly NavigationManager _navigationManager;
 
-        public List<UserModelWithCredentials> Users { get; set; } = new List<UserModelWithCredentials>();
+        public List<UserDTO> Users { get; set; } = new List<UserDTO>();
 
         public UsersService(HttpClient httpClient, NavigationManager navigationManager)
         {
@@ -17,28 +17,28 @@ namespace ClimateControlSystem.Client.Services.UsersService
             _navigationManager = navigationManager;
         }
 
-        public async Task<UserModelWithCredentials> GetUser(int id)
+        public async Task<UserDTO> GetUser(int id)
         {
-            var result = await _httpClient.GetFromJsonAsync<UserModelWithCredentials>($"api/user/{id}");
+            var result = await _httpClient.GetFromJsonAsync<UserDTO>($"api/user/{id}");
 
             return result;
         }
 
-        public async Task<List<UserModelWithCredentials>> GetUsers()
+        public async Task<List<UserDTO>> GetUsers()
         {
-            var result = await _httpClient.GetFromJsonAsync<List<UserModelWithCredentials>>("api/user");
+            var result = await _httpClient.GetFromJsonAsync<List<UserDTO>>("api/user");
             
             return result;
         }
 
-        public async Task CreateUser(UserModelWithCredentials user)
+        public async Task CreateUser(UserDTO user)
         {
             var result = await _httpClient.PostAsJsonAsync("api/user", user);
 
             await SetUsers(result);
         }
 
-        public async Task UpdateUser(UserModelWithCredentials user)
+        public async Task UpdateUser(UserDTO user)
         {
             var result = await _httpClient.PutAsJsonAsync($"api/user/{user.Id}", user);
 
@@ -53,7 +53,7 @@ namespace ClimateControlSystem.Client.Services.UsersService
 
         private async Task SetUsers(HttpResponseMessage result)
         {
-            var response = await result.Content.ReadFromJsonAsync<List<UserModelWithCredentials>>();
+            var response = await result.Content.ReadFromJsonAsync<List<UserDTO>>();
 
             if (response is null)
             {

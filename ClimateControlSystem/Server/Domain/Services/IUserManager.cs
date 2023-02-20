@@ -5,15 +5,15 @@ namespace ClimateControlSystem.Server.Domain.Services
 {
     public interface IUserManager
     {
-        Task<List<UserModelWithCredentials>> GetUsers();
+        Task<List<UserDTO>> GetUsers();
 
-        Task<UserModelWithCredentials> GetUserById(int id);
+        Task<UserDTO> GetUserById(int id);
 
-        Task<bool> CreateUser(UserModelWithCredentials user);
+        Task<bool> CreateUser(UserDTO user);
 
         Task<UserEntity> GetUserByName(string name);
 
-        Task<bool> UpdateUser(UserModelWithCredentials user, int id);
+        Task<bool> UpdateUser(UserDTO user, int id);
 
         Task<bool> DeleteUser(int id);
     }

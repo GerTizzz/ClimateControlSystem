@@ -1,4 +1,4 @@
-﻿namespace ClimateControlSystem.Shared.SendToClient
+﻿namespace ClimateControlSystem.Shared.Responses
 {
     public record class MonitoringEventsDTO
     {

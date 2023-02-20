@@ -4,7 +4,7 @@ namespace ClimateControlSystem.Client.Services.AuthenticationService
 {
     public interface IAuthenticationService
     {
-        Task<bool> Login(UserModelWithCredentials userForAuthentication);
+        Task<bool> Login(UserDTO userForAuthentication);
         Task Logout();
     }
 }

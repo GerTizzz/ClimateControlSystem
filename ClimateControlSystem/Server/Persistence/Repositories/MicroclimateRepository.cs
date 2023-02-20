@@ -129,14 +129,14 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
         }
 
-        public async Task<int> GetMicroclimatesCountAsync()
+        public async Task<long> GetMicroclimatesCountAsync()
         {
-            return await _context.Monitorings.CountAsync();
+            return await _context.Monitorings.LongCountAsync();
         }
 
-        public async Task<int> GetMonitoringsCountAsync()
+        public async Task<long> GetMonitoringsCountAsync()
         {
-            return await _context.Predictions.CountAsync();
+            return await _context.Predictions.LongCountAsync();
         }
 
         public async Task<PredictionsEntity?> TryGetLastPredictionAsync()

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Resources.Common;
-using ClimateControlSystem.Shared.SendToClient;
+using ClimateControlSystem.Shared.Responses;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ClimateControlSystem.Server.Hubs
@@ -16,7 +16,7 @@ namespace ClimateControlSystem.Server.Hubs
 
         public async Task SendMonitoringToWebClients(Monitoring monitoring)
         {
-            var dataToSend = _mapper.Map<MonitoringWithAccuraciesDTO>(monitoring);
+            var dataToSend = _mapper.Map<MonitoringWithAccuracyDTO>(monitoring);
 
             if (Clients is not null)
             {

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Hubs;
 using ClimateControlSystem.Server.Services.MediatR.Commands;
-using ClimateControlSystem.Shared.SendToClient;
+using ClimateControlSystem.Shared.Responses;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 

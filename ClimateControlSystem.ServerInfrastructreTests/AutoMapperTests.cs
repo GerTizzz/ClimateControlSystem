@@ -1,7 +1,7 @@
 using AutoMapper;
 using ClimateControlSystem.Server.Mapping;
 using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
-using ClimateControlSystem.Shared.SendToClient;
+using ClimateControlSystem.Shared.Responses;
 
 namespace ClimateControlSystem.ServerInfrastructreTests
 {
@@ -41,7 +41,7 @@ namespace ClimateControlSystem.ServerInfrastructreTests
         [Test]
         public void PredictionsEntityToPredictionDTO()
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<PredictionsEntity, PredictionDTO>());
+            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<PredictionsEntity, PredictionsDTO>());
 
             configuration.AssertConfigurationIsValid();
 

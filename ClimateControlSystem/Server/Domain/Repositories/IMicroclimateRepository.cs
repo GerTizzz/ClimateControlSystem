@@ -7,9 +7,9 @@ namespace ClimateControlSystem.Server.Domain.Repositories
     {
         Task<bool> SaveMonitoringAsync(MonitoringsEntity monitoring);
 
-        Task<int> GetMicroclimatesCountAsync();
+        Task<long> GetMicroclimatesCountAsync();
 
-        Task<int> GetMonitoringsCountAsync();
+        Task<long> GetMonitoringsCountAsync();
 
         Task<PredictionsEntity?> TryGetLastPredictionAsync();
 

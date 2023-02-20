@@ -4,7 +4,7 @@ using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
 using ClimateControlSystem.Shared.Common;
-using ClimateControlSystem.Shared.SendToClient;
+using ClimateControlSystem.Shared.Responses;
 
 namespace ClimateControlSystem.Server.Mapping
 {
@@ -12,11 +12,17 @@ namespace ClimateControlSystem.Server.Mapping
     {
         public AppMappingProfile()
         {
-            #region gRPC communication
+            #region gRPC-To-Domain
 
             CreateMap<ClimateMonitoringRequest, FeaturesData>();
 
             #endregion
+
+            #region Domain-To-Domain
+
+            CreateMap<ActualData, FeaturesData>();
+
+            CreateMap<FeaturesData, ActualData>();
 
             #region PredictEngine
 
@@ -46,73 +52,52 @@ namespace ClimateControlSystem.Server.Mapping
 
             #endregion
 
-            #region Repository
+            #endregion
 
-            CreateMap<Monitoring, MonitoringsEntity>();
+
+            #region Repository-To-Domain
 
             CreateMap<MonitoringsEntity, Monitoring>();
 
-
-            CreateMap<FeaturesData, FeaturesDataEntity>();
-
             CreateMap<FeaturesDataEntity, FeaturesData>();
-
 
             CreateMap<AccuracysEntity, Accuracy>();
 
-            CreateMap<Accuracy, AccuracysEntity>();
-
-
             CreateMap<ActualDataEntity, ActualData>();
-
-            CreateMap<ActualData, ActualDataEntity>();
-
 
             CreateMap<PredictionsEntity, Prediction>();
 
-            CreateMap<Prediction, PredictionsEntity>();
-
-
-            CreateMap<Config, ConfigsEntity>();
-
             CreateMap<ConfigsEntity, Config>();
-
 
             CreateMap<MicroclimatesEventsEntity, MicroclimatesEvents>();
 
+            #endregion
+
+            #region Domain-To-Repository
+
+            CreateMap<Monitoring, MonitoringsEntity>();
+
+            CreateMap<Config, ConfigsEntity>();
+
+            CreateMap<FeaturesData, FeaturesDataEntity>();
+
+            CreateMap<Accuracy, AccuracysEntity>();
+
+            CreateMap<ActualData, ActualDataEntity>();
+
+            CreateMap<Prediction, PredictionsEntity>();
+
             CreateMap<MicroclimatesEvents, MicroclimatesEventsEntity>();
-
-
-            CreateMap<ActualData, FeaturesData>();
-
-            CreateMap<FeaturesData, ActualData>();
-
-
-            CreateMap<UserEntity, UserModelWithCredentials>()
-                .ForMember(dto => dto.Name, auth => auth
-                    .MapFrom(authSrc => authSrc.Name))
-                .ForMember(dto => dto.Role, auth => auth
-                    .MapFrom(authSrc => authSrc.Role))
-                .ForMember(dto => dto.Id, auth => auth
-                    .MapFrom(authSrc => authSrc.Id));
-
-            CreateMap<UserModelWithCredentials, UserEntity>()
-                .ForMember(auth => auth.Name, dto => dto
-                    .MapFrom(dtoSrc => dtoSrc.Name))
-                .ForMember(auth => auth.Role, dto => dto
-                    .MapFrom(dtoSrc => dtoSrc.Role));
 
             #endregion
 
-            #region DTOs
 
-            CreateMap<ConfigResponse, Config>();
+            #region Domain-To-DTO
 
-            CreateMap<Config, ConfigResponse>();
+            CreateMap<Config, ConfigsDTO>();
 
 
-            CreateMap<Prediction, PredictionDTO>();
-
+            CreateMap<Prediction, PredictionsDTO>();
 
             CreateMap<ActualData, ActualDataDTO>();
 
@@ -121,15 +106,54 @@ namespace ClimateControlSystem.Server.Mapping
 
             CreateMap<Monitoring, MonitoringWithEventsDTO>();
 
-            CreateMap<Monitoring, MonitoringWithAccuraciesDTO>();
+            CreateMap<Monitoring, MonitoringWithAccuracyDTO>();
+
+            #endregion
+
+            #region DTO-To-Domain
+
+            CreateMap<ConfigsDTO, Config>();
+
+            #endregion
 
 
-            CreateMap<MicroclimatesEvents, MicroclimateEventDTO>();
+            #region Repository-To-DTO
 
+            CreateMap<MonitoringsEntity, MonitoringWithEventsDTO>();
+
+            CreateMap<MonitoringsEntity, MonitoringWithAccuracyDTO>();
 
             CreateMap<MonitoringsEntity, BaseMonitoringDTO>();
-            CreateMap<PredictionsEntity, PredictionDTO>();
+
+
+            CreateMap<MicroclimatesEvents, MicroclimatesEventsDTO>();
+
+            CreateMap<PredictionsEntity, PredictionsDTO>();
+
             CreateMap<ActualDataEntity, ActualDataDTO>();
+
+            CreateMap<MicroclimatesEventsEntity, MicroclimatesEventsDTO>();
+
+            CreateMap<AccuracysEntity, AccuracyDTO>();
+
+
+            CreateMap<UserEntity, UserDTO>()
+                .ForMember(dto => dto.Name, auth => auth
+                    .MapFrom(authSrc => authSrc.Name))
+                .ForMember(dto => dto.Role, auth => auth
+                    .MapFrom(authSrc => authSrc.Role))
+                .ForMember(dto => dto.Id, auth => auth
+                    .MapFrom(authSrc => authSrc.Id));
+
+            #endregion
+
+            #region DTO-To-Repository
+
+            CreateMap<UserDTO, UserEntity>()
+                .ForMember(auth => auth.Name, dto => dto
+                    .MapFrom(dtoSrc => dtoSrc.Name))
+                .ForMember(auth => auth.Role, dto => dto
+                    .MapFrom(dtoSrc => dtoSrc.Role));
 
             #endregion
         }

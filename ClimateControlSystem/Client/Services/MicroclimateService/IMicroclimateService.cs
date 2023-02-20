@@ -1,4 +1,4 @@
-﻿using ClimateControlSystem.Shared.SendToClient;
+﻿using ClimateControlSystem.Shared.Responses;
 
 namespace ClimateControlSystem.Client.Services.ClimateService
 {
@@ -12,7 +12,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
 
         Task<List<BaseMonitoringDTO>> GetBaseMonitoringsAsync(int start, int count);
 
-        Task<List<MonitoringWithAccuraciesDTO>> GetMonitoringsWithAccuraciesAsync(int start, int count);
+        Task<List<MonitoringWithAccuracyDTO>> GetMonitoringsWithAccuraciesAsync(int start, int count);
 
         /// <summary>
         /// Returns microclimate records

@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Services.MediatR.Queries;
-using ClimateControlSystem.Shared.SendToClient;
+using ClimateControlSystem.Server.Services.MediatR.Queries.MicroclimateRepository;
+using ClimateControlSystem.Shared.Responses;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers
+namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MicroclimateRepository
 {
     public sealed class GetBaseMonitoringsHandler : IRequestHandler<GetBaseMonitoringsQuery, List<BaseMonitoringDTO>>
     {
@@ -21,11 +21,11 @@ namespace ClimateControlSystem.Server.Services.MediatR.Handlers
         {
             try
             {
-                var baseMonitoringsEntities = await _microclimateRepository.GetBaseMonitoringsAsync(request.RequestLimits);
+                var monitoringsEntities = await _microclimateRepository.GetBaseMonitoringsAsync(request.RequestLimits);
 
-                var baseMonitoringsDTO = baseMonitoringsEntities.Select(entity => _mapper.Map<BaseMonitoringDTO>(entity)).ToList();
+                var monitoringsDTO = monitoringsEntities.Select(entity => _mapper.Map<BaseMonitoringDTO>(entity)).ToList();
 
-                return baseMonitoringsDTO;
+                return monitoringsDTO;
             }
             catch (Exception ex)
             {

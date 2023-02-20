@@ -1,5 +1,5 @@
 ﻿using ClimateControlSystem.Client.Services.AuthenticationService;
-using ClimateControlSystem.Shared.SendToClient;
+using ClimateControlSystem.Shared.Responses;
 using System.Net.Http.Json;
 
 namespace ClimateControlSystem.Client.Services.ClimateService
@@ -72,13 +72,13 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             return new List<BaseMonitoringDTO>();
         }
 
-        public async Task<List<MonitoringWithAccuraciesDTO>> GetMonitoringsWithAccuraciesAsync(int start = 0, int count = 25)
+        public async Task<List<MonitoringWithAccuracyDTO>> GetMonitoringsWithAccuraciesAsync(int start = 0, int count = 25)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<MonitoringWithAccuraciesDTO>>($"api/microclimate/monitoringswithaccuracies/{start}/{count}");
+                var result = await _httpClient.GetFromJsonAsync<List<MonitoringWithAccuracyDTO>>($"api/microclimate/monitoringswithaccuracies/{start}/{count}");
 
-                return result.Reverse<MonitoringWithAccuraciesDTO>().ToList();
+                return result.Reverse<MonitoringWithAccuracyDTO>().ToList();
             }
             catch (HttpRequestException e)
             {
@@ -88,7 +88,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
 
-            return new List<MonitoringWithAccuraciesDTO>();
+            return new List<MonitoringWithAccuracyDTO>();
         }
 
         public async Task<List<MicroclimateDTO>> GetMicroclimatesAsync(int offsetFromTheEnd, int count)

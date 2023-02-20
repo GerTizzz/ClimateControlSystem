@@ -4,6 +4,6 @@ namespace ClimateControlSystem.Server.Domain.Services
 {
     public interface IAuthenticateManager
     {
-        Task<string> GetTokenForUser(UserModelWithCredentials request);
+        Task<string> GetTokenForUser(UserDTO request);
     }
 }

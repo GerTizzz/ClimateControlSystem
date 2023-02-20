@@ -1,7 +1,8 @@
 ﻿@page "/"
-@using Microsoft.AspNetCore.SignalR.Client
-@using ClimateControlSystem.Client.Resources
-@using System.Text;
+@    using Microsoft.AspNetCore.SignalR.Client
+@    using ClimateControlSystem.Client.Resources
+@    using System.Text;
+    using ClimateControlSystem.Shared.Responses;
 @inject NavigationManager NavigationManager
 @inject IMicroclimateService MicroclimateService
 @inject IConfigService ConfigService
@@ -31,7 +32,7 @@
 </AuthorizeView>
 
 @code {
-    private ConfigResponse _config;
+    private ConfigsDTO _config;
 
     private const int _recordsCount = 15;
     private const int _recordsRequestBeginningIndex = 0;
@@ -128,26 +129,26 @@
     {
         try
         {
-            if (monitoring.MicroclimatesEvent is null)
+            if (monitoring.MicroclimatesEvents is null)
             {
                 return;
             }
 
             StringBuilder messageBuilder = new StringBuilder();
 
-            if (monitoring.MicroclimatesEvent.TemperatureValue is not null)
+            if (monitoring.MicroclimatesEvents.TemperatureValue is not null)
             {
                 messageBuilder.Append(
                     GetAlertMessage(
-                        monitoring.MicroclimatesEvent.TemperatureValue.Value,
+                        monitoring.MicroclimatesEvents.TemperatureValue.Value,
                         monitoring.TracedTime, "температуры"));
             }
 
-            if (monitoring.MicroclimatesEvent.HumidityValue is not null)
+            if (monitoring.MicroclimatesEvents.HumidityValue is not null)
             {
                 messageBuilder.Append(
                     GetAlertMessage(
-                        monitoring.MicroclimatesEvent.HumidityValue.Value,
+                        monitoring.MicroclimatesEvents.HumidityValue.Value,
                         monitoring.TracedTime, "влажности"));
             }
 

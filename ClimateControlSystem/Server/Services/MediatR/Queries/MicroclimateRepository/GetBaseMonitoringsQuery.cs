@@ -1,8 +1,8 @@
 ﻿using ClimateControlSystem.Server.Infrastructure;
-using ClimateControlSystem.Shared.SendToClient;
+using ClimateControlSystem.Shared.Responses;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Queries
+namespace ClimateControlSystem.Server.Services.MediatR.Queries.MicroclimateRepository
 {
     public sealed class GetBaseMonitoringsQuery : IRequest<List<BaseMonitoringDTO>>
     {

@@ -1,6 +1,6 @@
-﻿namespace ClimateControlSystem.Shared.SendToClient
+﻿namespace ClimateControlSystem.Shared.Responses
 {
-    public record class MicroclimateEventDTO
+    public record class MicroclimatesEventsDTO
     {
         public float? TemperatureValue { get; init; }
         public float? HumidityValue { get; init; }

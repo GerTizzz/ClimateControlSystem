@@ -1,5 +1,6 @@
 ﻿@page "/eventspage"
-@using ClimateControlSystem.Shared.SendToClient;
+@    using ClimateControlSystem.Shared.SendToClient;
+    using ClimateControlSystem.Shared.Responses;
 @inject IMicroclimateService MicroclimateService
 @inject IConfigService ConfigService
 
@@ -63,7 +64,7 @@
     private const int _recordsCount = 20;
     private const int _recordsRequestBeginningIndex = 0;
 
-    private ConfigResponse _config;
+    private ConfigsDTO _config;
 
     private List<MonitoringEventsDTO> _monitoringEvents;
 

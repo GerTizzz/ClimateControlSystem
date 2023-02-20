@@ -22,7 +22,7 @@ namespace ClimateControlSystem.Client.Services.AuthenticationService
             _localStorage = localStorage;
         }
 
-        public async Task<bool> Login(UserModelWithCredentials userForAuthentication)
+        public async Task<bool> Login(UserDTO userForAuthentication)
         {
             var authResult = await _client.PostAsJsonAsync("api/auth/login", userForAuthentication);
             var token = await authResult.Content.ReadAsStringAsync();

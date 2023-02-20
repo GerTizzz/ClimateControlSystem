@@ -1,15 +1,15 @@
-﻿namespace ClimateControlSystem.Shared.SendToClient
+﻿namespace ClimateControlSystem.Shared.Responses
 {
     public class BaseMonitoringDTO
     {
         public DateTimeOffset? TracedTime { get; set; }
-        public PredictionDTO? Prediction { get; set; }
+        public PredictionsDTO? Prediction { get; set; }
         public ActualDataDTO? ActualData { get; set; }
 
         public BaseMonitoringDTO CloneFull()
         {
             return new BaseMonitoringDTO()
-            { 
+            {
                 TracedTime = TracedTime,
                 Prediction = Prediction?.Clone(),
                 ActualData = ActualData?.Clone()
