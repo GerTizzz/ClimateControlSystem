@@ -6,7 +6,7 @@ namespace ClimateControlSystem.Server.Domain.Repositories
     {
         Task<List<UserEntity>> GetUsers();
 
-        Task<UserEntity> GetUser(int id);
+        Task<UserEntity?> GetUser(int id);
 
         Task<bool> Create(UserEntity newUser);
 

@@ -37,7 +37,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
 
                 return result;
             }
-            catch (Exception exc)
+            catch
             {
                 return Enumerable.Empty<MonitoringsEntity>();
             }
@@ -67,7 +67,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
 
                 return result;
             }
-            catch (Exception exc)
+            catch
             {
                 return Enumerable.Empty<MonitoringsEntity>();
             }
@@ -96,7 +96,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
 
                 return result;
             }
-            catch (Exception exc)
+            catch
             {
                 return Enumerable.Empty<MonitoringsEntity>();
             }
@@ -123,7 +123,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
 
                 return result;
             }
-            catch (Exception exc)
+            catch
             {
                 return Enumerable.Empty<MonitoringsEntity>();
             }
@@ -147,14 +147,9 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                     .OrderByDescending(record => record.Id)
                     .FirstOrDefaultAsync();
 
-                if (lastMonitoring is null)
-                {
-                    return null;
-                }
-
-                return lastMonitoring.Prediction;
+                return lastMonitoring?.Prediction;
             }
-            catch (Exception exc)
+            catch
             {
                 return null;
             }

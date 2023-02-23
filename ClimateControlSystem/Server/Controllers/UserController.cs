@@ -18,15 +18,16 @@ namespace ClimateControlSystem.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<UserDTO>>> GetUsers()
+        public async Task<ActionResult<List<UserDto>>> GetUsers()
         {
             var users = await _userManager.GetUsers();
+            
             return Ok(users);
         }
 
         [HttpGet]
-        [Route("{id}")]
-        public async Task<ActionResult<UserDTO>> GetUser(int id)
+        [Route("{id:int}")]
+        public async Task<ActionResult<UserDto>> GetUser(int id)
         {
             var requiredUser = await _userManager.GetUserById(id);
 
@@ -39,48 +40,27 @@ namespace ClimateControlSystem.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<UserDTO>>> CreateUser(UserDTO user)
+        public async Task<ActionResult<bool>> CreateUser(UserDto user)
         {
-            bool hasCreated = await _userManager.CreateUser(user);
+            var hasCreated = await _userManager.CreateUser(user);
 
-            var result = await _userManager.GetUsers();
-
-            if (hasCreated)
-            {
-                return Ok(result);
-            }
-
-            return BadRequest(result);
+            return Ok(hasCreated);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<List<UserDTO>>> UpdateUser(UserDTO user, int id)
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<bool>> UpdateUser(UserDto user, int id)
         {
-            bool hasUpdated = await _userManager.UpdateUser(user, id);
-
-            var result = await _userManager.GetUsers();
-
-            if (hasUpdated)
-            {
-                return Ok(result);
-            }
-
-            return BadRequest(result);
+            var hasUpdated = await _userManager.UpdateUser(user, id);
+            
+            return Ok(hasUpdated);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<List<UserDTO>>> DeleteUser(int id)
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult<bool>> DeleteUser(int id)
         {
-            bool hasDeleted = await _userManager.DeleteUser(id);
+            var hasDeleted = await _userManager.DeleteUser(id);
 
-            var result = await _userManager.GetUsers();
-
-            if (hasDeleted)
-            {
-                return Ok(result);
-            }
-
-            return BadRequest(result);
+            return Ok(hasDeleted);
         }
     }
 }

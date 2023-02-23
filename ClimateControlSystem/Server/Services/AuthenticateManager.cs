@@ -6,12 +6,13 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace ClimateControlSystem.Server.Services
 {
     public class AuthenticateManager : IAuthenticateManager
     {
-        private IUserManager _userManager;
+        private readonly IUserManager _userManager;
         private readonly IConfiguration _configuration;
 
         public AuthenticateManager(IUserManager userManager, IConfiguration configuration)
@@ -20,16 +21,16 @@ namespace ClimateControlSystem.Server.Services
             _configuration = configuration;
         }
 
-        public async Task<string> GetTokenForUser(UserDTO request)
+        public async Task<string?> GetTokenForUser(UserDto request)
         {
-            UserEntity user = await _userManager.GetUserByName(request.Name);
+            var user = await _userManager.GetUserByName(request.Name);
 
             if (user is null || VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt) is false)
             {
                 return null;
             }
 
-            string token = string.Empty;
+            var token = string.Empty;
 
             if (await IsUserVerifyed(request, user))
             {
@@ -39,35 +40,23 @@ namespace ClimateControlSystem.Server.Services
             return token;
         }
 
-        private bool VerifyPasswordHash(string password, byte[] passwsordHash, byte[] passwordSalt)
+        private static bool VerifyPasswordHash(string password, byte[] passwsordHash, byte[] passwordSalt)
         {
-            using (var hmac = new HMACSHA512(passwordSalt))
-            {
-                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                return computedHash.SequenceEqual(passwsordHash);
-            }
+            using var hmac = new HMACSHA512(passwordSalt);
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return computedHash.SequenceEqual(passwsordHash);
         }
 
-        private async Task<bool> IsUserVerifyed(UserDTO request, UserEntity user)
+        private static Task<bool> IsUserVerifyed(UserDto request, UserEntity user)
         {
-            if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-            {
-                return true;
-            }
-
-            return false;
+            return Task.FromResult(VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt));
         }
 
-        private string CreateToken(UserEntity user, string securityKey)
+        private static string CreateToken(UserEntity user, string securityKey)
         {
-            ClaimsIdentity claim = GetIdentity(user);
+            var claim = GetIdentity(user);
 
-            if (claim is null)
-            {
-                return string.Empty;
-            }
-
-            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(securityKey));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
 
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
@@ -83,40 +72,33 @@ namespace ClimateControlSystem.Server.Services
             return jwt;
         }
 
-        private ClaimsIdentity GetIdentity(UserEntity user)
+        private static ClaimsIdentity GetIdentity(UserEntity user)
         {
-            if (user != null)
+            var role = string.Empty;
+
+            if (user.Role == UserType.Admin)
             {
-                string role = string.Empty;
-
-                if (user.Role == UserType.Admin)
-                {
-                    role = "Admin";
-                }
-                else if (user.Role != UserType.Operator)
-                {
-                    role = "Operator";
-                }
-
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.Name),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, role)
-                };
-
-                //List<Claim> claim = new List<Claim>()
-                //{
-                //    new Claim(ClaimTypes.Name, user.Name),
-                //    new Claim(ClaimTypes.Role, role)
-                //};
-
-                ClaimsIdentity claimsIdentity =
-                new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
-                    ClaimsIdentity.DefaultRoleClaimType);
-                return claimsIdentity;
+                role = "Admin";
+            }
+            else if (user.Role != UserType.Operator)
+            {
+                role = "Operator";
             }
 
-            return null;
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Name),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, role)
+            };
+
+            var claimsIdentity =
+                new ClaimsIdentity(
+                    claims,
+                    "Token",
+                    ClaimsIdentity.DefaultNameClaimType,
+                    ClaimsIdentity.DefaultRoleClaimType);
+            
+            return claimsIdentity;
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿@page "/graphicspage"
-@    using ClimateControlSystem.Client.PaginationNavigation;
-@    using ClimateControlSystem.Client.Resources
-@    using ClimateControlSystem.Client.Components
+@using ClimateControlSystem.Client.PaginationNavigation
+@using ClimateControlSystem.Client.Components
 @inject IMicroclimateService MicroclimateService
 @inject IConfigService ConfigService
 
@@ -11,23 +10,25 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_predictions == null)
+        @if (_monitorings == null || _monitorings.Count == 0)
         {
-            <p><em>Загрузка...</em></p>
+            <p>
+                <em>Загрузка...</em>
+            </p>
         }
         else
         {
-            <Line @ref="_temperatureChart" Data="_actualAndPredictedTemperature" Config="_temperatureDataLineConfig" />
+            <Line @ref="_temperatureChart" Data="_actualAndPredictedTemperature" Config="_temperatureDataLineConfig"/>
             <Line @ref="_humidityChart" Data="_actualAndPredictedHumidity" Config="_humidityDataLineConfig"/>
-            <Line @ref="_accuracyChart" Data="_temperatureAndHumidityAccuracy" Config="_accuracyLineConfig" />
+            <Line @ref="_accuracyChart" Data="_temperatureAndHumidityAccuracy" Config="_accuracyLineConfig"/>
 
-            <br />
+            <br/>
 
             <PaginationComponent RecordsCount=@_monitoringsRecordsCount
-                RecordsPerPage=@_recordsCount
-                PageChanged=@OnPageChanged />
+                                 RecordsPerPage=@RecordsCount
+                                 PageChanged=@OnPageChanged/>
 
-            <br />
+            <br/>
         }
     </Authorized>
     <NotAuthorized>
@@ -36,12 +37,12 @@
 </AuthorizeView>
 
 @code{
-    private const int _recordsCount = 15;
-    private const int _recordsRequestBeginningIndex = 0;
+    private const int RecordsCount = 15;
+    private const int RecordsRequestBeginningIndex = 0;
 
     private ConfigsDTO _config;
 
-    private List<MonitoringWithAccuracyDTO> _predictions;
+    private List<MonitoringWithAccuracyDTO> _monitorings;
 
     private Line _temperatureChart;
     private Line _humidityChart;
@@ -63,16 +64,16 @@
 
         _monitoringsRecordsCount = await MicroclimateService.GetMonitoringsCount();
 
-        _predictions = (await MicroclimateService.GetMonitoringsWithAccuraciesAsync(_recordsRequestBeginningIndex, _recordsCount)).ToList();
+        _monitorings = await MicroclimateService.GetMonitoringsWithAccuraciesAsync(RecordsRequestBeginningIndex, RecordsCount);
 
-        UpdateGraphics();
+        await UpdateGraphics();
     }
 
     private async Task UpdateGraphics()
     {
-        _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_predictions, _config);
-        _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_predictions, _config);
-        _temperatureAndHumidityAccuracy = AntChartHelper.GetAccuracyData(_predictions);
+        _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_monitorings, _config);
+        _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_monitorings, _config);
+        _temperatureAndHumidityAccuracy = AntChartHelper.GetAccuracyData(_monitorings);
 
         _temperatureDataLineConfig = AntChartHelper.GetTemperatureLineConfig(_actualAndPredictedTemperature);
         _humidityDataLineConfig = AntChartHelper.GetHumidityLineConfig(_actualAndPredictedHumidity);
@@ -85,8 +86,9 @@
 
     private async Task OnPageChanged(RecordsRequest request)
     {
-        _predictions = (await MicroclimateService.GetMonitoringsWithAccuraciesAsync(request.RecordsOffset, request.RecordsCount)).ToList();
+        _monitorings = await MicroclimateService.GetMonitoringsWithAccuraciesAsync(request.RecordsOffset, request.RecordsCount);
 
-        UpdateGraphics();
+        await UpdateGraphics();
     }
+
 }

@@ -1,6 +1,4 @@
 ﻿@page "/configspage"
-@using ClimateControlSystem.Shared.Common;
-@using ClimateControlSystem.Client.Resources
 @attribute [Authorize(Roles = "Admin")]
 @inject IConfigService ConfigService
 
@@ -11,33 +9,31 @@
 <EditForm Model="_config" OnSubmit="HandleSubmit">
     <div>
         <label for="uppTempWarn">Верхний тревожный предел температуры, C</label>
-        <InputNumber id="uppTempWarn" @bind-Value="_config.UpperTemperatureWarningLimit" />
+        <InputNumber id="uppTempWarn" @bind-Value="_config.UpperTemperatureWarningLimit"/>
     </div>
     <div>
         <label for="lowTempWarn">Нижний тревожный предел температуры, C</label>
-        <InputNumber id="lowTempWarn" @bind-Value="_config.LowerTemperatureWarningLimit" />
+        <InputNumber id="lowTempWarn" @bind-Value="_config.LowerTemperatureWarningLimit"/>
     </div>
 
     <div>
         <label for="uppHumWarn">Верхний тревожный предел абсолютной влажности, г/м^3</label>
-        <InputNumber id="uppHumWarn" @bind-Value="_config.UpperHumidityWarningLimit" />
+        <InputNumber id="uppHumWarn" @bind-Value="_config.UpperHumidityWarningLimit"/>
     </div>
     <div>
         <label for="lowHumWarn">Нижний тревожный предел абсолютной влажности, г/м^3</label>
-        <InputNumber id="lowHumWarn" @bind-Value="_config.LowerHumidityWarningLimit" />
-    </div>   
+        <InputNumber id="lowHumWarn" @bind-Value="_config.LowerHumidityWarningLimit"/>
+    </div>
     <div>
         <label for="predictionTimeInterval">Интервал прогнозирования, с</label>
-        <InputNumber id="predictionTimeInterval" @bind-Value="_config.PredictionTimeIntervalSeconds" />
+        <InputNumber id="predictionTimeInterval" @bind-Value="_config.PredictionTimeIntervalSeconds"/>
     </div>
-    <br />
+    <br/>
     <button type="submit" class="btn btn-primary">Сохранить</button>
 </EditForm>
 
 @code {
-    ConfigsDTO _config = new ConfigsDTO();
-
-    string gg = string.Empty;
+    private ConfigsDTO _config = new ConfigsDTO();
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,11 +42,12 @@
 
     async Task HandleSubmit()
     {
-        bool isUpdated = await ConfigService.UpdateConfigAsync(_config);
+        var isUpdated = await ConfigService.UpdateConfigAsync(_config);
 
         if (isUpdated is false)
         {
             _config = await ConfigService.GetConfigAsync();
         }
     }
+
 }

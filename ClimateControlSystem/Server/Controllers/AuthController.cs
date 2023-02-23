@@ -16,11 +16,11 @@ namespace ClimateControlSystem.Server.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(UserDTO request)
+        public async Task<ActionResult<string>> Login(UserDto request)
         {
             var token = await _authManager.GetTokenForUser(request);
 
-            if (token is null)
+            if (string.IsNullOrEmpty(token))
             {
                 return BadRequest(string.Empty);
             }

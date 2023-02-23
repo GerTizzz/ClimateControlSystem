@@ -137,7 +137,7 @@ namespace ClimateControlSystem.Server.Mapping
             CreateMap<AccuracysEntity, AccuracyDTO>();
 
 
-            CreateMap<UserEntity, UserDTO>()
+            CreateMap<UserEntity, UserDto>()
                 .ForMember(dto => dto.Name, auth => auth
                     .MapFrom(authSrc => authSrc.Name))
                 .ForMember(dto => dto.Role, auth => auth
@@ -149,7 +149,7 @@ namespace ClimateControlSystem.Server.Mapping
 
             #region DTO-To-Repository
 
-            CreateMap<UserDTO, UserEntity>()
+            CreateMap<UserDto, UserEntity>()
                 .ForMember(auth => auth.Name, dto => dto
                     .MapFrom(dtoSrc => dtoSrc.Name))
                 .ForMember(auth => auth.Role, dto => dto

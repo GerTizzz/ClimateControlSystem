@@ -1,6 +1,4 @@
 ﻿@page "/eventspage"
-@    using ClimateControlSystem.Shared.SendToClient;
-    using ClimateControlSystem.Shared.Responses;
 @inject IMicroclimateService MicroclimateService
 @inject IConfigService ConfigService
 
@@ -10,7 +8,7 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_monitoringEvents is null)
+        @if (_monitoringEvents is null || _monitoringEvents.Count == 0)
         {
             <p><em>Загрузка...</em></p>
         }
@@ -25,12 +23,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var _tempEvent in _monitoringEvents.Select(monEv => monEv.TemperatureValue).ToList())
+                    @foreach (var tempEvent in _monitoringEvents.Select(monEv => monEv.TemperatureValue).ToList())
                     {
                         <tr>
                             <td style="font-size:small"><span class="oi oi-warning ico" aria-hidden="true" style="color:red"></span></td>
-@*                            <td>Ожидается критическое значение температуры! На @_tempEvent.TemperatureValue, °C!</td>
-*@                        </tr>
+                        </tr>
                     }
                 </tbody>
             </table>       
@@ -44,12 +41,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var _humEvent in _monitoringEvents.Select(monEv => monEv.HumidityValue).ToList())
+                    @foreach (var humEvent in _monitoringEvents.Select(monEv => monEv.HumidityValue).ToList())
                     {
                         <tr>
                             <td style="font-size:small"><span class="oi oi-warning" aria-hidden="true" style="color:red"></span></td>
-@*                            <td>Ожидается критическое значение влажности! На @_humEvent.Value, %!</td>
-*@                        </tr>
+                       </tr>
                     }
                 </tbody>
             </table>
@@ -61,22 +57,17 @@
 </AuthorizeView>
 
 @code {
-    private const int _recordsCount = 20;
-    private const int _recordsRequestBeginningIndex = 0;
+    private const int RecordsCount = 20;
+    private const int RecordsRequestBeginningIndex = 0;
 
     private ConfigsDTO _config;
 
     private List<MonitoringEventsDTO> _monitoringEvents;
 
-    private float _temperatureDeviation = 0;
-    private float _humidityDeviation = 0;
-
     protected override async Task OnInitializedAsync()
     {
         _config = await ConfigService.GetConfigAsync();
 
-        _temperatureDeviation = _config.UpperTemperatureWarningLimit - _config.LowerTemperatureWarningLimit;
-
-        _monitoringEvents = await MicroclimateService.GetMonitoringEventsAsync(_recordsRequestBeginningIndex, _recordsCount);
+        _monitoringEvents = await MicroclimateService.GetMonitoringEventsAsync(RecordsRequestBeginningIndex, RecordsCount);
     }
 }

@@ -2,7 +2,6 @@
 using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Persistence.Context;
 using ClimateControlSystem.Server.Resources.Common;
-using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClimateControlSystem.Server.Persistence.Repositories
@@ -20,9 +19,14 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
 
         public async Task<bool> UpdateConfigAsync(Config configToUpdate)
         {
+            if (configToUpdate is null)
+            {
+                throw new ArgumentNullException(nameof(configToUpdate));
+            }
+            
             try
             {
-                ConfigsEntity existingConfig = await _context.Configs.OrderBy(config => config.Id).FirstAsync();
+                var existingConfig = await _context.Configs.OrderBy(config => config.Id).FirstAsync();
 
                 existingConfig.UpperTemperatureWarningLimit = configToUpdate.UpperTemperatureWarningLimit;
                 existingConfig.LowerTemperatureWarningLimit = configToUpdate.LowerTemperatureWarningLimit;
@@ -44,18 +48,11 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
 
         public async Task<Config> GetConfigAsync()
         {
-            try
-            {
-                var existingConfig = await _context.Configs.OrderBy(config => config.Id).FirstAsync();
+            var existingConfig = await _context.Configs.OrderBy(config => config.Id).FirstAsync();
 
-                Config configToGive = _mapper.Map<Config>(existingConfig);
+            var configToGive = _mapper.Map<Config>(existingConfig);
 
-                return configToGive;
-            }
-            catch
-            {
-                return null;
-            }
+            return configToGive;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿@page "/userspage"
-@using ClimateControlSystem.Shared.Common;
 @inject NavigationManager NavigationManager
 @inject IUsersService UsersService
 @attribute [Authorize(Roles = "Admin")]
@@ -8,36 +7,38 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (users is null || users.Count == 0)
+        @if (_users is null || _users.Count == 0)
         {
-            <p><em>Загрузка...</em></p>
+            <p>
+                <em>Загрузка...</em>
+            </p>
         }
         else
         {
             <table class="table">
                 <thead>
-                    <tr>
-                        <th>Имя</th>
-                        <th>Роль</th>
-                        <th></th>
-                    </tr>
+                <tr>
+                    <th>Имя</th>
+                    <th>Роль</th>
+                    <th></th>
+                </tr>
                 </thead>
                 <tbody>
-                    @foreach (var user in users)
-                    {
-                        <tr>
-                            <td>@user.Name</td>
-                            <td>@user.Role</td>
-                            <td>
-                                <button class="btn btn-primary" @onclick="(() => ShowUser(user.Id))">
-                                    <i class="oi oi-pencil"/>
-                                </button>
-                            </td>
-                        </tr>
-                    }
+                @foreach (var user in _users)
+                {
+                    <tr>
+                        <td>@user.Name</td>
+                        <td>@nameof(user.Role)</td>
+                        <td>
+                            <button class="btn btn-primary" @onclick="() => ShowUser(user.Id)">
+                                <i class="oi oi-pencil"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
                 </tbody>
             </table>
-            <button class="btn btn-primary" @onclick="(() => CreateUser())">Создать нового пользователя</button>
+            <button class="btn btn-primary" @onclick="CreateUser">Создать нового пользователя</button>
         }
     </Authorized>
     <NotAuthorized>
@@ -46,11 +47,11 @@
 </AuthorizeView>
 
 @code {
-    private List<UserDTO> users;
+    private List<UserDto> _users;
 
     protected override async Task OnInitializedAsync()
     {
-        users = await UsersService.GetUsers();
+        _users = await UsersService.GetUsers();
     }
 
     void ShowUser(int id)
@@ -62,4 +63,5 @@
     {
         NavigationManager.NavigateTo("/user");
     }
+
 }

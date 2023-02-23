@@ -4,30 +4,30 @@
 
 <h3>Войти</h3>
 
-@if (showAuthenticationError)
+@if (_showAuthenticationError)
 {
     <div class="alert alert-danger" role="alert">
-        <p>@authenticationErrorText</p>
+        <p>@_authenticationErrorText</p>
     </div>
 }
 
-<EditForm Model="model" OnValidSubmit="ExecuteLogin" class="card card-body bg-light mt-5">
+<EditForm Model="_model" OnValidSubmit="ExecuteLogin" class="card card-body bg-light mt-5">
     <DataAnnotationsValidator/>
     <ValidationSummary/>
 
     <div class="from-group row">
         <label for="username" class="col-md-2 col-form-label">Имя:</label>
         <div class="col-md-10">
-            <InputText id="username" class="form-control" @bind-Value="model.Name"/>
-            <ValidationMessage For="@(() => model.Name)"/>
+            <InputText id="username" class="form-control" @bind-Value="_model.Name"/>
+            <ValidationMessage For="@(() => _model.Name)"/>
         </div>
     </div>
 
     <div class="from-group row">
         <label for="password" class="col-md-2 col-form-label">Пароль:</label>
         <div class="col-md-10">
-            <InputText type="password" id="password" class="form-control" @bind-Value="model.Password" />
-            <ValidationMessage For="@(() => model.Password)" />
+            <InputText type="password" id="password" class="form-control" @bind-Value="_model.Password"/>
+            <ValidationMessage For="@(() => _model.Password)"/>
         </div>
     </div>
 
@@ -40,17 +40,17 @@
 </EditForm>
 
 @code {
-    private UserDTO model = new();
+    private readonly UserDto _model = new();
 
-    private bool showAuthenticationError = false;
+    private bool _showAuthenticationError;
 
-    private string authenticationErrorText = string.Empty;
+    private string _authenticationErrorText = string.Empty;
 
     private async Task ExecuteLogin()
     {
-        showAuthenticationError = false;
+        _showAuthenticationError = false;
 
-        bool result = await AuthService.Login(model);
+        var result = await AuthService.Login(_model);
 
         if (result)
         {
@@ -58,8 +58,9 @@
         }
         else
         {
-            authenticationErrorText = "Доступ запрещен.";
-            showAuthenticationError = true;
+            _authenticationErrorText = "Доступ запрещен.";
+            _showAuthenticationError = true;
         }
     }
+
 }

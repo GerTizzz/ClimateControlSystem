@@ -8,37 +8,35 @@ namespace ClimateControlSystem.Client.Services.UsersService
     {
         private readonly HttpClient _httpClient;
         private readonly NavigationManager _navigationManager;
-
-        public List<UserDTO> Users { get; set; } = new List<UserDTO>();
-
+        
         public UsersService(HttpClient httpClient, NavigationManager navigationManager)
         {
             _httpClient = httpClient;
             _navigationManager = navigationManager;
         }
 
-        public async Task<UserDTO> GetUser(int id)
+        public async Task<UserDto?> GetUser(int id)
         {
-            var result = await _httpClient.GetFromJsonAsync<UserDTO>($"api/user/{id}");
+            var result = await _httpClient.GetFromJsonAsync<UserDto>($"api/user/{id}");
 
             return result;
         }
 
-        public async Task<List<UserDTO>> GetUsers()
+        public async Task<List<UserDto>> GetUsers()
         {
-            var result = await _httpClient.GetFromJsonAsync<List<UserDTO>>("api/user");
-            
+            var result = await _httpClient.GetFromJsonAsync<List<UserDto>>("api/user");
+
             return result;
         }
 
-        public async Task CreateUser(UserDTO user)
+        public async Task CreateUser(UserDto user)
         {
             var result = await _httpClient.PostAsJsonAsync("api/user", user);
 
             await SetUsers(result);
         }
 
-        public async Task UpdateUser(UserDTO user)
+        public async Task UpdateUser(UserDto user)
         {
             var result = await _httpClient.PutAsJsonAsync($"api/user/{user.Id}", user);
 
@@ -48,21 +46,18 @@ namespace ClimateControlSystem.Client.Services.UsersService
         public async Task DeleteUser(int id)
         {
             var result = await _httpClient.DeleteAsync($"api/user/{id}");
+            
             await SetUsers(result);
         }
 
         private async Task SetUsers(HttpResponseMessage result)
         {
-            var response = await result.Content.ReadFromJsonAsync<List<UserDTO>>();
+            var response = await result.Content.ReadFromJsonAsync<bool>();
 
-            if (response is null)
+            if (response)
             {
-                return;
+                _navigationManager.NavigateTo("users");
             }
-
-            Users = response;
-
-            _navigationManager.NavigateTo("users");
         }
     }
 }

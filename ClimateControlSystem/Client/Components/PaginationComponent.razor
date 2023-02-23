@@ -2,7 +2,7 @@
 @using ClimateControlSystem.Client.PagesNavigation
 @using ClimateControlSystem.Client.PaginationNavigation;
 
-<table align="center">
+<table>
     <tbody>
         <tr>
             @foreach (var pageButton in _paginationManager.PaginationButtons)
@@ -37,25 +37,31 @@
     [Parameter]
     public EventCallback<RecordsRequest> PageChanged { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         _paginationManager = new PaginationButtonManager(RecordsCount, RecordsPerPage);
 
         _paginationManager.PageChangedEvent += OnPageChanged;
+        
+        return Task.CompletedTask;
     }
 
-    public void OnPageChanged(RecordsRequest request)
+    private void OnPageChanged(RecordsRequest request)
     {
         PageChanged.InvokeAsync(request);
         StateHasChanged();
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        if (_paginationManager is not null)
+        if (_paginationManager is null)
         {
-            _paginationManager.PageChangedEvent -= OnPageChanged;
-            _paginationManager.Close();
+            return ValueTask.CompletedTask;
         }
+        
+        _paginationManager.PageChangedEvent -= OnPageChanged;
+        _paginationManager.Close();
+        
+        return ValueTask.CompletedTask;
     }
 }

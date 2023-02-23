@@ -22,8 +22,13 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             return users;
         }
 
-        public async Task<UserEntity> GetUser(int id)
+        public async Task<UserEntity?> GetUser(int id)
         {
+            if (id <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(id));
+            }
+            
             var user = await _context.Users
                 .OrderBy(user => user.Id)
                 .FirstOrDefaultAsync(user => user.Id == id);
@@ -33,6 +38,11 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
 
         public async Task<bool> Create(UserEntity newUser)
         {
+            if (newUser == null)
+            {
+                throw new ArgumentNullException(nameof(newUser));
+            }
+            
             if (_context.Users.Any(user => user.Name == newUser.Name))
             {
                 return false;
@@ -44,14 +54,29 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             return true;
         }
 
-        public async Task<UserEntity> GetUserByName(string userName)
+        public async Task<UserEntity?> GetUserByName(string userName)
         {
+            if (string.IsNullOrEmpty(userName))
+            {
+                throw new ArgumentNullException(nameof(userName));
+            }
+            
             return await _context.Users.OrderBy(user => user.Id)
                 .FirstOrDefaultAsync(user => user.Name == userName);
         }
 
         public async Task<bool> UpdateUser(UserEntity updateUser, int id)
         {
+            if (updateUser is null)
+            {
+                throw new ArgumentNullException(nameof(updateUser));
+            }
+
+            if (id <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(id));
+            }
+
             var requiredUser = await _context.Users
                 .FirstOrDefaultAsync(user => user.Id == id);
 
@@ -71,6 +96,11 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
 
         public async Task<bool> DeleteUser(int id)
         {
+            if (id <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(id));
+            }
+            
             var requiredUser = await _context.Users
                 .FirstOrDefaultAsync(user => user.Id == id);
 

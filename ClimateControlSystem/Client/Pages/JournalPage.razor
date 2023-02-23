@@ -1,7 +1,6 @@
 ﻿@page "/journalpage"
-@    using ClimateControlSystem.Client.PaginationNavigation;
-@    using ClimateControlSystem.Shared.SendToClient;
-    using ClimateControlSystem.Shared.Responses;
+@using ClimateControlSystem.Client.PaginationNavigation
+@using System.Globalization
 @inject IMicroclimateService MicroclimateService
 
 <PageTitle>Journal Page</PageTitle>
@@ -10,75 +9,77 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_climatesData == null)
+        @if (_microclimates is null || _microclimates.Count == 0)
         {
-            <p><em>Загрузка...</em></p>
+            <p>
+                <em>Загрузка...</em>
+            </p>
         }
         else
         {
             <table class="table-bordered" align="center">
                 <thead>
-                    <tr>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Время измерения</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Загрузка кластера</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Использование ЦПУ</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Температура кластера</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Температура воздуха</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Влажность воздуха</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Влажность снаружи</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Сухая температура снаружи</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Влажная температура снаружи</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Скорость ветра снаружи</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Направления ветра снаружи</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Энтальпия воздуха снаружи</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Температура охлаждения</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Спрогнозированная температура</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Спрогнозированная влажность</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Точность прогноза температуры</th>
-                        <th style="word-wrap:break-word; font-size:small; text-align:center">Точность прогноза влажности</th>
-                    </tr>
+                <tr>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Время измерения</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Загрузка кластера</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Использование ЦПУ</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Температура кластера</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Температура воздуха</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Влажность воздуха</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Влажность снаружи</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Сухая температура снаружи</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Влажная температура снаружи</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Скорость ветра снаружи</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Направления ветра снаружи</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Энтальпия воздуха снаружи</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Температура охлаждения</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Спрогнозированная температура</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Спрогнозированная влажность</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Точность прогноза температуры</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Точность прогноза влажности</th>
+                </tr>
                 </thead>
                 <tbody>
-                    @foreach (var record in _climatesData)
-                    {
-                        <tr>
-                            <td style="font-size:small; text-align:center">
-                                @if (record.MeasurementTime.HasValue)
-                                {
-                                    @record.MeasurementTime.Value.ToString("HH:mm:ss")
-                                    <br/>
-                                    @record.MeasurementTime.Value.ToString("dd:MM:yyyy")
-                                }
-                            </td>
-                            <td style="font-size:small; text-align:center">@record.ClusterLoad</td>
-                            <td style="font-size:small; text-align:center">@record.CpuUsage</td>
-                            <td style="font-size:small; text-align:center">@record.ClusterTemperature</td>
-                            <td style="font-size:small; text-align:center">@record.CurrentRealTemperature</td>
-                            <td style="font-size:small; text-align:center">@record.CurrentRealHumidity</td>
-                            <td style="font-size:small; text-align:center">@record.AirHumidityOutside</td>
-                            <td style="font-size:small; text-align:center">@record.AirDryTemperatureOutside</td>
-                            <td style="font-size:small; text-align:center">@record.AirWetTemperatureOutside</td>
-                            <td style="font-size:small; text-align:center">@record.WindSpeed</td>
-                            <td style="font-size:small; text-align:center">@record.WindDirection</td>
-                            <td style="font-size:small; text-align:center">@record.WindEnthalpy</td>
-                            <td style="font-size:small; text-align:center">@record.MeanCoolingValue</td>
-                            <td style="font-size:small; text-align:center">@record.PredictedFutureTemperature</td>
-                            <td style="font-size:small; text-align:center">@record.PredictedFutureHumidity</td>
-                            <td style="font-size:small; text-align:center">@record.PredictedTemperatureAccuracy</td>
-                            <td style="font-size:small; text-align:center">@record.PredictedHumidityAccuracy</td>
-                        </tr>
-                    }
+                @foreach (var record in _microclimates)
+                {
+                    <tr>
+                        <td style="font-size:small; text-align:center">
+                            @if (record.MeasurementTime.HasValue)
+                            {
+                                @record.MeasurementTime.Value.ToString("HH:mm:ss")
+                                <br/>
+                                @record.MeasurementTime.Value.ToString("dd:MM:yyyy")
+                            }
+                        </td>
+                        <td style="font-size:small; text-align:center">@(record.ClusterLoad.HasValue ? record.ClusterLoad.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                        <td style="font-size:small; text-align:center">@(record.CpuUsage.HasValue ? record.CpuUsage.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                        <td style="font-size:small; text-align:center">@(record.ClusterTemperature.HasValue ? record.ClusterTemperature.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                        <td style="font-size:small; text-align:center">@(record.CurrentRealTemperature.HasValue ? record.CurrentRealTemperature.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                        <td style="font-size:small; text-align:center">@(record.CurrentRealHumidity.HasValue ? record.CurrentRealHumidity.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                        <td style="font-size:small; text-align:center">@(record.AirHumidityOutside.HasValue ? record.AirHumidityOutside.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                        <td style="font-size:small; text-align:center">@(record.AirDryTemperatureOutside.HasValue ? record.AirDryTemperatureOutside.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                        <td style="font-size:small; text-align:center">@(record.AirWetTemperatureOutside.HasValue ? record.AirWetTemperatureOutside.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                        <td style="font-size:small; text-align:center">@(record.WindSpeed.HasValue ? record.WindSpeed.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                        <td style="font-size:small; text-align:center">@(record.WindDirection.HasValue ? record.WindDirection.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                        <td style="font-size:small; text-align:center">@(record.WindEnthalpy.HasValue ? record.WindEnthalpy.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                        <td style="font-size:small; text-align:center">@(record.MeanCoolingValue.HasValue ? record.MeanCoolingValue.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                        <td style="font-size:small; text-align:center">@(record.PredictedFutureTemperature.HasValue ? record.PredictedFutureTemperature.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                        <td style="font-size:small; text-align:center">@(record.PredictedFutureHumidity.HasValue ? record.PredictedFutureHumidity.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                        <td style="font-size:small; text-align:center">@(record.PredictedTemperatureAccuracy.HasValue ? record.PredictedTemperatureAccuracy.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                        <td style="font-size:small; text-align:center">@(record.PredictedHumidityAccuracy.HasValue ? record.PredictedHumidityAccuracy.Value.ToString(CultureInfo.InvariantCulture) : string.Empty)</td>
+                    </tr>
+                }
                 </tbody>
             </table>
 
-            <br />
+            <br/>
 
-            <ClimateControlSystem.Client.Components.PaginationComponent 
-            RecordsCount=@_microclimateRecordsCount
-            RecordsPerPage=@RecordsPerPage
-            PageChanged=@OnPageChanged/>
+            <ClimateControlSystem.Client.Components.PaginationComponent
+                RecordsCount=@_microclimateRecordsCount
+                RecordsPerPage=@RecordsPerPage
+                PageChanged=@OnPageChanged/>
 
-            <br />
+            <br/>
         }
     </Authorized>
     <NotAuthorized>
@@ -87,19 +88,21 @@
 </AuthorizeView>
 
 @code {
-    private List<MicroclimateDTO> _climatesData;
-    private int _microclimateRecordsCount;
     private const int RecordsPerPage = 15;
+
+    private List<MicroclimateDTO> _microclimates;
+    private int _microclimateRecordsCount;
 
     protected override async Task OnInitializedAsync()
     {
         _microclimateRecordsCount = await MicroclimateService.GetMicroclimatesCount();
 
-        _climatesData = (await MicroclimateService.GetMicroclimatesAsync(0, RecordsPerPage)).ToList();
+        _microclimates = await MicroclimateService.GetMicroclimatesAsync(0, RecordsPerPage);
     }
 
     private async Task OnPageChanged(RecordsRequest request)
     {
-        _climatesData = (await MicroclimateService.GetMicroclimatesAsync(request.RecordsOffset, request.RecordsCount)).ToList();
+        _microclimates = await MicroclimateService.GetMicroclimatesAsync(request.RecordsOffset, request.RecordsCount);
     }
+
 }

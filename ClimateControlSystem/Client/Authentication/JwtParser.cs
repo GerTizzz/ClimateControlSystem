@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace ClimateControlSystem.Client.Authentication
 {
-    public class JwtParser
+    public static class JwtParser
     {
         public static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
         {
@@ -14,6 +14,11 @@ namespace ClimateControlSystem.Client.Authentication
 
             var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
 
+            if (keyValuePairs == null)
+            {
+                return claims;
+            }
+            
             ExtractRolesFromJwt(claims, keyValuePairs);
 
             claims.AddRange(keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())));
@@ -25,24 +30,23 @@ namespace ClimateControlSystem.Client.Authentication
         {
             keyValuePairs.TryGetValue(ClaimTypes.Role, out object roles);
 
-            if (roles is not null)
+            if (roles is null)
             {
-                var parsedRoles = roles.ToString().Trim().TrimStart('[').TrimEnd(']').Split(',');
-
-                if (parsedRoles.Length > 1) 
-                {
-                    foreach (var parsedRole in parsedRoles)
-                    {
-                        claims.Add(new Claim(ClaimTypes.Role, parsedRole.Trim('"')));
-                    }
-                }
-                else
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, parsedRoles[0]));
-                }
-
-                keyValuePairs.Remove(ClaimTypes.Role);
+                return;
             }
+            
+            var parsedRoles = roles.ToString().Trim().TrimStart('[').TrimEnd(']').Split(',');
+
+            if (parsedRoles.Length > 1)
+            {
+                claims.AddRange(parsedRoles.Select(parsedRole => new Claim(ClaimTypes.Role, parsedRole.Trim('"'))));
+            }
+            else
+            {
+                claims.Add(new Claim(ClaimTypes.Role, parsedRoles[0]));
+            }
+
+            keyValuePairs.Remove(ClaimTypes.Role);
         }
 
         private static byte[] ParseBase64WithoutPadding(string base64)

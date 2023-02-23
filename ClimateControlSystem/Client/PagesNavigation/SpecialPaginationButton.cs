@@ -12,34 +12,31 @@
         private const int NextPageNumber = -3;
         private const int LastPageNumber = -4;
 
-        private string _title;
+        public override string Title { get; }
 
-        public override string Title => _title;
-
-        public SpecialPaginationButton(PaginationButtonType selectionPageButtonType)
+        private SpecialPaginationButton(PaginationButtonType selectionPageButtonType)
         {
             ButtonType = selectionPageButtonType;
             IsEnabled = true;
 
-            if (ButtonType == PaginationButtonType.StartPage)
+            switch (ButtonType)
             {
-                PageNumber = StartPageNumber;
-                _title = StartPageTitle;
-            }
-            else if (ButtonType == PaginationButtonType.PreviousPage)
-            {
-                PageNumber = PreviousPageNumber;
-                _title = PreviousPageTitle;
-            }
-            else if (ButtonType == PaginationButtonType.NextPage)
-            {
-                PageNumber = NextPageNumber;
-                _title = NextPageTitle;
-            }
-            else
-            {
-                PageNumber = LastPageNumber;
-                _title = LastPageTitle;
+                case PaginationButtonType.StartPage:
+                    PageNumber = StartPageNumber;
+                    Title = StartPageTitle;
+                    break;
+                case PaginationButtonType.PreviousPage:
+                    PageNumber = PreviousPageNumber;
+                    Title = PreviousPageTitle;
+                    break;
+                case PaginationButtonType.NextPage:
+                    PageNumber = NextPageNumber;
+                    Title = NextPageTitle;
+                    break;
+                default:
+                    PageNumber = LastPageNumber;
+                    Title = LastPageTitle;
+                    break;
             }
         }
 
