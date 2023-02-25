@@ -1,11 +1,11 @@
-﻿using ClimateControlSystem.Server.Resources.Common;
+﻿using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 
 namespace ClimateControlSystem.Server.Domain.Repositories
 {
     public interface IConfigRepository
     {
-        Task<bool> UpdateConfigAsync(Config configToUpdate);
+        Task<bool> UpdateConfigAsync(ConfigsEntity configToUpdate);
 
-        Task<Config> GetConfigAsync();
+        Task<ConfigsEntity> GetConfigAsync();
     }
 }

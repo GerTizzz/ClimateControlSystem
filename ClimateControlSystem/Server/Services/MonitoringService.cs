@@ -1,8 +1,12 @@
 ﻿using ClimateControlSystem.Server.Domain.Services;
 using ClimateControlSystem.Server.Infrastructure;
 using ClimateControlSystem.Server.Resources.Common;
+using ClimateControlSystem.Server.Resources.Domain;
 using ClimateControlSystem.Server.Services.MediatR.Commands;
+using ClimateControlSystem.Server.Services.MediatR.Commands.MicroclimateRepository;
 using ClimateControlSystem.Server.Services.MediatR.Queries;
+using ClimateControlSystem.Server.Services.MediatR.Queries.MicroclimateRepository;
+using ClimateControlSystem.Server.Services.MediatR.Queries.PredictionEngine;
 using MediatR;
 
 namespace ClimateControlSystem.Server.Services

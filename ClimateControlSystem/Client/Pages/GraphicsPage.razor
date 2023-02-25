@@ -1,6 +1,7 @@
 ﻿@page "/graphicspage"
 @using ClimateControlSystem.Client.PaginationNavigation
 @using ClimateControlSystem.Client.Components
+@using ClimateControlSystem.Client.Services.MicroclimateService
 @inject IMicroclimateService MicroclimateService
 @inject IConfigService ConfigService
 
@@ -18,14 +19,14 @@
         }
         else
         {
-            <Line @ref="_temperatureChart" Data="_actualAndPredictedTemperature" Config="_temperatureDataLineConfig"/>
-            <Line @ref="_humidityChart" Data="_actualAndPredictedHumidity" Config="_humidityDataLineConfig"/>
-            <Line @ref="_accuracyChart" Data="_temperatureAndHumidityAccuracy" Config="_accuracyLineConfig"/>
+            <Line @ref="_temperatureChart" Data="_temperatureData" Config="_temperatureDataLineConfig"/>
+            <Line @ref="_humidityChart" Data="_humidityData" Config="_humidityDataLineConfig"/>
+            <Line @ref="_accuracyChart" Data="_accuracyData" Config="_accuracyLineConfig"/>
 
             <br/>
 
             <PaginationComponent RecordsCount=@_monitoringsRecordsCount
-                                 RecordsPerPage=@RecordsCount
+                                 RecordsPerPage=@RecordsPerPage
                                  PageChanged=@OnPageChanged/>
 
             <br/>
@@ -37,12 +38,12 @@
 </AuthorizeView>
 
 @code{
-    private const int RecordsCount = 15;
-    private const int RecordsRequestBeginningIndex = 0;
+    private const int RecordsPerPage = 15;
+    private const int StartRecordsRequestCount = 0;
 
-    private ConfigsDTO _config;
+    private ConfigsDto _config;
 
-    private List<MonitoringWithAccuracyDTO> _monitorings;
+    private List<MonitoringWithAccuracyDto> _monitorings;
 
     private Line _temperatureChart;
     private Line _humidityChart;
@@ -52,9 +53,9 @@
     private LineConfig _humidityDataLineConfig;
     private LineConfig _accuracyLineConfig;
 
-    private List<GraphicData> _actualAndPredictedTemperature;
-    private List<GraphicData> _actualAndPredictedHumidity;
-    private List<GraphicData> _temperatureAndHumidityAccuracy;
+    private List<GraphicData> _temperatureData;
+    private List<GraphicData> _humidityData;
+    private List<GraphicData> _accuracyData;
 
     private int _monitoringsRecordsCount;
 
@@ -64,24 +65,24 @@
 
         _monitoringsRecordsCount = await MicroclimateService.GetMonitoringsCount();
 
-        _monitorings = await MicroclimateService.GetMonitoringsWithAccuraciesAsync(RecordsRequestBeginningIndex, RecordsCount);
+        _monitorings = await MicroclimateService.GetMonitoringsWithAccuraciesAsync(StartRecordsRequestCount, RecordsPerPage);
 
         await UpdateGraphics();
     }
 
     private async Task UpdateGraphics()
     {
-        _actualAndPredictedTemperature = AntChartHelper.GetTemperatureData(_monitorings, _config);
-        _actualAndPredictedHumidity = AntChartHelper.GetHumidityData(_monitorings, _config);
-        _temperatureAndHumidityAccuracy = AntChartHelper.GetAccuracyData(_monitorings);
+        _temperatureData = AntChartHelper.GetTemperatureData(_monitorings, _config);
+        _humidityData = AntChartHelper.GetHumidityData(_monitorings, _config);
+        _accuracyData = AntChartHelper.GetAccuracyData(_monitorings);
 
-        _temperatureDataLineConfig = AntChartHelper.GetTemperatureLineConfig(_actualAndPredictedTemperature);
-        _humidityDataLineConfig = AntChartHelper.GetHumidityLineConfig(_actualAndPredictedHumidity);
-        _accuracyLineConfig = AntChartHelper.GetAccuracyConfig(_temperatureAndHumidityAccuracy);
+        _temperatureDataLineConfig = AntChartHelper.GetTemperatureLineConfig(_temperatureData);
+        _humidityDataLineConfig = AntChartHelper.GetHumidityLineConfig(_humidityData);
+        _accuracyLineConfig = AntChartHelper.GetAccuracyConfig(_accuracyData);
 
-        await _temperatureChart.ChangeData(_actualAndPredictedTemperature);
-        await _humidityChart.ChangeData(_actualAndPredictedHumidity);
-        await _accuracyChart.ChangeData(_temperatureAndHumidityAccuracy);
+        await _temperatureChart.ChangeData(_temperatureData);
+        await _humidityChart.ChangeData(_humidityData);
+        await _accuracyChart.ChangeData(_accuracyData);
     }
 
     private async Task OnPageChanged(RecordsRequest request)
@@ -90,5 +91,4 @@
 
         await UpdateGraphics();
     }
-
 }

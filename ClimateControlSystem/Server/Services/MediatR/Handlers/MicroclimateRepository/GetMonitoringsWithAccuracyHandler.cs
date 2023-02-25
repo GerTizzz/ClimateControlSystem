@@ -6,7 +6,7 @@ using MediatR;
 
 namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MicroclimateRepository
 {
-    public sealed class GetMonitoringsWithAccuracyHandler : IRequestHandler<GetMonitoringsWithAccuracyQuery, List<MonitoringWithAccuracyDTO>>
+    public sealed class GetMonitoringsWithAccuracyHandler : IRequestHandler<GetMonitoringsWithAccuracyQuery, List<MonitoringWithAccuracyDto>>
     {
         private readonly IMapper _mapper;
         private readonly IMicroclimateRepository _microclimateRepository;
@@ -17,19 +17,19 @@ namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MicroclimateRepo
             _microclimateRepository = microclimateRepository;
         }
 
-        public async Task<List<MonitoringWithAccuracyDTO>> Handle(GetMonitoringsWithAccuracyQuery request, CancellationToken cancellationToken)
+        public async Task<List<MonitoringWithAccuracyDto>> Handle(GetMonitoringsWithAccuracyQuery request, CancellationToken cancellationToken)
         {
             try
             {
                 var monitoringsEntities = await _microclimateRepository.GetMonitoringsWithAccuraciesAsync(request.RequestLimits);
 
-                var monitoringsDTO = monitoringsEntities.Select(entity => _mapper.Map<MonitoringWithAccuracyDTO>(entity)).ToList();
+                var monitoringsDTO = monitoringsEntities.Select(entity => _mapper.Map<MonitoringWithAccuracyDto>(entity)).ToList();
 
                 return monitoringsDTO;
             }
             catch (Exception ex)
             {
-                return new List<MonitoringWithAccuracyDTO>();
+                return new List<MonitoringWithAccuracyDto>();
             }
         }
     }

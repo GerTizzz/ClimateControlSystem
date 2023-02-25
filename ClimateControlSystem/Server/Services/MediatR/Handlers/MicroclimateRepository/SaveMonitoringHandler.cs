@@ -2,9 +2,10 @@
 using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 using ClimateControlSystem.Server.Services.MediatR.Commands;
+using ClimateControlSystem.Server.Services.MediatR.Commands.MicroclimateRepository;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers
+namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MicroclimateRepository
 {
     public sealed class SaveMonitoringHandler : IRequestHandler<SaveMonitoringCommand, bool>
     {

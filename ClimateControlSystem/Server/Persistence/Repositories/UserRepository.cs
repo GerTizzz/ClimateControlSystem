@@ -36,7 +36,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             return user;
         }
 
-        public async Task<bool> Create(UserEntity newUser)
+        public async Task<bool> SaveUser(UserEntity newUser)
         {
             if (newUser == null)
             {

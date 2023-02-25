@@ -1,4 +1,4 @@
-﻿namespace ClimateControlSystem.Server.Resources.Common
+﻿namespace ClimateControlSystem.Server.Resources.Domain
 {
     public sealed class ActualData
     {

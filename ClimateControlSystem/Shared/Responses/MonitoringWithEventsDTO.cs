@@ -1,7 +1,7 @@
 ﻿namespace ClimateControlSystem.Shared.Responses
 {
-    public sealed class MonitoringWithEventsDTO : BaseMonitoringDTO
+    public sealed class MonitoringWithEventsDto : BaseMonitoringDto
     {
-        public MicroclimatesEventsDTO? MicroclimatesEvents { get; init; }
+        public MicroclimatesEventsDto? MicroclimatesEvents { get; init; }
     }
 }

@@ -28,7 +28,7 @@ namespace ClimateControlSystem.Server.Controllers
         }
 
         [HttpGet("monitorings/{start:int}/{count:int:range(1, 25)}")]
-        public async Task<ActionResult<List<BaseMonitoringDTO>>> GetMonitorings(int start, int count)
+        public async Task<ActionResult<List<BaseMonitoringDto>>> GetMonitorings(int start, int count)
         {
             var records = await _mediator.Send(new GetBaseMonitoringsQuery(new RequestLimits(start, count)));
 
@@ -36,7 +36,7 @@ namespace ClimateControlSystem.Server.Controllers
         }
 
         [HttpGet("monitoringswithaccuracies/{start:int}/{count:int:range(1, 25)}")]
-        public async Task<ActionResult<List<MonitoringWithAccuracyDTO>>> GetMonitoringsWithAccuracies(int start, int count)
+        public async Task<ActionResult<List<MonitoringWithAccuracyDto>>> GetMonitoringsWithAccuracies(int start, int count)
         {
             var records = await _mediator.Send(new GetMonitoringsWithAccuracyQuery(new RequestLimits(start, count)));
 
@@ -52,7 +52,7 @@ namespace ClimateControlSystem.Server.Controllers
         }
 
         [HttpGet("microclimates/{start:int}/{count:int:range(1, 25)}")]
-        public async Task<ActionResult<List<MicroclimateDTO>>> GetMicroclimates(int start, int count)
+        public async Task<ActionResult<List<ForecastingDto>>> GetMicroclimates(int start, int count)
         {
             var records = await _mediator.Send(new GetMicroclimatesQuery(new RequestLimits(start, count)));
 
@@ -60,7 +60,7 @@ namespace ClimateControlSystem.Server.Controllers
         }
 
         [HttpGet("monitoringevents/{start:int}/{count:int:range(1, 25)}")]
-        public async Task<ActionResult<List<MonitoringEventsDTO>>> GetMonitoringEvents(int start, int count)
+        public async Task<ActionResult<List<MonitoringsEventsDto>>> GetMonitoringEvents(int start, int count)
         {
             var records = await _mediator.Send(new GetMonitoringEventsQuery(new RequestLimits(start, count)));
 

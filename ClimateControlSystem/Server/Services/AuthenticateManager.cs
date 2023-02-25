@@ -21,20 +21,20 @@ namespace ClimateControlSystem.Server.Services
             _configuration = configuration;
         }
 
-        public async Task<string?> GetTokenForUser(UserDto request)
+        public async Task<string?> GetTokenForUser(UserDto userToVerify)
         {
-            var user = await _userManager.GetUserByName(request.Name);
+            var verifiedUser = await _userManager.GetUserByName(userToVerify.Name);
 
-            if (user is null || VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt) is false)
+            if (verifiedUser is null || VerifyPasswordHash(userToVerify.Password, verifiedUser.PasswordHash, verifiedUser.PasswordSalt) is false)
             {
                 return null;
             }
 
             var token = string.Empty;
 
-            if (await IsUserVerifyed(request, user))
+            if (IsUserVerifyed(userToVerify, verifiedUser))
             {
-                token = CreateToken(user, _configuration.GetSection("AppSettings:Token").Value);
+                token = CreateToken(verifiedUser, _configuration.GetSection("AppSettings:Token").Value);
             }
 
             return token;
@@ -47,9 +47,9 @@ namespace ClimateControlSystem.Server.Services
             return computedHash.SequenceEqual(passwsordHash);
         }
 
-        private static Task<bool> IsUserVerifyed(UserDto request, UserEntity user)
+        private static bool IsUserVerifyed(UserDto userToVerify, UserEntity verifiedUser)
         {
-            return Task.FromResult(VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt));
+            return VerifyPasswordHash(userToVerify.Password, verifiedUser.PasswordHash, verifiedUser.PasswordSalt);
         }
 
         private static string CreateToken(UserEntity user, string securityKey)

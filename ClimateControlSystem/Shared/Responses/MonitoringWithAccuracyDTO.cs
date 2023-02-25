@@ -1,7 +1,7 @@
 ﻿namespace ClimateControlSystem.Shared.Responses
 {
-    public sealed class MonitoringWithAccuracyDTO : BaseMonitoringDTO
+    public sealed class MonitoringWithAccuracyDto : BaseMonitoringDto
     {
-        public AccuracyDTO? Accuracy { get; set; }
+        public AccuracyDto? Accuracy { get; set; }
     }
 }

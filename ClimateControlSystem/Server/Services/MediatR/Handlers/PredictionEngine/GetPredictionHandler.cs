@@ -2,10 +2,11 @@
 using ClimateControlSystem.Server.Domain.Services;
 using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Services.MediatR.Queries;
+using ClimateControlSystem.Server.Services.MediatR.Queries.PredictionEngine;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers
+namespace ClimateControlSystem.Server.Services.MediatR.Handlers.PredictionEngine
 {
     public sealed class GetPredictionHandler : IRequestHandler<GetPredictionQuery, Prediction>
     {

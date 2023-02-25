@@ -15,11 +15,11 @@ namespace ClimateControlSystem.Client.Services.ConfigService
             _authService = authService;
         }
 
-        public async Task<ConfigsDTO> GetConfigAsync()
+        public async Task<ConfigsDto> GetConfigAsync()
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<ConfigsDTO>($"api/config/") ?? GetDefaultConfig();
+                var result = await _httpClient.GetFromJsonAsync<ConfigsDto>($"api/config/") ?? GetDefaultConfig();
                 return result;
             }
             catch (HttpRequestException e)
@@ -33,7 +33,7 @@ namespace ClimateControlSystem.Client.Services.ConfigService
             return GetDefaultConfig();
         }
 
-        public async Task<bool> UpdateConfigAsync(ConfigsDTO config)
+        public async Task<bool> UpdateConfigAsync(ConfigsDto config)
         {
             try
             {
@@ -56,9 +56,9 @@ namespace ClimateControlSystem.Client.Services.ConfigService
             return await result.Content.ReadFromJsonAsync<bool>();
         }
 
-        private static ConfigsDTO GetDefaultConfig()
+        private static ConfigsDto GetDefaultConfig()
         {
-            return new ConfigsDTO()
+            return new ConfigsDto()
             {
                 UpperTemperatureWarningLimit = 24f,
                 LowerTemperatureWarningLimit = 16f,

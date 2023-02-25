@@ -1,6 +1,6 @@
 ﻿using ClimateControlSystem.Shared.Responses;
 
-namespace ClimateControlSystem.Client.Services.ClimateService
+namespace ClimateControlSystem.Client.Services.MicroclimateService
 {
     public interface IMicroclimateService
     {
@@ -10,16 +10,16 @@ namespace ClimateControlSystem.Client.Services.ClimateService
         /// <returns>Amount of microclimates records count</returns>
         Task<int> GetMicroclimatesCount();
 
-        Task<List<BaseMonitoringDTO>> GetBaseMonitoringsAsync(int start, int count);
+        Task<List<BaseMonitoringDto>> GetBaseMonitoringsAsync(int start, int count);
 
-        Task<List<MonitoringWithAccuracyDTO>> GetMonitoringsWithAccuraciesAsync(int start, int count);
+        Task<List<MonitoringWithAccuracyDto>> GetMonitoringsWithAccuraciesAsync(int start, int count);
 
         /// <summary>
         /// Returns microclimate records
         /// </summary>
         /// <param name="offsetFromTheEnd">Number of records to skip from the end</param>
-        Task<List<MicroclimateDTO>> GetMicroclimatesAsync(int offsetFromTheEnd, int count);
+        Task<List<ForecastingDto>> GetMicroclimatesAsync(int offsetFromTheEnd, int count);
 
-        Task<List<MonitoringEventsDTO>> GetMonitoringEventsAsync(int start, int count);
+        Task<List<MonitoringsEventsDto>> GetMonitoringEventsAsync(int start, int count);
     }
 }

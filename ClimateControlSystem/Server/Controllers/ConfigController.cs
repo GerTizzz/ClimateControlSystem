@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Resources.Common;
+﻿using ClimateControlSystem.Server.Services.MediatR.Commands.ConfigManager;
+using ClimateControlSystem.Server.Services.MediatR.Queries.ConfigManager;
 using ClimateControlSystem.Shared.Common;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,28 +12,25 @@ namespace ClimateControlSystem.Server.Controllers
     [ApiController]
     public class ConfigController : ControllerBase
     {
-        private readonly IConfigManager _configManager;
-        private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
-        public ConfigController(IConfigManager configManager, IMapper mapper)
+        public ConfigController(IMediator mediator)
         {
-            _configManager = configManager;
-            _mapper = mapper;
+            _mediator = mediator;
         }
 
         [HttpGet]
-        public async Task<ActionResult<ConfigsDTO>> GetConfig()
+        public async Task<ActionResult<ConfigsDto>> GetConfig()
         {
-            var response = _mapper.Map<ConfigsDTO>(_configManager.Config);
-            return Ok(response);
+            var config = await _mediator.Send(new GetConfigDtoQuery());
+            
+            return Ok(config);
         }
 
         [HttpPut]
-        public async Task<ActionResult<bool>> UpdateConfig(ConfigsDTO newConfig)
+        public async Task<ActionResult<bool>> UpdateConfig(ConfigsDto config)
         {
-            var config = _mapper.Map<Config>(newConfig);
-
-            var result = await _configManager.UpdateConfig(config);
+            var result = await _mediator.Send(new UpdateConfigCommand(config));
 
             return Ok(result);
         }

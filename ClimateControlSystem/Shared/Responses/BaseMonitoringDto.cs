@@ -1,14 +1,14 @@
 ﻿namespace ClimateControlSystem.Shared.Responses
 {
-    public class BaseMonitoringDTO
+    public class BaseMonitoringDto
     {
         public DateTimeOffset? TracedTime { get; set; }
-        public PredictionsDTO? Prediction { get; set; }
-        public ActualDataDTO? ActualData { get; set; }
+        public PredictionDto? Prediction { get; set; }
+        public ActualDataDto? ActualData { get; set; }
 
-        public BaseMonitoringDTO CloneFull()
+        public BaseMonitoringDto CloneFull()
         {
-            return new BaseMonitoringDTO()
+            return new BaseMonitoringDto()
             {
                 TracedTime = TracedTime,
                 Prediction = Prediction?.Clone(),
@@ -16,17 +16,17 @@
             };
         }
 
-        public BaseMonitoringDTO CloneWithPrediction()
+        public BaseMonitoringDto CloneWithPrediction()
         {
-            return new BaseMonitoringDTO()
+            return new BaseMonitoringDto()
             {
                 Prediction = Prediction?.Clone()
             };
         }
 
-        public BaseMonitoringDTO CloneWithMeasuredAndTime()
+        public BaseMonitoringDto CloneWithMeasuredAndTime()
         {
-            return new BaseMonitoringDTO()
+            return new BaseMonitoringDto()
             {
                 TracedTime = TracedTime,
                 ActualData = ActualData?.Clone()

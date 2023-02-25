@@ -4,7 +4,7 @@ using MediatR;
 
 namespace ClimateControlSystem.Server.Services.MediatR.Queries.MicroclimateRepository
 {
-    public sealed class GetMonitoringEventsQuery : IRequest<List<MonitoringEventsDTO>>
+    public sealed class GetMonitoringEventsQuery : IRequest<List<MonitoringsEventsDto>>
     {
         public RequestLimits RequestLimits { get; }
 

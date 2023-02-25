@@ -19,7 +19,7 @@ namespace ClimateControlSystem.ServerInfrastructreTests
         [Test]
         public void MonitoringEntityToBaseMonitoringDTO()
         {
-            _mapper.Map<BaseMonitoringDTO>(new MonitoringsEntity()
+            _mapper.Map<BaseMonitoringDto>(new MonitoringsEntity()
             {
                 Id = 0,
                 Prediction = new PredictionsEntity()
@@ -41,7 +41,7 @@ namespace ClimateControlSystem.ServerInfrastructreTests
         [Test]
         public void PredictionsEntityToPredictionDTO()
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<PredictionsEntity, PredictionsDTO>());
+            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<PredictionsEntity, PredictionDto>());
 
             configuration.AssertConfigurationIsValid();
 
@@ -51,7 +51,7 @@ namespace ClimateControlSystem.ServerInfrastructreTests
         [Test]
         public void ActualDataEntityToActualDataDTO()
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<ActualDataEntity, ActualDataDTO>());
+            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<ActualDataEntity, ActualDataDto>());
 
             configuration.AssertConfigurationIsValid();
 

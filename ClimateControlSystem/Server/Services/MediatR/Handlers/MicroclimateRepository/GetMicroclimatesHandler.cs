@@ -6,7 +6,7 @@ using MediatR;
 
 namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MicroclimateRepository
 {
-    public sealed class GetMicroclimatesHandler : IRequestHandler<GetMicroclimatesQuery, List<MicroclimateDTO>>
+    public sealed class GetMicroclimatesHandler : IRequestHandler<GetMicroclimatesQuery, List<ForecastingDto>>
     {
         private readonly IMapper _mapper;
         private readonly IMicroclimateRepository _microclimateRepository;
@@ -17,19 +17,19 @@ namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MicroclimateRepo
             _microclimateRepository = microclimateRepository;
         }
 
-        public async Task<List<MicroclimateDTO>> Handle(GetMicroclimatesQuery request, CancellationToken cancellationToken)
+        public async Task<List<ForecastingDto>> Handle(GetMicroclimatesQuery request, CancellationToken cancellationToken)
         {
             try
             {
                 var monitoringsEntities = await _microclimateRepository.GetMicroclimatesAsync(request.RequestLimits);
 
-                var microclimatesDTO = monitoringsEntities.Select(entity => _mapper.Map<MicroclimateDTO>(entity)).ToList();
+                var microclimatesDTO = monitoringsEntities.Select(entity => _mapper.Map<ForecastingDto>(entity)).ToList();
 
                 return microclimatesDTO;
             }
             catch (Exception ex)
             {
-                return new List<MicroclimateDTO>();
+                return new List<ForecastingDto>();
             }
         }
     }

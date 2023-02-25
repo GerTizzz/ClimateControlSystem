@@ -10,7 +10,7 @@ namespace ClimateControlSystem.Client.Shared
         private const float AccuracyUpperLimit = 100f;
         private const int MaxGraphicsDataPerMonitoringResponse = 4;
 
-        private static List<GraphicData> GetNewTemperatureGraphicData(BaseMonitoringDTO monitoring, ConfigsDTO config)
+        private static List<GraphicData> GetNewTemperatureGraphicData(BaseMonitoringDto monitoring, ConfigsDto config)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        private static List<GraphicData> GetNewHumidityGraphicsData(BaseMonitoringDTO monitoring, ConfigsDTO config)
+        private static List<GraphicData> GetNewHumidityGraphicsData(BaseMonitoringDto monitoring, ConfigsDto config)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        public static List<GraphicData> GetAccuracyData(List<MonitoringWithAccuracyDTO> monitorings)
+        public static List<GraphicData> GetAccuracyData(List<MonitoringWithAccuracyDto> monitorings)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        public static List<GraphicData> GetTemperatureData<T>(List<T> monitorings, ConfigsDTO config) where T : BaseMonitoringDTO
+        public static List<GraphicData> GetTemperatureData<T>(List<T> monitorings, ConfigsDto config) where T : BaseMonitoringDto
         {
             try
             {
@@ -136,7 +136,7 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        private static bool TrySetDateTimeBasedOnNeighbors<T>(List<T> monitorings, int index, ConfigsDTO config) where T : BaseMonitoringDTO
+        private static bool TrySetDateTimeBasedOnNeighbors<T>(List<T> monitorings, int index, ConfigsDto config) where T : BaseMonitoringDto
         {
             var firstMonWithTime = monitorings.FirstOrDefault(mon => mon.TracedTime.HasValue);
             
@@ -156,7 +156,7 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        public static List<GraphicData> GetHumidityData<T>(List<T> monitorings, ConfigsDTO config) where T : BaseMonitoringDTO
+        public static List<GraphicData> GetHumidityData<T>(List<T> monitorings, ConfigsDto config) where T : BaseMonitoringDto
         {
             try
             {

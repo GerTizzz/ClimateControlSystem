@@ -2,9 +2,10 @@
 using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Services.MediatR.Queries;
+using ClimateControlSystem.Server.Services.MediatR.Queries.MicroclimateRepository;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers
+namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MicroclimateRepository
 {
     public sealed class TryGetLastPredictionHandler : IRequestHandler<TryGetLastPredictionQuery, Prediction?>
     {

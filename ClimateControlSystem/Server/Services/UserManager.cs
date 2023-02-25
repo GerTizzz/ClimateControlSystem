@@ -1,71 +1,61 @@
-﻿using AutoMapper;
-using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Resources.Authentication;
+﻿using ClimateControlSystem.Server.Domain.Services;
 using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
+using ClimateControlSystem.Server.Services.MediatR.Commands.UserRepository;
+using ClimateControlSystem.Server.Services.MediatR.Queries.UserRepository;
 using ClimateControlSystem.Shared.Common;
+using MediatR;
 
 namespace ClimateControlSystem.Server.Services
 {
     public sealed class UserManager : IUserManager
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
-        public UserManager(IUserRepository userRepository, IMapper mapper)
+        public UserManager(IMediator mediator)
         {
-            _userRepository = userRepository;
-            _mapper = mapper;
+            _mediator = mediator;
         }
 
         public async Task<UserDto?> GetUserById(int id)
         {
-            var user = await _userRepository.GetUser(id);
+            var userDto = await _mediator.Send(new GetUserByIdQuery(id));
 
-            return _mapper.Map<UserDto>(user);
+            return userDto;
         }
 
         public async Task<List<UserDto>> GetUsers()
         {
-            var users = await _userRepository.GetUsers();
+            var users = await _mediator.Send(new GetUsersQuery());
+            
+            return users;
+        }
 
-            var result = users.Select(user => _mapper.Map<UserDto>(user)).ToList();
+        public async Task<bool> CreateUser(UserDto user)
+        {
+            var result = await _mediator.Send(new CreateUserCommand(user));
 
             return result;
         }
 
-        public Task<bool> CreateUser(UserDto user)
+        public async Task<bool> UpdateUser(UserDto user, int id)
         {
-            TokenHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            var result = await _mediator.Send(new UpdateUserCommand(user, id));
 
-            var newUser = _mapper.Map<UserEntity>(user);
-
-            newUser.PasswordHash = passwordHash;
-            newUser.PasswordSalt = passwordSalt;
-
-            return _userRepository.Create(newUser);
+            return result;
         }
 
-        public Task<bool> UpdateUser(UserDto user, int id)
+        public async Task<bool> DeleteUser(int id)
         {
-            var authUser = _mapper.Map<UserEntity>(user);
-
-            TokenHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
-
-            authUser.PasswordHash = passwordHash;
-            authUser.PasswordSalt = passwordSalt;
-
-            return _userRepository.UpdateUser(authUser, id);
+            var result = await _mediator.Send(new DeleteUserCommand(id));
+            
+            return result;
         }
 
-        public Task<bool> DeleteUser(int id)
+        public async Task<UserEntity?> GetUserByName(string name)
         {
-            return _userRepository.DeleteUser(id);
-        }
-
-        public Task<UserEntity?> GetUserByName(string name)
-        {
-            return _userRepository.GetUserByName(name);
+            var userEntity = await _mediator.Send(new GetUserByNameQuery(name));
+            
+            return userEntity;
         }
     }
 }

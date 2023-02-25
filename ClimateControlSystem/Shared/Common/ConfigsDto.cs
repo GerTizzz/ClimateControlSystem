@@ -1,6 +1,6 @@
 ﻿namespace ClimateControlSystem.Shared.Common
 {
-    public sealed class ConfigsDTO
+    public sealed class ConfigsDto
     {
         public float UpperTemperatureWarningLimit { get; set; }
         public float LowerTemperatureWarningLimit { get; set; }

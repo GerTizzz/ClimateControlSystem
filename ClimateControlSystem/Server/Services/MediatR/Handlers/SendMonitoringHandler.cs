@@ -22,7 +22,7 @@ namespace ClimateControlSystem.Server.Services.MediatR.Handlers
         {
             try
             {
-                var monitoring = _mapper.Map<MonitoringWithEventsDTO>(request.Monitoring);
+                var monitoring = _mapper.Map<MonitoringWithEventsDto>(request.Monitoring);
 
                 await _monitoringHub.Clients.All.SendAsync("GetMonitoringResponse", monitoring);
 

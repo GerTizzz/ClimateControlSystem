@@ -8,7 +8,7 @@ namespace ClimateControlSystem.Server.Domain.Repositories
 
         Task<UserEntity?> GetUser(int id);
 
-        Task<bool> Create(UserEntity newUser);
+        Task<bool> SaveUser(UserEntity newUser);
 
         Task<UserEntity?> GetUserByName(string userName);
 

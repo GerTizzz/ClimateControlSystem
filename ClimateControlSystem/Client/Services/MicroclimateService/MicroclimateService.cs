@@ -1,6 +1,7 @@
 ﻿using ClimateControlSystem.Client.Services.AuthenticationService;
 using ClimateControlSystem.Shared.Responses;
 using System.Net.Http.Json;
+using ClimateControlSystem.Client.Services.MicroclimateService;
 
 namespace ClimateControlSystem.Client.Services.ClimateService
 {
@@ -53,13 +54,13 @@ namespace ClimateControlSystem.Client.Services.ClimateService
             return 0;
         }
 
-        public async Task<List<BaseMonitoringDTO>> GetBaseMonitoringsAsync(int start = 0, int count = 25)
+        public async Task<List<BaseMonitoringDto>> GetBaseMonitoringsAsync(int start = 0, int count = 25)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<BaseMonitoringDTO>>($"api/microclimate/monitorings/{start}/{count}");
+                var result = await _httpClient.GetFromJsonAsync<List<BaseMonitoringDto>>($"api/microclimate/monitorings/{start}/{count}");
 
-                return result.Reverse<BaseMonitoringDTO>().ToList();
+                return result.Reverse<BaseMonitoringDto>().ToList();
             }
             catch (HttpRequestException e)
             {
@@ -69,16 +70,16 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
             
-            return new List<BaseMonitoringDTO>();
+            return new List<BaseMonitoringDto>();
         }
 
-        public async Task<List<MonitoringWithAccuracyDTO>> GetMonitoringsWithAccuraciesAsync(int start = 0, int count = 25)
+        public async Task<List<MonitoringWithAccuracyDto>> GetMonitoringsWithAccuraciesAsync(int start = 0, int count = 25)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<MonitoringWithAccuracyDTO>>($"api/microclimate/monitoringswithaccuracies/{start}/{count}");
+                var result = await _httpClient.GetFromJsonAsync<List<MonitoringWithAccuracyDto>>($"api/microclimate/monitoringswithaccuracies/{start}/{count}");
 
-                return result.Reverse<MonitoringWithAccuracyDTO>().ToList();
+                return result.Reverse<MonitoringWithAccuracyDto>().ToList();
             }
             catch (HttpRequestException e)
             {
@@ -88,14 +89,14 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
 
-            return new List<MonitoringWithAccuracyDTO>();
+            return new List<MonitoringWithAccuracyDto>();
         }
 
-        public async Task<List<MicroclimateDTO>> GetMicroclimatesAsync(int offsetFromTheEnd, int count)
+        public async Task<List<ForecastingDto>> GetMicroclimatesAsync(int offsetFromTheEnd, int count)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<MicroclimateDTO>>($"api/microclimate/microclimates/{offsetFromTheEnd}/{count}") ?? new List<MicroclimateDTO>();
+                var result = await _httpClient.GetFromJsonAsync<List<ForecastingDto>>($"api/microclimate/microclimates/{offsetFromTheEnd}/{count}") ?? new List<ForecastingDto>();
                 return result;
             }
             catch (HttpRequestException e)
@@ -106,14 +107,14 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
 
-            return new List<MicroclimateDTO>();
+            return new List<ForecastingDto>();
         }
 
-        public async Task<List<MonitoringEventsDTO>> GetMonitoringEventsAsync(int start = 0, int count = 25)
+        public async Task<List<MonitoringsEventsDto>> GetMonitoringEventsAsync(int start = 0, int count = 25)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<MonitoringEventsDTO>>($"api/microclimate/monitoringevents/{start}/{count}") ?? new List<MonitoringEventsDTO>();
+                var result = await _httpClient.GetFromJsonAsync<List<MonitoringsEventsDto>>($"api/microclimate/monitoringevents/{start}/{count}") ?? new List<MonitoringsEventsDto>();
                 return result;
             }
             catch (HttpRequestException e)
@@ -124,7 +125,7 @@ namespace ClimateControlSystem.Client.Services.ClimateService
                 }
             }
 
-            return new List<MonitoringEventsDTO>();
+            return new List<MonitoringsEventsDto>();
         }
     }
 }

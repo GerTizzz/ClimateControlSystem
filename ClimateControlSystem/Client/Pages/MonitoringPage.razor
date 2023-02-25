@@ -4,6 +4,7 @@
 @inject IConfigService ConfigService
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Text
+@using ClimateControlSystem.Client.Services.MicroclimateService
 @implements IAsyncDisposable
 @inject IJSRuntime JsRuntime
 
@@ -37,7 +38,7 @@
     private const int RecordsCount = 15;
     private const int RecordsRequestBeginningIndex = 0;
     
-    private ConfigsDTO _config;
+    private ConfigsDto _config;
 
     private Line _temperatureChart;
     private Line _humidityChart;
@@ -48,7 +49,7 @@
     private List<GraphicData> _temperatureRenderableSeries;
     private List<GraphicData> _humidityRenderableSeries;
 
-    private List<BaseMonitoringDTO> _monitorings;
+    private List<BaseMonitoringDto> _monitorings;
 
     private HubConnection? _monitoringConnection;
 
@@ -79,16 +80,16 @@
             .WithAutomaticReconnect()
             .Build();
 
-        _monitoringConnection.On<MonitoringWithEventsDTO>("GetMonitoringResponse", MonitoringDataArrived);
+        _monitoringConnection.On<MonitoringWithEventsDto>("GetMonitoringResponse", MonitoringDataArrived);
 
         await _monitoringConnection.StartAsync();
     }
 
-    private async Task MonitoringDataArrived(MonitoringWithEventsDTO arrivedMonitoring)
+    private async Task MonitoringDataArrived(MonitoringWithEventsDto arrivedMonitoring)
     {
         try
         {
-            if (arrivedMonitoring is MonitoringWithEventsDTO eventMonitroing)
+            if (arrivedMonitoring is MonitoringWithEventsDto eventMonitroing)
             {
                 _ = Task.Run(() => MicroclimateEventArrived(eventMonitroing));
             }
@@ -103,7 +104,7 @@
         }
     }
 
-    private void AddNewMonitoring(BaseMonitoringDTO monitoring)
+    private void AddNewMonitoring(BaseMonitoringDto monitoring)
     {
         if (_monitorings is null)
         {
@@ -126,7 +127,7 @@
         RemoveExtraMonitroingElementsFromBeginning();
     }
 
-    private async Task MicroclimateEventArrived(MonitoringWithEventsDTO monitoring)
+    private async Task MicroclimateEventArrived(MonitoringWithEventsDto monitoring)
     {
         try
         {

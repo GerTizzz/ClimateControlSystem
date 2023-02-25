@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Protos;
 using ClimateControlSystem.Server.Resources.Common;
+using ClimateControlSystem.Server.Resources.Domain;
 using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
 using ClimateControlSystem.Shared.Common;
@@ -94,48 +95,56 @@ namespace ClimateControlSystem.Server.Mapping
 
             #region Domain-To-DTO
 
-            CreateMap<Config, ConfigsDTO>();
+            CreateMap<Config, ConfigsDto>();
 
 
-            CreateMap<Prediction, PredictionsDTO>();
+            CreateMap<Prediction, PredictionDto>();
 
-            CreateMap<ActualData, ActualDataDTO>();
+            CreateMap<ActualData, ActualDataDto>();
 
 
-            CreateMap<Monitoring, BaseMonitoringDTO>();
+            CreateMap<Monitoring, BaseMonitoringDto>();
 
-            CreateMap<Monitoring, MonitoringWithEventsDTO>();
+            CreateMap<Monitoring, MonitoringWithEventsDto>();
 
-            CreateMap<Monitoring, MonitoringWithAccuracyDTO>();
+            CreateMap<Monitoring, MonitoringWithAccuracyDto>();
 
             #endregion
 
             #region DTO-To-Domain
 
-            CreateMap<ConfigsDTO, Config>();
+            CreateMap<ConfigsDto, Config>();
 
             #endregion
 
 
             #region Repository-To-DTO
 
-            CreateMap<MonitoringsEntity, MonitoringWithEventsDTO>();
+            CreateMap<MonitoringsEntity, MonitoringWithEventsDto>();
 
-            CreateMap<MonitoringsEntity, MonitoringWithAccuracyDTO>();
+            CreateMap<MonitoringsEntity, MonitoringWithAccuracyDto>();
 
-            CreateMap<MonitoringsEntity, BaseMonitoringDTO>();
+            CreateMap<MonitoringsEntity, BaseMonitoringDto>();
 
+            CreateMap<MonitoringsEntity, ForecastingDto>()
+                .ForMember(dto => dto.Features, monEntity => monEntity
+                    .MapFrom(entity => entity.Prediction.Features));
 
-            CreateMap<MicroclimatesEvents, MicroclimatesEventsDTO>();
+            CreateMap<MicroclimatesEvents, MicroclimatesEventsDto>();
 
-            CreateMap<PredictionsEntity, PredictionsDTO>();
+            CreateMap<PredictionsEntity, PredictionDto>();
 
-            CreateMap<ActualDataEntity, ActualDataDTO>();
+            CreateMap<ActualDataEntity, ActualDataDto>();
 
-            CreateMap<MicroclimatesEventsEntity, MicroclimatesEventsDTO>();
+            CreateMap<MicroclimatesEventsEntity, MicroclimatesEventsDto>();
 
-            CreateMap<AccuracysEntity, AccuracyDTO>();
+            CreateMap<AccuracysEntity, AccuracyDto>()
+                .ForMember(dto => dto.Temperature, entity => entity
+                    .MapFrom(accuracy => accuracy.PredictedTemperatureAccuracy))
+                .ForMember(dto => dto.Humidity, entity => entity
+                    .MapFrom(accuracy => accuracy.PredictedHumidityAccuracy));
 
+            CreateMap<FeaturesDataEntity, FeaturesDto>();
 
             CreateMap<UserEntity, UserDto>()
                 .ForMember(dto => dto.Name, auth => auth

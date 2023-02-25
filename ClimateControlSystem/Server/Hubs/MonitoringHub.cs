@@ -16,7 +16,7 @@ namespace ClimateControlSystem.Server.Hubs
 
         public async Task SendMonitoringToWebClients(Monitoring monitoring)
         {
-            var dataToSend = _mapper.Map<MonitoringWithAccuracyDTO>(monitoring);
+            var dataToSend = _mapper.Map<MonitoringWithAccuracyDto>(monitoring);
 
             if (Clients is not null)
             {

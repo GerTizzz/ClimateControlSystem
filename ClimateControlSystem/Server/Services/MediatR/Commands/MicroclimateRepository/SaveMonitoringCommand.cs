@@ -1,7 +1,7 @@
 ﻿using ClimateControlSystem.Server.Resources.Common;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Commands
+namespace ClimateControlSystem.Server.Services.MediatR.Commands.MicroclimateRepository
 {
     public sealed class SaveMonitoringCommand : IRequest<bool>
     {

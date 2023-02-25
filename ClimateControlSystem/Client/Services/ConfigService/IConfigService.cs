@@ -4,8 +4,8 @@ namespace ClimateControlSystem.Client.Services.ConfigService
 {
     public interface IConfigService
     {
-        Task<ConfigsDTO> GetConfigAsync();
+        Task<ConfigsDto> GetConfigAsync();
 
-        Task<bool> UpdateConfigAsync(ConfigsDTO config);
+        Task<bool> UpdateConfigAsync(ConfigsDto config);
     }
 }

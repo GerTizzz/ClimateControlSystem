@@ -14,17 +14,18 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using ClimateControlSystem.Server.Services.MediatR.Queries.ConfigRepository;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//C:\Users\miste\Desktop\DC Climate Control System\ClimateControlSystem\ClimateControlSystem\Server\Resources\PredictionEngineResources\MlModel\keras model\
-string _modelLocation = Directory.GetCurrentDirectory() + "\\" + builder.Configuration["ModelLocationPath"];
-string _predictionDbConnectionString = builder.Configuration.GetConnectionString("PredictionsDbConnection");
+var modelLocation = Directory.GetCurrentDirectory() + "\\" + builder.Configuration["ModelLocationPath"];
+var predictionDbConnectionString = builder.Configuration.GetConnectionString("PredictionsDbConnection");
 
-builder.Services.AddSingleton<IConfigSingleton, ConfigSingleton>();
-
-builder.Services.AddSingleton<IPredictionEngineService>(sp =>
-    new PredictionEngineService(_modelLocation));
+builder.Services.AddDbContext<PredictionsDbContext>(options =>
+{
+    options.UseSqlServer(predictionDbConnectionString);
+});
 
 builder.Services.AddScoped<IMicroclimateRepository, MicroclimateRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -49,13 +50,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddSingleton<IConfigSingleton, ConfigSingleton>();
+
+builder.Services.AddSingleton<IPredictionEngineService>(_ =>
+    new PredictionEngineService(modelLocation));
+
 builder.Services.AddMediatR(typeof(MediatREntrypoint).Assembly);
 builder.Services.AddAutoMapper(typeof(AppMappingProfile));
-builder.Services.AddDbContext<PredictionsDbContext>(options =>
-{
-    options.UseSqlServer(_predictionDbConnectionString);
-});
-builder.Services.AddRazorPages();
 
 builder.Services.AddGrpc();
 
@@ -65,6 +66,8 @@ builder.Services.AddResponseCompression(options =>
     .MimeTypes
     .Concat(new[] { "application/octet-stream" })
 );
+
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 

@@ -1,49 +1,42 @@
-﻿using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Domain.Services;
+﻿using ClimateControlSystem.Server.Domain.Services;
 using ClimateControlSystem.Server.Domain.Singletons;
 using ClimateControlSystem.Server.Resources.Common;
+using ClimateControlSystem.Server.Services.MediatR.Commands.ConfigRepository;
+using MediatR;
 
 namespace ClimateControlSystem.Server.Services
 {
     public sealed class ConfigManager : IConfigManager
     {
-        private readonly IConfigRepository _configRepository;
         private readonly IConfigSingleton _configSingleton;
+        private readonly IMediator _mediator;
 
-        private Config _config => _configSingleton.Config;
+        public Config Config => _configSingleton.Config;
 
-        public Config Config => _config;
+        public float UpperTemperatureWarningLimit => Config.UpperTemperatureWarningLimit;
+        public float LowerTemperatureWarningLimit => Config.LowerTemperatureWarningLimit;
 
-        public float UpperTemperatureWarningLimit => _config.UpperTemperatureWarningLimit;
-        public float LowerTemperatureWarningLimit => _config.LowerTemperatureWarningLimit;
+        public float UpperHumidityWarningLimit => Config.UpperHumidityWarningLimit;
+        public float LowerHumidityWarningLimit => Config.LowerHumidityWarningLimit;
 
-        public float UpperHumidityWarningLimit => _config.UpperHumidityWarningLimit;
-        public float LowerHumidityWarningLimit => _config.LowerHumidityWarningLimit;
+        public int PredictionTimeIntervalSeconds => Config.PredictionTimeIntervalSeconds;
 
-        public int PredictionTimeIntervalSeconds => _config.PredictionTimeIntervalSeconds;
-
-        public ConfigManager(IConfigRepository configRepository, IConfigSingleton configSingleton)
+        public ConfigManager(IConfigSingleton configSingleton, IMediator mediator)
         {
-            _configRepository = configRepository;
             _configSingleton = configSingleton;
-
-            var config = _configRepository.GetConfigAsync();
-
-            Task.WaitAll(config);
-
-            _configSingleton.TrySetInitialConfig(config.Result);
+            _mediator = mediator;
         }
 
         public async Task<bool> UpdateConfig(Config config)
         {
-            bool isUpdated = await _configRepository.UpdateConfigAsync(config);
+            bool updateResult = await _mediator.Send(new UpdateConfigsEntityCommand(config));
 
-            if (isUpdated)
+            if (updateResult)
             {
-                await _configSingleton.UpdateConfig(config);
+                _configSingleton.UpdateConfig(config);
             }
 
-            return isUpdated;
+            return updateResult;
         }
     }
 }

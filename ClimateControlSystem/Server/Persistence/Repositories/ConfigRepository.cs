@@ -1,7 +1,6 @@
-﻿using AutoMapper;
-using ClimateControlSystem.Server.Domain.Repositories;
+﻿using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Persistence.Context;
-using ClimateControlSystem.Server.Resources.Common;
+using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClimateControlSystem.Server.Persistence.Repositories
@@ -9,15 +8,13 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
     public class ConfigRepository : IConfigRepository
     {
         private readonly PredictionsDbContext _context;
-        private readonly IMapper _mapper;
 
-        public ConfigRepository(PredictionsDbContext context, IMapper mapper)
+        public ConfigRepository(PredictionsDbContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
-        public async Task<bool> UpdateConfigAsync(Config configToUpdate)
+        public async Task<bool> UpdateConfigAsync(ConfigsEntity configToUpdate)
         {
             if (configToUpdate is null)
             {
@@ -46,13 +43,11 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
         }
 
-        public async Task<Config> GetConfigAsync()
+        public async Task<ConfigsEntity> GetConfigAsync()
         {
-            var existingConfig = await _context.Configs.OrderBy(config => config.Id).FirstAsync();
-
-            var configToGive = _mapper.Map<Config>(existingConfig);
-
-            return configToGive;
+            var configEntity = await _context.Configs.OrderBy(config => config.Id).FirstAsync();
+            
+            return configEntity;
         }
     }
 }

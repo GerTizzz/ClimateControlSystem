@@ -1,5 +1,7 @@
 ﻿using ClimateControlSystem.Server.Domain.Singletons;
 using ClimateControlSystem.Server.Resources.Common;
+using ClimateControlSystem.Server.Services.MediatR.Queries.ConfigRepository;
+using MediatR;
 
 namespace ClimateControlSystem.Server.Services
 {
@@ -7,18 +9,36 @@ namespace ClimateControlSystem.Server.Services
     {
         private Config _config;
 
-        public Config Config => _config;
+        private readonly object _lock;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        public Task UpdateConfig(Config config)
+        public Config Config
         {
-            _config = config;
-
-            return Task.CompletedTask;
+            get
+            {
+                lock (_lock)
+                {
+                    return _config;
+                }
+            }
         }
 
-        public void TrySetInitialConfig(Config config)
+        public ConfigSingleton(IServiceScopeFactory scopeFactory)
         {
-            if (_config is null)
+            _lock = new();
+            _scopeFactory = scopeFactory;
+
+            using (var scope = scopeFactory.CreateScope())
+            {
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+                _config = mediator.Send(new GetConfigQuery()).Result;
+            }
+        }
+
+        public void UpdateConfig(Config config)
+        {
+            lock (_lock)
             {
                 _config = config;
             }
