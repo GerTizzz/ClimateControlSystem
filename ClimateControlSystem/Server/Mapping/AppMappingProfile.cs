@@ -138,11 +138,7 @@ namespace ClimateControlSystem.Server.Mapping
 
             CreateMap<MicroclimatesEventsEntity, MicroclimatesEventsDto>();
 
-            CreateMap<AccuracysEntity, AccuracyDto>()
-                .ForMember(dto => dto.Temperature, entity => entity
-                    .MapFrom(accuracy => accuracy.PredictedTemperatureAccuracy))
-                .ForMember(dto => dto.Humidity, entity => entity
-                    .MapFrom(accuracy => accuracy.PredictedHumidityAccuracy));
+            CreateMap<AccuracysEntity, AccuracyDto>();
 
             CreateMap<FeaturesDataEntity, FeaturesDto>();
 

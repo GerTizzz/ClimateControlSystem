@@ -147,7 +147,14 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                     .OrderByDescending(record => record.Id)
                     .FirstOrDefaultAsync();
 
-                return lastMonitoring?.Prediction;
+                var lastPredictionId = lastMonitoring?.PredictionId;
+
+                if (lastPredictionId is null)
+                {
+                    return null;
+                }
+
+                return await _context.Predictions.FirstOrDefaultAsync(prediction => prediction.Id == lastPredictionId);
             }
             catch
             {

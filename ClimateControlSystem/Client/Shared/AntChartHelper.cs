@@ -188,51 +188,48 @@ namespace ClimateControlSystem.Client.Shared
             }
         }
 
-        public static LineConfig GetAccuracyConfig(List<GraphicData> accuracy)
+        public static LineConfig GetAccuracyConfig(List<GraphicData> accuracyData)
         {
             var config = GetBaseLineConfig();
 
             config.Title.Text = "Точность прогноза температуры";
             config.YAxis.Title.Text = "Точнсть прогноза %";
-            var min = accuracy.Min(item => item.value);
-            var max = accuracy.Max(item => item.value);
-            var delta = max - min;
-            config.YAxis.Max = max + delta / 10;
-            config.YAxis.Min = min - delta / 10;
+            UpdateConfigsMinMaxLimits(ref config, accuracyData);
             config.Point.Shape = "square";
 
             return config;
         }
 
-        public static LineConfig GetTemperatureLineConfig(List<GraphicData> actualAndPredictedTemperature)
+        public static LineConfig GetTemperatureLineConfig(List<GraphicData> temperatureData)
         {
             var config = GetBaseLineConfig();
 
             config.Title.Text = "Температура";
             config.YAxis.Title.Text = "Градусы, °C";
-            var min = actualAndPredictedTemperature.Min(item => item.value);
-            var max = actualAndPredictedTemperature.Max(item => item.value);
-            var delta = max - min;
-            config.YAxis.Max = max + delta / 10;
-            config.YAxis.Min = min - delta / 10;
+            UpdateConfigsMinMaxLimits(ref config, temperatureData);
 
             return config;
         }
 
-        public static LineConfig GetHumidityLineConfig(List<GraphicData> actualAndPredictedHumidity)
+        public static LineConfig GetHumidityLineConfig(List<GraphicData> humidityData)
         {
             var config = GetBaseLineConfig();
 
             config.Title.Text = "Относительная влажность";
             config.YAxis.Title.Text = "Процент влажности, %";
-            var min = actualAndPredictedHumidity.Min(item => item.value);
-            var max = actualAndPredictedHumidity.Max(item => item.value);
-            var delta = max - min;
-            config.YAxis.Max = max + delta / 10;
-            config.YAxis.Min = min - delta / 10;
+            UpdateConfigsMinMaxLimits(ref config, humidityData);
             config.Point.Shape = "circle";
 
             return config;
+        }
+
+        public static void UpdateConfigsMinMaxLimits(ref LineConfig config, List<GraphicData> data)
+        {
+            var min = data.Min(item => item.value);
+            var max = data.Max(item => item.value);
+            var delta = max - min;
+            config.YAxis.Max = max + delta / 10;
+            config.YAxis.Min = min - delta / 10;
         }
 
         private static LineConfig GetBaseLineConfig()

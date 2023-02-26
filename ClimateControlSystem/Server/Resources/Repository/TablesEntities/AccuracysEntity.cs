@@ -6,7 +6,7 @@ namespace ClimateControlSystem.Server.Resources.Repository.TablesEntities
     {
         [Key]
         public int Id { get; set; }
-        public float PredictedTemperatureAccuracy { get; set; }
-        public float PredictedHumidityAccuracy { get; set; }
+        public float Temperature { get; set; }
+        public float Humidity { get; set; }
     }
 }

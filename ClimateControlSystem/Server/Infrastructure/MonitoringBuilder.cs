@@ -40,9 +40,9 @@ namespace ClimateControlSystem.Server.Infrastructure
             return this;
         }
 
-        public MonitoringBuilder AddMicroclimatesEvents(MicroclimatesEvents? microclimatesEvents)
+        public MonitoringBuilder AddMicroclimatesEvent(MicroclimatesEvents? microclimatesEvents)
         {
-            _monitoring.MicroclimatesEvents = microclimatesEvents;
+            _monitoring.MicroclimatesEvent = microclimatesEvents;
 
             return this;
         }

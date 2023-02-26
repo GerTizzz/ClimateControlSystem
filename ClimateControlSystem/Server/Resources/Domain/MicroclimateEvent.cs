@@ -2,15 +2,15 @@
 {
     public sealed class MicroclimatesEvents
     {
-        public float? TemperatureValue { get; set; }
-        public float? HumidityValue { get; set; }
+        public float? Temperature { get; set; }
+        public float? Humidity { get; set; }
 
         public MicroclimatesEvents Clone()
         {
             var clone = new MicroclimatesEvents()
             {
-                TemperatureValue = TemperatureValue,
-                HumidityValue = HumidityValue
+                Temperature = Temperature,
+                Humidity = Humidity
             };
 
             return clone;

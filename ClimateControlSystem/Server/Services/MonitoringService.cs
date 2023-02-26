@@ -36,7 +36,7 @@ namespace ClimateControlSystem.Server.Services
         {
             var actualData = GetActualDataFromFeaturesData(prediction.Features);
 
-            var accuracy = await TrGetPredictionAccuracy(actualData);
+            var accuracy = await TryGetPredictionAccuracy(actualData);
 
             var microclimatesEvent = await TryGetMicroclimatesEvents(prediction, config);
 
@@ -44,7 +44,7 @@ namespace ClimateControlSystem.Server.Services
                 .AddActualData(actualData)
                 .AddAccuracy(accuracy)
                 .AddTracedTime(DateTimeOffset.Now)
-                .AddMicroclimatesEvents(microclimatesEvent)
+                .AddMicroclimatesEvent(microclimatesEvent)
                 .AddPrediction(prediction)
                 .Build();
 
@@ -66,7 +66,7 @@ namespace ClimateControlSystem.Server.Services
             };
         }
 
-        private async Task<Accuracy?> TrGetPredictionAccuracy(ActualData actualData)
+        private async Task<Accuracy?> TryGetPredictionAccuracy(ActualData actualData)
         {
             var prediction = await TryGetLastPrediction();
 

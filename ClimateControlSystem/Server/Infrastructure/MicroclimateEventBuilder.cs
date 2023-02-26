@@ -15,7 +15,7 @@ namespace ClimateControlSystem.Server.Infrastructure
 
         public MicroclimateEventBuilder AddTemperatureEvent(float value)
         {
-            _microclimatesEvents.TemperatureValue = value;
+            _microclimatesEvents.Temperature = value;
 
             _isAnyEvents = true;
 
@@ -24,7 +24,7 @@ namespace ClimateControlSystem.Server.Infrastructure
 
         public MicroclimateEventBuilder AddHumidityEvent(float value)
         {
-            _microclimatesEvents.HumidityValue = value;
+            _microclimatesEvents.Humidity = value;
 
             _isAnyEvents = true;
 

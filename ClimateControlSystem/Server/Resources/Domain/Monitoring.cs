@@ -7,7 +7,7 @@ namespace ClimateControlSystem.Server.Resources.Common
         public DateTimeOffset? TracedTime { get; set; }
         public ActualData ActualData { get; set; }
         public Prediction Prediction { get; set; }
-        public MicroclimatesEvents? MicroclimatesEvents { get; set; }
+        public MicroclimatesEvents? MicroclimatesEvent { get; set; }
         public Accuracy? Accuracy { get; set; }
 
         public Monitoring Clone()
@@ -17,7 +17,7 @@ namespace ClimateControlSystem.Server.Resources.Common
                 TracedTime = TracedTime,
                 ActualData = ActualData.Clone(),
                 Prediction = Prediction.Clone(),
-                MicroclimatesEvents = MicroclimatesEvents?.Clone(),
+                MicroclimatesEvent = MicroclimatesEvent?.Clone(),
                 Accuracy = Accuracy?.Clone(),
             };
 
