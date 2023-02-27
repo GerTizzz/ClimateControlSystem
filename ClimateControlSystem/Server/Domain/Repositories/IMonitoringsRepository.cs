@@ -3,13 +3,13 @@ using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 
 namespace ClimateControlSystem.Server.Domain.Repositories
 {
-    public interface IMicroclimateRepository
+    public interface IMonitoringsRepository
     {
         Task<bool> SaveMonitoringAsync(MonitoringsEntity monitoring);
 
-        Task<long> GetMicroclimatesCountAsync();
-
         Task<long> GetMonitoringsCountAsync();
+
+        Task<long> GetMicroclimatesEventsCountAsync();
 
         Task<PredictionsEntity?> TryGetLastPredictionAsync();
 
@@ -19,6 +19,6 @@ namespace ClimateControlSystem.Server.Domain.Repositories
 
         Task<IEnumerable<MonitoringsEntity>> GetMicroclimatesAsync(RequestLimits requestLimits);
 
-        Task<IEnumerable<MonitoringsEntity>> GetMonitoringEventsAsync(RequestLimits requestLimits);
+        Task<IEnumerable<MonitoringsEntity>> GetMicroclimatesEventsAsync(RequestLimits requestLimits);
     }
 }

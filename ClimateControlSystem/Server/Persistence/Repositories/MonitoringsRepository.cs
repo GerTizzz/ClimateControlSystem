@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClimateControlSystem.Server.Persistence.Repositories
 {
-    public class MicroclimateRepository : IMicroclimateRepository
+    public class MonitoringsRepository : IMonitoringsRepository
     {
         private readonly PredictionsDbContext _context;
 
-        public MicroclimateRepository(PredictionsDbContext context)
+        public MonitoringsRepository(PredictionsDbContext context)
         {
             _context = context;
         }
@@ -102,22 +102,22 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
         }
 
-        public async Task<IEnumerable<MonitoringsEntity>> GetMonitoringEventsAsync(RequestLimits requestLimits)
+        public async Task<IEnumerable<MonitoringsEntity>> GetMicroclimatesEventsAsync(RequestLimits requestLimits)
         {
             try
             {
                 var monitorings = _context.Monitorings
-                    .Include(micro => micro.Prediction)
-                    .Include(micro => micro.MicroclimatesEvent)
-                    .OrderByDescending(micro => micro.Id)
+                    .Include(monitoring => monitoring.MicroclimatesEvent)
+                    .Where(monitoring => monitoring.MicroclimatesEvent != null)
+                    .OrderByDescending(monitoring => monitoring.Id)
                     .Skip(requestLimits.Start)
                     .Take(requestLimits.Count);
 
-                var result = await monitorings.Select(monitor =>
+                var result = await monitorings.Select(monitoring =>
                     new MonitoringsEntity()
                     {
-                        TracedTime = monitor.TracedTime,
-                        MicroclimatesEvent = monitor.MicroclimatesEvent
+                        TracedTime = monitoring.TracedTime,
+                        MicroclimatesEvent = monitoring.MicroclimatesEvent
                     })
                     .ToListAsync();
 
@@ -129,14 +129,17 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             }
         }
 
-        public async Task<long> GetMicroclimatesCountAsync()
+        public async Task<long> GetMonitoringsCountAsync()
         {
             return await _context.Monitorings.LongCountAsync();
         }
 
-        public async Task<long> GetMonitoringsCountAsync()
+        public async Task<long> GetMicroclimatesEventsCountAsync()
         {
-            return await _context.Predictions.LongCountAsync();
+            return await _context.Monitorings
+                .Include(monitoring => monitoring.MicroclimatesEvent)
+                .Where(monitoring => monitoring.MicroclimatesEvent != null)
+                .LongCountAsync();
         }
 
         public async Task<PredictionsEntity?> TryGetLastPredictionAsync()
@@ -182,10 +185,10 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                         .OrderBy(monit => monit.Id)
                         .LastAsync();
 
-                    lastMonitoring.ActualData = monitoring.ActualData;
+                    lastMonitoring.ActualData = monitoring.ActualData?.Clone();
                     lastMonitoring.TracedTime = monitoring.TracedTime;
-                    lastMonitoring.Accuracy = monitoring.Accuracy;
-                    lastMonitoring.MicroclimatesEvent = monitoring.MicroclimatesEvent;
+                    lastMonitoring.Accuracy = monitoring.Accuracy?.Clone();
+                    lastMonitoring.MicroclimatesEvent = monitoring.MicroclimatesEvent?.Clone();
 
                     await _context.SaveChangesAsync();
                 }

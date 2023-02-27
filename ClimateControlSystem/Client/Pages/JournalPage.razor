@@ -1,8 +1,8 @@
 ﻿@page "/journalpage"
 @using ClimateControlSystem.Client.PaginationNavigation
 @using System.Globalization
-@using ClimateControlSystem.Client.Services.MicroclimateService
-@inject IMicroclimateService MicroclimateService
+@using ClimateControlSystem.Client.Services.MonitoringService
+@inject IMonitoringService MonitoringService
 
 <PageTitle>Journal Page</PageTitle>
 
@@ -10,7 +10,7 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_microclimates is null || _microclimates.Count == 0)
+        @if (_forecastings.Any() is false)
         {
             <p>
                 <em>Загрузка...</em>
@@ -41,7 +41,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach (var record in _microclimates)
+                @foreach (var record in _forecastings)
                 {
                     <tr>
                         <td style="font-size:small; text-align:center">
@@ -53,25 +53,25 @@
                             }
                             else
                             {
-                                @MockString;
+                                @NoValueString;
                             }
                         </td>
-                        <td style="font-size:small; text-align:center">@(record.Features is null ? MockString : record.Features.ClusterLoad.ToString(CultureInfo.InvariantCulture))</td>
-                        <td style="font-size:small; text-align:center">@(record.Features is null ? MockString : record.Features.CpuUsage.ToString(CultureInfo.InvariantCulture))</td>
-                        <td style="font-size:small; text-align:center">@(record.Features is null ? MockString : record.Features.ClusterTemperature.ToString(CultureInfo.InvariantCulture))</td>
-                        <td style="font-size:small; text-align:center">@(record.Features is null ? MockString : record.Features.CurrentRealTemperature.ToString(CultureInfo.InvariantCulture))</td>
-                        <td style="font-size:small; text-align:center">@(record.Features is null ? MockString : record.Features.CurrentRealHumidity.ToString(CultureInfo.InvariantCulture))</td>
-                        <td style="font-size:small; text-align:center">@(record.Features is null ? MockString : record.Features.AirHumidityOutside.ToString(CultureInfo.InvariantCulture))</td>
-                        <td style="font-size:small; text-align:center">@(record.Features is null ? MockString : record.Features.AirDryTemperatureOutside.ToString(CultureInfo.InvariantCulture))</td>
-                        <td style="font-size:small; text-align:center">@(record.Features is null ? MockString : record.Features.AirWetTemperatureOutside.ToString(CultureInfo.InvariantCulture))</td>
-                        <td style="font-size:small; text-align:center">@(record.Features is null ? MockString : record.Features.WindSpeed.ToString(CultureInfo.InvariantCulture))</td>
-                        <td style="font-size:small; text-align:center">@(record.Features is null ? MockString : record.Features.WindDirection.ToString(CultureInfo.InvariantCulture))</td>
-                        <td style="font-size:small; text-align:center">@(record.Features is null ? MockString : record.Features.WindEnthalpy.ToString(CultureInfo.InvariantCulture))</td>
-                        <td style="font-size:small; text-align:center">@(record.Features is null ? MockString : record.Features.MeanCoolingValue.ToString(CultureInfo.InvariantCulture))</td>
-                        <td style="font-size:small; text-align:center">@(record.Prediction is null ? MockString : record.Prediction.Temperature.ToString(CultureInfo.InvariantCulture))</td>
-                        <td style="font-size:small; text-align:center">@(record.Prediction is null ? MockString : record.Prediction.Humidity.ToString(CultureInfo.InvariantCulture))</td>
-                        <td style="font-size:small; text-align:center">@(record.Accuracy is null ? MockString : record.Accuracy.Temperature.ToString(CultureInfo.InvariantCulture))</td>
-                        <td style="font-size:small; text-align:center">@(record.Accuracy is null ? MockString : record.Accuracy.Humidity.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Features is null ? NoValueString : record.Features.ClusterLoad.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Features is null ? NoValueString : record.Features.CpuUsage.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Features is null ? NoValueString : record.Features.ClusterTemperature.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Features is null ? NoValueString : record.Features.CurrentRealTemperature.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Features is null ? NoValueString : record.Features.CurrentRealHumidity.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Features is null ? NoValueString : record.Features.AirHumidityOutside.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Features is null ? NoValueString : record.Features.AirDryTemperatureOutside.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Features is null ? NoValueString : record.Features.AirWetTemperatureOutside.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Features is null ? NoValueString : record.Features.WindSpeed.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Features is null ? NoValueString : record.Features.WindDirection.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Features is null ? NoValueString : record.Features.WindEnthalpy.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Features is null ? NoValueString : record.Features.MeanCoolingValue.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Prediction is null ? NoValueString : record.Prediction.Temperature.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Prediction is null ? NoValueString : record.Prediction.Humidity.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Accuracy is null ? NoValueString : record.Accuracy.Temperature.ToString(CultureInfo.InvariantCulture))</td>
+                        <td style="font-size:small; text-align:center">@(record.Accuracy is null ? NoValueString : record.Accuracy.Humidity.ToString(CultureInfo.InvariantCulture))</td>
                     </tr>
                 }
                 </tbody>
@@ -80,7 +80,7 @@
             <br/>
 
             <ClimateControlSystem.Client.Components.PaginationComponent
-                RecordsCount=@_microclimateRecordsCount
+                RecordsCount=@_forecastingsRecordsCount
                 RecordsPerPage=@RecordsPerPage
                 PageChanged=@OnPageChanged/>
 
@@ -95,21 +95,22 @@
 @code {
     private const int RecordsPerPage = 15;
     private const int StartRecordsRequestCount = 0;
-    private const string MockString = "-";
+    private const string NoValueString = "-";
 
-    private List<ForecastingDto> _microclimates;
-    private int _microclimateRecordsCount;
+    private readonly List<ForecastingDto> _forecastings = new(RecordsPerPage);
+    private long _forecastingsRecordsCount;
 
     protected override async Task OnInitializedAsync()
     {
-        _microclimateRecordsCount = await MicroclimateService.GetMicroclimatesCount();
+        _forecastingsRecordsCount = await MonitoringService.GetCountAsync();
 
-        _microclimates = await MicroclimateService.GetMicroclimatesAsync(StartRecordsRequestCount, RecordsPerPage);
+        _forecastings.AddRange(await MonitoringService.GetForecastingsAsync(StartRecordsRequestCount, RecordsPerPage));
     }
 
     private async Task OnPageChanged(RecordsRequest request)
     {
-        _microclimates = await MicroclimateService.GetMicroclimatesAsync(request.RecordsOffset, request.RecordsCount);
+        _forecastings.Clear();
+        _forecastings.AddRange(await MonitoringService.GetForecastingsAsync(request.RecordsOffset, request.RecordsCount));
     }
 
 }

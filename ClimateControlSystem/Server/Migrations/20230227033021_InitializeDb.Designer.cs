@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClimateControlSystem.Server.Migrations
 {
     [DbContext(typeof(PredictionsDbContext))]
-    [Migration("20230218121000_InitializeDb")]
+    [Migration("20230227033021_InitializeDb")]
     partial class InitializeDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,10 +32,10 @@ namespace ClimateControlSystem.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<float>("PredictedHumidityAccuracy")
+                    b.Property<float>("Humidity")
                         .HasColumnType("real");
 
-                    b.Property<float>("PredictedTemperatureAccuracy")
+                    b.Property<float>("Temperature")
                         .HasColumnType("real");
 
                     b.HasKey("Id");
@@ -158,10 +158,10 @@ namespace ClimateControlSystem.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<float?>("HumidityValue")
+                    b.Property<float?>("Humidity")
                         .HasColumnType("real");
 
-                    b.Property<float?>("TempertatureValue")
+                    b.Property<float?>("Temperature")
                         .HasColumnType("real");
 
                     b.HasKey("Id");

@@ -1,18 +1,17 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Domain.Repositories;
 using ClimateControlSystem.Server.Resources.Common;
-using ClimateControlSystem.Server.Services.MediatR.Queries;
-using ClimateControlSystem.Server.Services.MediatR.Queries.MicroclimateRepository;
+using ClimateControlSystem.Server.Services.MediatR.Queries.MonitoringsRepository;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MicroclimateRepository
+namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MonitoringsRepository
 {
     public sealed class TryGetLastPredictionHandler : IRequestHandler<TryGetLastPredictionQuery, Prediction?>
     {
-        private readonly IMicroclimateRepository _predictionRepository;
+        private readonly IMonitoringsRepository _predictionRepository;
         private readonly IMapper _mapper;
 
-        public TryGetLastPredictionHandler(IMicroclimateRepository predictionRepository, IMapper mapper)
+        public TryGetLastPredictionHandler(IMonitoringsRepository predictionRepository, IMapper mapper)
         {
             _predictionRepository = predictionRepository;
             _mapper = mapper;

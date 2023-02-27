@@ -2,13 +2,13 @@
 using ClimateControlSystem.Shared.Responses;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Queries.MicroclimateRepository
+namespace ClimateControlSystem.Server.Services.MediatR.Queries.MonitoringsRepository
 {
-    public sealed class GetBaseMonitoringsQuery : IRequest<List<BaseMonitoringDto>>
+    public sealed class GetMicroclimatesQuery : IRequest<List<ForecastingDto>>
     {
         public RequestLimits RequestLimits { get; }
 
-        public GetBaseMonitoringsQuery(RequestLimits requestLimits)
+        public GetMicroclimatesQuery(RequestLimits requestLimits)
         {
             RequestLimits = requestLimits;
         }

@@ -1,11 +1,14 @@
 ﻿@page "/"
-@inject NavigationManager NavigationManager
-@inject IMicroclimateService MicroclimateService
-@inject IConfigService ConfigService
+
+@using ClimateControlSystem.Client.Services.MonitoringService;
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Text
-@using ClimateControlSystem.Client.Services.MicroclimateService
+
 @implements IAsyncDisposable
+
+@inject NavigationManager NavigationManager
+@inject IMonitoringService MonitoringService
+@inject IConfigService ConfigService
 @inject IJSRuntime JsRuntime
 
 <PageTitle>Monitoring Page</PageTitle>
@@ -14,10 +17,8 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_temperatureRenderableSeries is null ||
-             _humidityRenderableSeries is null ||
-             _temperatureRenderableSeries.Count == 0 ||
-             _humidityRenderableSeries.Count == 0)
+        @if (_temperatureRenderableSeries.Any() is false ||
+             _humidityRenderableSeries.Any() is false)
         {
             <p>
                 <em>Загрузка...</em>
@@ -37,7 +38,7 @@
 @code {
     private const int RecordsCount = 15;
     private const int RecordsRequestBeginningIndex = 0;
-    
+
     private ConfigsDto _config;
 
     private Line _temperatureChart;
@@ -46,10 +47,10 @@
     private LineConfig _temperatureDataLineConfig;
     private LineConfig _humidityDataLineConfig;
 
-    private List<GraphicData> _temperatureRenderableSeries;
-    private List<GraphicData> _humidityRenderableSeries;
+    private readonly List<GraphicData> _temperatureRenderableSeries = new(RecordsCount);
+    private readonly List<GraphicData> _humidityRenderableSeries = new(RecordsCount);
 
-    private List<BaseMonitoringDto> _monitorings;
+    private readonly List<BaseMonitoringDto> _monitorings = new(RecordsCount);
 
     private HubConnection? _monitoringConnection;
 
@@ -63,7 +64,7 @@
         if (authState.User.Identity is {IsAuthenticated: true })
         {
             _config = await ConfigService.GetConfigAsync();
-            _monitorings = await MicroclimateService.GetBaseMonitoringsAsync(RecordsRequestBeginningIndex, RecordsCount);
+            _monitorings.AddRange(await MonitoringService.GetBaseMonitoringsAsync(RecordsRequestBeginningIndex, RecordsCount));
             _monitorings.Capacity = RecordsCount;
 
             UpdateRenderableSeries();
@@ -153,7 +154,7 @@
                         monitoring.MicroclimatesEvents.HumidityValue.Value,
                         monitoring.TracedTime, "влажности"));
             }
-            
+
             if (messageBuilder.Length > 0)
             {
                 await JsRuntime.InvokeVoidAsync("Alert", messageBuilder.ToString());
@@ -201,8 +202,11 @@
 
     private void UpdateRenderableSeries()
     {
-        _temperatureRenderableSeries = AntChartHelper.GetTemperatureData(_monitorings, _config);
-        _humidityRenderableSeries = AntChartHelper.GetHumidityData(_monitorings, _config);
+        _temperatureRenderableSeries.Clear();
+        _temperatureRenderableSeries.AddRange(AntChartHelper.GetTemperatureData(_monitorings, _config));
+
+        _humidityRenderableSeries.Clear();
+        _humidityRenderableSeries.AddRange(AntChartHelper.GetHumidityData(_monitorings, _config));
     }
 
     private void UpdateChartsConfigs()
@@ -229,6 +233,10 @@
         {
             await _monitoringConnection.DisposeAsync();
         }
+
+        _monitorings.Clear();
+        _temperatureRenderableSeries.Clear();
+        _humidityRenderableSeries.Clear();
     }
 
 }

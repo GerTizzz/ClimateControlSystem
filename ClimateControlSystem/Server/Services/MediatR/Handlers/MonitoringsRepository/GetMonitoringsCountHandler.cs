@@ -1,14 +1,14 @@
 ﻿using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Services.MediatR.Queries.MicroclimateRepository;
+using ClimateControlSystem.Server.Services.MediatR.Queries.MonitoringsRepository;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MicroclimateRepository
+namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MonitoringsRepository
 {
     public sealed class GetMonitoringsCountHandler : IRequestHandler<GetMonitoringsCountQuery, long>
     {
-        private readonly IMicroclimateRepository _microclimateRepository;
+        private readonly IMonitoringsRepository _microclimateRepository;
 
-        public GetMonitoringsCountHandler(IMicroclimateRepository microclimateRepository)
+        public GetMonitoringsCountHandler(IMonitoringsRepository microclimateRepository)
         {
             _microclimateRepository = microclimateRepository;
         }

@@ -1,35 +1,35 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Services.MediatR.Queries.MicroclimateRepository;
+using ClimateControlSystem.Server.Services.MediatR.Queries.MonitoringsRepository;
 using ClimateControlSystem.Shared.Responses;
 using MediatR;
 
 namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MicroclimateRepository
 {
-    public sealed class GetMicroclimatesHandler : IRequestHandler<GetMicroclimatesQuery, List<ForecastingDto>>
+    public sealed class GetMicroclimatesHandler : IRequestHandler<GetMicroclimatesQuery, List<MicroclimateDTO>>
     {
         private readonly IMapper _mapper;
-        private readonly IMicroclimateRepository _microclimateRepository;
+        private readonly IMonitoringsRepository _microclimateRepository;
 
-        public GetMicroclimatesHandler(IMapper mapper, IMicroclimateRepository microclimateRepository)
+        public GetMicroclimatesHandler(IMapper mapper, IMonitoringsRepository microclimateRepository)
         {
             _mapper = mapper;
             _microclimateRepository = microclimateRepository;
         }
 
-        public async Task<List<ForecastingDto>> Handle(GetMicroclimatesQuery request, CancellationToken cancellationToken)
+        public async Task<List<MicroclimateDTO>> Handle(GetMicroclimatesQuery request, CancellationToken cancellationToken)
         {
             try
             {
                 var monitoringsEntities = await _microclimateRepository.GetMicroclimatesAsync(request.RequestLimits);
 
-                var microclimatesDTO = monitoringsEntities.Select(entity => _mapper.Map<ForecastingDto>(entity)).ToList();
+                var microclimatesDTO = monitoringsEntities.Select(entity => _mapper.Map<MicroclimateDTO>(entity)).ToList();
 
                 return microclimatesDTO;
             }
             catch (Exception ex)
             {
-                return new List<ForecastingDto>();
+                return new List<MicroclimateDTO>();
             }
         }
     }

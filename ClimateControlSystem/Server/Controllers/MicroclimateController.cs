@@ -10,19 +10,27 @@ namespace ClimateControlSystem.Server.Controllers
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
-    public class MicroclimateController : ControllerBase
+    public class MonitoringController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public MicroclimateController(IMediator mediator)
+        public MonitoringController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
         [HttpGet("monitoringscount")]
-        public async Task<ActionResult<int>> GetMonitoringsCount()
+        public async Task<ActionResult<long>> GetMonitoringsCount()
         {
             var recordsCount = await _mediator.Send(new GetMonitoringsCountQuery());
+
+            return Ok(recordsCount);
+        }
+
+        [HttpGet("monitoringseventscount")]
+        public async Task<ActionResult<long>> GetMicroclimatesEventsCount()
+        {
+            var recordsCount = await _mediator.Send(new GetMicroclimatesEventsCountQuery());
 
             return Ok(recordsCount);
         }
@@ -43,23 +51,15 @@ namespace ClimateControlSystem.Server.Controllers
             return Ok(records);
         }
 
-        [HttpGet("microclimatescount")]
-        public async Task<ActionResult<int>> GetMicroclimatesCount()
-        {
-            var recordsCount = await _mediator.Send(new GetMicroclimatesCountQuery());
-
-            return Ok(recordsCount);
-        }
-
-        [HttpGet("microclimates/{start:int}/{count:int:range(1, 25)}")]
-        public async Task<ActionResult<List<ForecastingDto>>> GetMicroclimates(int start, int count)
+        [HttpGet("monitoringsforecastings/{start:int}/{count:int:range(1, 25)}")]
+        public async Task<ActionResult<List<ForecastingDto>>> GetForecastings(int start, int count)
         {
             var records = await _mediator.Send(new GetMicroclimatesQuery(new RequestLimits(start, count)));
 
             return Ok(records);
         }
 
-        [HttpGet("monitoringevents/{start:int}/{count:int:range(1, 25)}")]
+        [HttpGet("monitoringsevents/{start:int}/{count:int:range(1, 25)}")]
         public async Task<ActionResult<List<MonitoringsEventsDto>>> GetMonitoringEvents(int start, int count)
         {
             var records = await _mediator.Send(new GetMonitoringEventsQuery(new RequestLimits(start, count)));

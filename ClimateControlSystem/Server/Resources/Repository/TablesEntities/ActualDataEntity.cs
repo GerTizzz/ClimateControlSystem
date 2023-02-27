@@ -9,5 +9,17 @@ namespace ClimateControlSystem.Server.Resources.Repository.TablesEntities
 
         public float Temperature { get; set; }
         public float Humidity { get; set; }
+
+        /// <summary>
+        /// Instance clone without Id
+        /// </summary>
+        public ActualDataEntity Clone()
+        {
+            return new ActualDataEntity
+            {
+                Temperature = Temperature,
+                Humidity = Humidity
+            };
+        }
     }
 }

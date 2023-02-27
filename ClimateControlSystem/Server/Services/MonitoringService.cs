@@ -3,9 +3,8 @@ using ClimateControlSystem.Server.Infrastructure;
 using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Resources.Domain;
 using ClimateControlSystem.Server.Services.MediatR.Commands;
-using ClimateControlSystem.Server.Services.MediatR.Commands.MicroclimateRepository;
-using ClimateControlSystem.Server.Services.MediatR.Queries;
-using ClimateControlSystem.Server.Services.MediatR.Queries.MicroclimateRepository;
+using ClimateControlSystem.Server.Services.MediatR.Commands.MonitoringsRepository;
+using ClimateControlSystem.Server.Services.MediatR.Queries.MonitoringsRepository;
 using ClimateControlSystem.Server.Services.MediatR.Queries.PredictionEngine;
 using MediatR;
 
@@ -77,8 +76,8 @@ namespace ClimateControlSystem.Server.Services
 
             Accuracy accuracy = new Accuracy()
             {
-                PredictedTemperatureAccuracy = 100f - Math.Abs(prediction.Temperature - actualData.Temperature) * 100 / actualData.Temperature,
-                PredictedHumidityAccuracy = 100f - Math.Abs(prediction.Humidity - actualData.Humidity) * 100 / actualData.Humidity
+                Temperature = 100f - Math.Abs(prediction.Temperature - actualData.Temperature) * 100 / actualData.Temperature,
+                Humidity = 100f - Math.Abs(prediction.Humidity - actualData.Humidity) * 100 / actualData.Humidity
             };
 
             return accuracy;
@@ -90,20 +89,20 @@ namespace ClimateControlSystem.Server.Services
 
             if (prediction.Temperature >= config.UpperTemperatureWarningLimit)
             {
-                microclimateEventBuilder.AddTemperatureEvent(prediction.Temperature - config.UpperTemperatureWarningLimit);
+                microclimateEventBuilder.AddTemperatureEvent(config.UpperTemperatureWarningLimit - prediction.Temperature);
             }
             else if (prediction.Temperature <= config.LowerTemperatureWarningLimit)
             {
-                microclimateEventBuilder.AddTemperatureEvent(prediction.Temperature - config.LowerTemperatureWarningLimit);
+                microclimateEventBuilder.AddTemperatureEvent(config.LowerTemperatureWarningLimit - prediction.Temperature);
             }
 
             if (prediction.Humidity >= config.UpperHumidityWarningLimit)
             {
-                microclimateEventBuilder.AddHumidityEvent(prediction.Humidity - config.UpperHumidityWarningLimit);
+                microclimateEventBuilder.AddHumidityEvent(config.UpperHumidityWarningLimit - prediction.Humidity);
             }
             else if (prediction.Humidity <= config.LowerHumidityWarningLimit)
             {
-                microclimateEventBuilder.AddHumidityEvent(prediction.Humidity - config.LowerHumidityWarningLimit);
+                microclimateEventBuilder.AddHumidityEvent(config.LowerHumidityWarningLimit - prediction.Humidity);
             }
 
             return Task.FromResult(microclimateEventBuilder.Build());

@@ -1,17 +1,17 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Services.MediatR.Queries.MicroclimateRepository;
+using ClimateControlSystem.Server.Services.MediatR.Queries.MonitoringsRepository;
 using ClimateControlSystem.Shared.Responses;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MicroclimateRepository
+namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MonitoringsRepository
 {
     public sealed class GetMonitoringEventsHandler : IRequestHandler<GetMonitoringEventsQuery, List<MonitoringsEventsDto>>
     {
         private readonly IMapper _mapper;
-        private readonly IMicroclimateRepository _microclimateRepository;
+        private readonly IMonitoringsRepository _microclimateRepository;
 
-        public GetMonitoringEventsHandler(IMapper mapper, IMicroclimateRepository microclimateRepository)
+        public GetMonitoringEventsHandler(IMapper mapper, IMonitoringsRepository microclimateRepository)
         {
             _mapper = mapper;
             _microclimateRepository = microclimateRepository;
@@ -21,7 +21,7 @@ namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MicroclimateRepo
         {
             try
             {
-                var monitoringsEntities = await _microclimateRepository.GetMonitoringEventsAsync(request.RequestLimits);
+                var monitoringsEntities = await _microclimateRepository.GetMicroclimatesEventsAsync(request.RequestLimits);
 
                 var monitoringsDto = monitoringsEntities.Select(entity => _mapper.Map<MonitoringsEventsDto>(entity)).ToList();
 

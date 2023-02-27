@@ -1,8 +1,8 @@
 ﻿@page "/graphicspage"
 @using ClimateControlSystem.Client.PaginationNavigation
 @using ClimateControlSystem.Client.Components
-@using ClimateControlSystem.Client.Services.MicroclimateService
-@inject IMicroclimateService MicroclimateService
+@using ClimateControlSystem.Client.Services.MonitoringService
+@inject IMonitoringService MonitoringService
 @inject IConfigService ConfigService
 
 <PageTitle>Graphics Page</PageTitle>
@@ -11,7 +11,7 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_monitorings == null || _monitorings.Count == 0)
+        @if (_monitorings.Any() is false)
         {
             <p>
                 <em>Загрузка...</em>
@@ -43,7 +43,7 @@
 
     private ConfigsDto _config;
 
-    private List<MonitoringWithAccuracyDto> _monitorings;
+    private readonly List<MonitoringWithAccuracyDto> _monitorings = new(RecordsPerPage);
 
     private Line _temperatureChart;
     private Line _humidityChart;
@@ -53,28 +53,33 @@
     private LineConfig _humidityConfig;
     private LineConfig _accuracyConfig;
 
-    private List<GraphicData> _temperatureData;
-    private List<GraphicData> _humidityData;
-    private List<GraphicData> _accuracyData;
+    private readonly List<GraphicData> _temperatureData = new(RecordsPerPage);
+    private readonly List<GraphicData> _humidityData = new(RecordsPerPage);
+    private readonly List<GraphicData> _accuracyData = new(RecordsPerPage);
 
-    private int _monitoringsRecordsCount;
+    private long _monitoringsRecordsCount;
 
     protected override async Task OnInitializedAsync()
     {
         _config = await ConfigService.GetConfigAsync();
 
-        _monitoringsRecordsCount = await MicroclimateService.GetMonitoringsCount();
+        _monitoringsRecordsCount = await MonitoringService.GetCountAsync();
 
-        _monitorings = await MicroclimateService.GetMonitoringsWithAccuraciesAsync(StartRecordsRequestCount, RecordsPerPage);
+        _monitorings.AddRange(await MonitoringService.GetMonitoringsWithAccuraciesAsync(StartRecordsRequestCount, RecordsPerPage));
 
         SetGraphicsConfigs();
     }
 
     private void CalculateGraphicsData()
     {
-        _temperatureData = AntChartHelper.GetTemperatureData(_monitorings, _config);
-        _humidityData = AntChartHelper.GetHumidityData(_monitorings, _config);
-        _accuracyData = AntChartHelper.GetAccuracyData(_monitorings);
+        _temperatureData.Clear();
+        _temperatureData.AddRange(AntChartHelper.GetTemperatureData(_monitorings, _config));
+
+        _humidityData.Clear();
+        _humidityData.AddRange(AntChartHelper.GetHumidityData(_monitorings, _config));
+
+        _accuracyData.Clear();
+        _accuracyData.AddRange(AntChartHelper.GetAccuracyData(_monitorings));
     }
 
     private void SetGraphicsConfigs()
@@ -88,7 +93,8 @@
 
     private async Task OnPageChanged(RecordsRequest request)
     {
-        _monitorings = await MicroclimateService.GetMonitoringsWithAccuraciesAsync(request.RecordsOffset, request.RecordsCount);
+        _monitorings.Clear();
+        _monitorings.AddRange(await MonitoringService.GetMonitoringsWithAccuraciesAsync(request.RecordsOffset, request.RecordsCount));
 
         await RerenderGraphics();
     }

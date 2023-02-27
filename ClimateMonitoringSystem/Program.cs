@@ -60,7 +60,7 @@ namespace ClimateMonitoringSystem
         private static async Task SendRequestsOverStream(AsyncDuplexStreamingCall<ClimateMonitoringRequest, ClimateMonitoringReply> call,
             float[][] dataSet, CancellationToken token)
         {
-            //while (token.IsCancellationRequested is false)
+            while (token.IsCancellationRequested is false)
             {
                 await Task.Delay(5000);
                 await call.RequestStream.WriteAsync(GenerateRequest(dataSet));

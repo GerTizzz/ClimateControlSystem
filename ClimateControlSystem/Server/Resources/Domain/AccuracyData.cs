@@ -2,15 +2,15 @@
 {
     public sealed class Accuracy
     {
-        public float PredictedTemperatureAccuracy { get; set; }
-        public float PredictedHumidityAccuracy { get; set; }
+        public float Temperature { get; set; }
+        public float Humidity { get; set; }
 
         public Accuracy Clone()
         {
             var clone = new Accuracy()
             {
-                PredictedTemperatureAccuracy = PredictedTemperatureAccuracy,
-                PredictedHumidityAccuracy = PredictedHumidityAccuracy
+                Temperature = Temperature,
+                Humidity = Humidity
             };
 
             return clone;

@@ -15,8 +15,8 @@ namespace ClimateControlSystem.Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PredictedTemperatureAccuracy = table.Column<float>(type: "real", nullable: false),
-                    PredictedHumidityAccuracy = table.Column<float>(type: "real", nullable: false)
+                    Temperature = table.Column<float>(type: "real", nullable: false),
+                    Humidity = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -84,8 +84,8 @@ namespace ClimateControlSystem.Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TempertatureValue = table.Column<float>(type: "real", nullable: true),
-                    HumidityValue = table.Column<float>(type: "real", nullable: true)
+                    Temperature = table.Column<float>(type: "real", nullable: true),
+                    Humidity = table.Column<float>(type: "real", nullable: true)
                 },
                 constraints: table =>
                 {

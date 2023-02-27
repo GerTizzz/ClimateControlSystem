@@ -126,6 +126,12 @@ namespace ClimateControlSystem.Server.Mapping
 
             CreateMap<MonitoringsEntity, BaseMonitoringDto>();
 
+            CreateMap<MonitoringsEntity, MonitoringsEventsDto>()
+                .ForMember(dto => dto.TemperatureValue, monEntity => monEntity
+                    .MapFrom(entity => entity.MicroclimatesEvent.Temperature))
+                .ForMember(dto => dto.HumidityValue, monEntity => monEntity
+                    .MapFrom(entity => entity.MicroclimatesEvent.Humidity));
+
             CreateMap<MonitoringsEntity, ForecastingDto>()
                 .ForMember(dto => dto.Features, monEntity => monEntity
                     .MapFrom(entity => entity.Prediction.Features));
