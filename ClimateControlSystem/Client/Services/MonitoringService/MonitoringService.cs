@@ -25,7 +25,7 @@ namespace ClimateControlSystem.Client.Services.MonitoringService
             }
             catch (HttpRequestException e)
             {
-                if (e.StatusCode.HasValue && e.StatusCode.Value == System.Net.HttpStatusCode.Unauthorized)
+                if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
                 {
                     await _authService.Logout();
                 }
@@ -44,7 +44,7 @@ namespace ClimateControlSystem.Client.Services.MonitoringService
             }
             catch (HttpRequestException e)
             {
-                if (e.StatusCode.HasValue && e.StatusCode.Value == System.Net.HttpStatusCode.Unauthorized)
+                if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
                 {
                     await _authService.Logout();
                 }
@@ -53,89 +53,80 @@ namespace ClimateControlSystem.Client.Services.MonitoringService
             return 0;
         }
 
-        public async Task<List<BaseMonitoringDto>> GetBaseMonitoringsAsync(int start = 0, int count = 25)
+        public async Task<IEnumerable<BaseMonitoringDto>> GetBaseMonitoringsAsync(int start = 0, int count = 25)
         {
             try
             {
                 var result = await _httpClient.GetFromJsonAsync<List<BaseMonitoringDto>>($"api/monitoring/monitorings/{start}/{count}");
 
-                if (result is null)
-                {
-                    return new List<BaseMonitoringDto>();
-                }
-
-                return result.Reverse<BaseMonitoringDto>().ToList();
+                return result?.Reverse<BaseMonitoringDto>().ToList() ?? Enumerable.Empty<BaseMonitoringDto>();
             }
             catch (HttpRequestException e)
             {
-                if (e.StatusCode.HasValue && e.StatusCode.Value == System.Net.HttpStatusCode.Unauthorized)
+                if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
                 {
                     await _authService.Logout();
                 }
             }
 
-            return new List<BaseMonitoringDto>();
+            return Enumerable.Empty<BaseMonitoringDto>();
         }
 
-        public async Task<List<MonitoringWithAccuracyDto>> GetMonitoringsWithAccuraciesAsync(int start = 0, int count = 25)
+        public async Task<IEnumerable<MonitoringWithAccuracyDto>> GetMonitoringsWithAccuraciesAsync(int start = 0, int count = 25)
         {
             try
             {
                 var result = await _httpClient.GetFromJsonAsync<List<MonitoringWithAccuracyDto>>($"api/monitoring/monitoringswithaccuracies/{start}/{count}");
 
-                if (result is null)
-                {
-                    return new List<MonitoringWithAccuracyDto>();
-                }
-
-                return result.Reverse<MonitoringWithAccuracyDto>().ToList();
+                return result?.Reverse<MonitoringWithAccuracyDto>().ToList() ?? Enumerable.Empty<MonitoringWithAccuracyDto>();
             }
             catch (HttpRequestException e)
             {
-                if (e.StatusCode.HasValue && e.StatusCode.Value == System.Net.HttpStatusCode.Unauthorized)
+                if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
                 {
                     await _authService.Logout();
                 }
             }
 
-            return new List<MonitoringWithAccuracyDto>();
+            return Enumerable.Empty<MonitoringWithAccuracyDto>();
         }
 
-        public async Task<List<ForecastingDto>> GetForecastingsAsync(int offsetFromTheEnd, int count)
+        public async Task<IEnumerable<ForecastingDto>> GetForecastingsAsync(int offsetFromTheEnd, int count)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<ForecastingDto>>($"api/monitoring/monitoringsforecastings/{offsetFromTheEnd}/{count}") ?? new List<ForecastingDto>();
-                return result;
-            }
-            catch (HttpRequestException e)
-            {
-                if (e.StatusCode.HasValue && e.StatusCode.Value == System.Net.HttpStatusCode.Unauthorized)
-                {
-                    await _authService.Logout();
-                }
-            }
-
-            return new List<ForecastingDto>();
-        }
-
-        public async Task<List<MonitoringsEventsDto>> GetEventsAsync(int start = 0, int count = 25)
-        {
-            try
-            {
-                var result = await _httpClient.GetFromJsonAsync<List<MonitoringsEventsDto>>($"api/monitoring/monitoringsevents/{start}/{count}") ?? new List<MonitoringsEventsDto>();
+                var result = await _httpClient.GetFromJsonAsync<List<ForecastingDto>>($"api/monitoring/monitoringsforecastings/{offsetFromTheEnd}/{count}");
                 
-                return result;
+                return result ?? Enumerable.Empty<ForecastingDto>();
             }
             catch (HttpRequestException e)
             {
-                if (e.StatusCode.HasValue && e.StatusCode.Value == System.Net.HttpStatusCode.Unauthorized)
+                if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
                 {
                     await _authService.Logout();
                 }
             }
 
-            return new List<MonitoringsEventsDto>();
+            return Enumerable.Empty<ForecastingDto>();
+        }
+
+        public async Task<IEnumerable<MonitoringsEventsDto>> GetEventsAsync(int start = 0, int count = 25)
+        {
+            try
+            {
+                var result = await _httpClient.GetFromJsonAsync<List<MonitoringsEventsDto>>($"api/monitoring/monitoringsevents/{start}/{count}");
+                
+                return result ?? Enumerable.Empty<MonitoringsEventsDto>();
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await _authService.Logout();
+                }
+            }
+
+            return Enumerable.Empty<MonitoringsEventsDto>();
         }
     }
 }

@@ -7,7 +7,7 @@ namespace ClimateControlSystem.Client.Services.UsersService
         Task CreateUser(UserDto user);
         Task DeleteUser(int id);
         Task<UserDto?> GetUser(int id);
-        Task<List<UserDto>> GetUsers();
+        Task<IEnumerable<UserDto>> GetUsers();
         Task UpdateUser(UserDto user);
     }
 }

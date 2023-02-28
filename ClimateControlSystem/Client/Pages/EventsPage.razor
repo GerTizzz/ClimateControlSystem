@@ -2,7 +2,6 @@
 @using ClimateControlSystem.Client.PaginationNavigation;
 @using ClimateControlSystem.Client.Services.MonitoringService
 @inject IMonitoringService MonitoringService
-@inject IConfigService ConfigService
 
 <PageTitle>Events Page</PageTitle>
 
@@ -34,7 +33,7 @@
 
                         <tr>
                             <td style="font-size:small"><span class="oi oi-warning ico" aria-hidden="true" style="color:red"></span></td>
-                            <td>Ожидается критическое значение температуры! На @tempEvent.Value, °C!</td>
+                            <td>Ожидается критическое значение температуры! На @tempEvent.ToString(), °C!</td>
                         </tr>
                     }
                 </tbody>
@@ -51,14 +50,14 @@
                 <tbody>
                     @foreach (var humEvent in _monitoringEvents.Select(monEv => monEv.HumidityValue).ToList())
                     {
-                        @if (humEvent.HasValue)
+                        @if (humEvent.HasValue is false)
                         {
                             continue;
                         }
 
                         <tr>
                             <td style="font-size:small"><span class="oi oi-warning" aria-hidden="true" style="color:red"></span></td>
-                            <td>Ожидается критическое значение влажности! На @humEvent.Value, %!</td>
+                            <td>Ожидается критическое значение влажности! На @humEvent.ToString(), %!</td>
                         </tr>
                     }
                 </tbody>
@@ -66,7 +65,7 @@
             
             <br/>
 
-            <PaginationComponent RecordsCount=@__monitoringEventsCount
+            <PaginationComponent RecordsCount=@_monitoringEventsCount
                                  RecordsPerPage=@RecordsPerPage
                                  PageChanged=@OnPageChanged/>
 
@@ -82,21 +81,20 @@
     private const int RecordsPerPage = 15;
     private const int StartRecordsRequestCount = 0;
 
-    private long __monitoringEventsCount;
-    private ConfigsDto _config;
-    private List<MonitoringsEventsDto> _monitoringEvents = new();
+    private long _monitoringEventsCount;
+    private readonly List<MonitoringsEventsDto> _monitoringEvents = new();
 
     protected override async Task OnInitializedAsync()
     {
-        _config = await ConfigService.GetConfigAsync();
+        _monitoringEventsCount = await MonitoringService.GetEventsCountAsync();
 
-        __monitoringEventsCount = await MonitoringService.GetEventsCountAsync();
-
-        _monitoringEvents = await MonitoringService.GetEventsAsync(StartRecordsRequestCount, RecordsPerPage);
+        _monitoringEvents.AddRange(await MonitoringService.GetEventsAsync(StartRecordsRequestCount, RecordsPerPage));
     }
 
     private async Task OnPageChanged(RecordsRequest request)
     {
-        _monitoringEvents = await MonitoringService.GetEventsAsync(request.RecordsOffset, request.RecordsCount);
+        _monitoringEvents.Clear();
+        
+        _monitoringEvents.AddRange(await MonitoringService.GetEventsAsync(request.RecordsOffset, request.RecordsCount));
     }
 }

@@ -8,17 +8,11 @@
 
         public string type { get; }
 
-        public GraphicData(string x, float y, string fieldType)
+        public GraphicData(string x, float y, string dataType)
         {
             time = x;
             value = y;
-            type = fieldType;
-        }
-
-        public GraphicData(string x, string fieldType)
-        {
-            time = x;
-            type = fieldType;
+            type = dataType;
         }
 
         public override string ToString()

@@ -3,6 +3,7 @@
 @using ClimateControlSystem.Client.Services.MonitoringService;
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Text
+@using ClimateControlSystem.Client.Helpers
 
 @implements IAsyncDisposable
 
@@ -47,10 +48,10 @@
     private LineConfig _temperatureDataLineConfig;
     private LineConfig _humidityDataLineConfig;
 
-    private readonly List<GraphicData> _temperatureRenderableSeries = new(RecordsCount);
-    private readonly List<GraphicData> _humidityRenderableSeries = new(RecordsCount);
+    private readonly List<GraphicData> _temperatureRenderableSeries = new();
+    private readonly List<GraphicData> _humidityRenderableSeries = new();
 
-    private readonly List<BaseMonitoringDto> _monitorings = new(RecordsCount);
+    private readonly List<BaseMonitoringDto> _monitorings = new();
 
     private HubConnection? _monitoringConnection;
 

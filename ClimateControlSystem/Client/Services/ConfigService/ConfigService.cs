@@ -19,12 +19,13 @@ namespace ClimateControlSystem.Client.Services.ConfigService
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<ConfigsDto>($"api/config/") ?? GetDefaultConfig();
-                return result;
+                var result = await _httpClient.GetFromJsonAsync<ConfigsDto>($"api/config/");
+
+                return result ?? throw new AggregateException("Config has not been recieved!");
             }
             catch (HttpRequestException e)
             {
-                if (e.StatusCode.HasValue && e.StatusCode.Value == System.Net.HttpStatusCode.Unauthorized)
+                if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
                 {
                     await _authService.Logout();
                 }
@@ -38,20 +39,21 @@ namespace ClimateControlSystem.Client.Services.ConfigService
             try
             {
                 var result = await _httpClient.PutAsJsonAsync($"api/config/", config);
+                
                 return await UpdateConfigResponse(result);
             }
             catch (HttpRequestException e)
             {
-                if (e.StatusCode.HasValue && e.StatusCode.Value == System.Net.HttpStatusCode.Unauthorized)
+                if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
                 {
                     await _authService.Logout();
                 }
-
-                return false;
             }
+            
+            return false;
         }
 
-        private async Task<bool> UpdateConfigResponse(HttpResponseMessage result)
+        private static async Task<bool> UpdateConfigResponse(HttpResponseMessage result)
         {
             return await result.Content.ReadFromJsonAsync<bool>();
         }

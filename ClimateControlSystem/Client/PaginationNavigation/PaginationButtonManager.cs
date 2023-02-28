@@ -1,6 +1,6 @@
-﻿using ClimateControlSystem.Client.PaginationNavigation;
+﻿using ClimateControlSystem.Client.PagesNavigation;
 
-namespace ClimateControlSystem.Client.PagesNavigation
+namespace ClimateControlSystem.Client.PaginationNavigation
 {
     public sealed class PaginationButtonManager
     {
@@ -10,37 +10,28 @@ namespace ClimateControlSystem.Client.PagesNavigation
         private const int NumberOfReservedButtons = 4;
         private const double EachSiteVisibleButtonsCount = 2.0;
         private const int DefaultPagesWithNumberCount = 5;
+        private const int PaginationButtonsCount = DefaultPagesWithNumberCount + NumberOfReservedButtons;
 
         private readonly int _visibleSiteDistance = (int)Math.Floor(DefaultPagesWithNumberCount / EachSiteVisibleButtonsCount);
-        private readonly int _paginationButtonsCount = DefaultPagesWithNumberCount + NumberOfReservedButtons;
 
-        private List<BasePaginationButton> _paginationButtons;
         private int _numberOfPaginationButtonsCount;
-        private long _recordsCount;
         private int _currentPageNumber;
         private int _lastPageNumber;
         private int _recordsPerPage;
 
-        public List<BasePaginationButton> PaginationButtons => _paginationButtons;
+        public List<BasePaginationButton> PaginationButtons { get; }
 
         public Action<RecordsRequest> PageChangedEvent;
 
         public PaginationButtonManager(long recordsCount, int recordsPerPage)
         {
-            try
-            {
-                _paginationButtons = new List<BasePaginationButton>(_paginationButtonsCount);
+            PaginationButtons = new List<BasePaginationButton>(PaginationButtonsCount);
 
-                UpdatePaginationInfo(recordsCount, recordsPerPage);
+            UpdatePaginationInfo(recordsCount, recordsPerPage);
 
-                InitializeButtons();
+            InitializeButtons();
 
-                UpdateButtonsContent();
-            }
-            catch
-            {
-                throw;
-            }
+            UpdateButtonsContent();
         }
 
 
@@ -54,7 +45,7 @@ namespace ClimateControlSystem.Client.PagesNavigation
         public void Close()
         {
             UnsubscribeFromPages();
-            _paginationButtons.Clear();
+            PaginationButtons.Clear();
         }
 
         private void UpdateButtonsContent()
@@ -69,69 +60,70 @@ namespace ClimateControlSystem.Client.PagesNavigation
             if (recordsCount < 0) throw new ArgumentException();
             if (recordsPerPage < 1) throw new ArgumentException();
 
-            _recordsCount = recordsCount;
             _recordsPerPage = recordsPerPage;
 
             _lastPageNumber = CalculateLastPageNumber(recordsCount, recordsPerPage);
             _currentPageNumber = StartPageNumber;
         }
 
-        private int CalculateLastPageNumber(long recordsCount, int recordsPerPage)
+        private static int CalculateLastPageNumber(long recordsCount, int recordsPerPage)
         {
-            int lastPageNumber = (int)(recordsCount / recordsPerPage);
+            var lastPageNumber = (int)(recordsCount / recordsPerPage);
+            
             if (recordsCount % recordsPerPage != 0)
             {
                 lastPageNumber += 1;
             }
+            
             return lastPageNumber;
         }
 
         private void InitializeButtons()
         {
-            _paginationButtons.Add(SpecialPaginationButton.CreateFirstPageButton());
-            _paginationButtons.Add(SpecialPaginationButton.CreatePreviousPageButton());
+            PaginationButtons.Add(SpecialPaginationButton.CreateFirstPageButton());
+            PaginationButtons.Add(SpecialPaginationButton.CreatePreviousPageButton());
 
             _numberOfPaginationButtonsCount = _lastPageNumber > DefaultPagesWithNumberCount ? DefaultPagesWithNumberCount : _lastPageNumber;
 
-            for (int i = 0; i < _numberOfPaginationButtonsCount; i++)
+            for (var i = 0; i < _numberOfPaginationButtonsCount; i++)
             {
-                _paginationButtons.Add(new NumberPaginationButton(StartPageNumber + i));
+                PaginationButtons.Add(new NumberPaginationButton(StartPageNumber + i));
             }
 
-            _paginationButtons.Add(SpecialPaginationButton.CreateNextPageButton());
-            _paginationButtons.Add(SpecialPaginationButton.CreateLastPageButton());
+            PaginationButtons.Add(SpecialPaginationButton.CreateNextPageButton());
+            PaginationButtons.Add(SpecialPaginationButton.CreateLastPageButton());
 
             SubscribeOnButtonsEvents();
         }
 
         private void SetSpecialPagesButtonsAvailability()
         {
-            if (_currentPageNumber == _paginationButtons.Skip(SkippingNotNumberPages).First().PageNumber)
+            if (_currentPageNumber == PaginationButtons.Skip(SkippingNotNumberPages).First().PageNumber)
             {
-                _paginationButtons[0].Disable();
-                _paginationButtons[1].Disable();
+                PaginationButtons[0].Disable();
+                PaginationButtons[1].Disable();
             }
             else
             {
-                _paginationButtons[0].Enable();
-                _paginationButtons[1].Enable();
+                PaginationButtons[0].Enable();
+                PaginationButtons[1].Enable();
             }
 
             if (_currentPageNumber == _lastPageNumber)
             {
-                _paginationButtons[_paginationButtons.Count - 2].Disable();
-                _paginationButtons[_paginationButtons.Count - 1].Disable();
+                PaginationButtons[^2].Disable();
+                PaginationButtons[^1].Disable();
             }
             else
             {
-                _paginationButtons[_paginationButtons.Count - 2].Enable();
-                _paginationButtons[_paginationButtons.Count - 1].Enable();
+                PaginationButtons[^2].Enable();
+                PaginationButtons[^1].Enable();
             }
         }
 
         private void SubscribeOnButtonsEvents()
         {
-            foreach (var page in _paginationButtons)
+            foreach (var page in PaginationButtons)
             {
                 page.ButtonPressedEvent += GoToPage;
             }
@@ -139,7 +131,7 @@ namespace ClimateControlSystem.Client.PagesNavigation
 
         private void UnsubscribeFromPages()
         {
-            foreach (var page in _paginationButtons)
+            foreach (var page in PaginationButtons)
             {
                 page.ButtonPressedEvent -= GoToPage;
             }
@@ -149,7 +141,7 @@ namespace ClimateControlSystem.Client.PagesNavigation
         {
             _currentPageNumber = GetNextPageNumber(nextPage);
 
-            VisiblePagesRange pagesRange = DefineStartAndEndIndices();
+            var pagesRange = DefineStartAndEndIndices();
 
             UpdateNumberPages(pagesRange);
 
@@ -201,8 +193,8 @@ namespace ClimateControlSystem.Client.PagesNavigation
 
         private VisiblePagesRange DefineStartAndEndIndices()
         {
-            int startPageRangeNumber = _currentPageNumber - _visibleSiteDistance;
-            int endPageRangeNumber = _currentPageNumber + _visibleSiteDistance;
+            var startPageRangeNumber = _currentPageNumber - _visibleSiteDistance;
+            var endPageRangeNumber = _currentPageNumber + _visibleSiteDistance;
 
             if (_lastPageNumber < DefaultPagesWithNumberCount)
             {
@@ -227,16 +219,16 @@ namespace ClimateControlSystem.Client.PagesNavigation
 
         private void UpdateNumberPages(VisiblePagesRange pagesRange)
         {
-            int counter = 0;
+            var counter = 0;
 
-            foreach (var button in _paginationButtons)
+            foreach (var button in PaginationButtons)
             {
                 if (button is not NumberPaginationButton numberPageButton)
                 {
                     continue;
                 }
 
-                int step = pagesRange.Start + counter;
+                var step = pagesRange.Start + counter;
 
                 if (step <= pagesRange.End)
                 {
@@ -260,7 +252,7 @@ namespace ClimateControlSystem.Client.PagesNavigation
 
         private void CallPageChangedEvent()
         {
-            int offset = _recordsPerPage * (_currentPageNumber - PageOffset);
+            var offset = _recordsPerPage * (_currentPageNumber - PageOffset);
 
             PageChangedEvent?.Invoke(new RecordsRequest(offset, _recordsPerPage));
         }

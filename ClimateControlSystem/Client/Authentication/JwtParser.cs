@@ -8,13 +8,14 @@ namespace ClimateControlSystem.Client.Authentication
         public static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
         {
             var claims = new List<Claim>();
+            
             var payload = jwt.Split('.')[1];
 
             var jsonBytes = ParseBase64WithoutPadding(payload);
 
             var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
 
-            if (keyValuePairs == null)
+            if (keyValuePairs is null)
             {
                 return claims;
             }
@@ -26,9 +27,9 @@ namespace ClimateControlSystem.Client.Authentication
             return claims;
         }
 
-        private static void ExtractRolesFromJwt(List<Claim> claims, Dictionary<string, object> keyValuePairs)
+        private static void ExtractRolesFromJwt(List<Claim> claims, IDictionary<string, object> keyValuePairs)
         {
-            keyValuePairs.TryGetValue(ClaimTypes.Role, out object roles);
+            keyValuePairs.TryGetValue(ClaimTypes.Role, out var roles);
 
             if (roles is null)
             {

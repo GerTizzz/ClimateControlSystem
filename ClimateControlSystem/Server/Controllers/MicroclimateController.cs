@@ -1,5 +1,5 @@
 ﻿using ClimateControlSystem.Server.Infrastructure;
-using ClimateControlSystem.Server.Services.MediatR.Queries.MicroclimateRepository;
+using ClimateControlSystem.Server.Services.MediatR.Queries.MonitoringsRepository;
 using ClimateControlSystem.Shared.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

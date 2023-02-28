@@ -89,20 +89,20 @@ namespace ClimateControlSystem.Server.Services
 
             if (prediction.Temperature >= config.UpperTemperatureWarningLimit)
             {
-                microclimateEventBuilder.AddTemperatureEvent(config.UpperTemperatureWarningLimit - prediction.Temperature);
+                microclimateEventBuilder.AddTemperatureEvent(prediction.Temperature - config.UpperTemperatureWarningLimit);
             }
             else if (prediction.Temperature <= config.LowerTemperatureWarningLimit)
             {
-                microclimateEventBuilder.AddTemperatureEvent(config.LowerTemperatureWarningLimit - prediction.Temperature);
+                microclimateEventBuilder.AddTemperatureEvent(prediction.Temperature - config.LowerTemperatureWarningLimit);
             }
 
             if (prediction.Humidity >= config.UpperHumidityWarningLimit)
             {
-                microclimateEventBuilder.AddHumidityEvent(config.UpperHumidityWarningLimit - prediction.Humidity);
+                microclimateEventBuilder.AddHumidityEvent(prediction.Humidity - config.UpperHumidityWarningLimit);
             }
             else if (prediction.Humidity <= config.LowerHumidityWarningLimit)
             {
-                microclimateEventBuilder.AddHumidityEvent(config.LowerHumidityWarningLimit - prediction.Humidity);
+                microclimateEventBuilder.AddHumidityEvent(prediction.Humidity - config.LowerHumidityWarningLimit);
             }
 
             return Task.FromResult(microclimateEventBuilder.Build());

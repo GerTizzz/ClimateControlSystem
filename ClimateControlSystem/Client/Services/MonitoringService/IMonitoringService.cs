@@ -10,12 +10,12 @@ namespace ClimateControlSystem.Client.Services.MonitoringService
         /// <returns>Amount of monitorings events records count</returns>
         Task<long> GetEventsCountAsync();
 
-        Task<List<BaseMonitoringDto>> GetBaseMonitoringsAsync(int start, int count);
+        Task<IEnumerable<BaseMonitoringDto>> GetBaseMonitoringsAsync(int start, int count);
 
-        Task<List<MonitoringWithAccuracyDto>> GetMonitoringsWithAccuraciesAsync(int start, int count);
+        Task<IEnumerable<MonitoringWithAccuracyDto>> GetMonitoringsWithAccuraciesAsync(int start, int count);
 
-        Task<List<ForecastingDto>> GetForecastingsAsync(int start, int count);
+        Task<IEnumerable<ForecastingDto>> GetForecastingsAsync(int start, int count);
 
-        Task<List<MonitoringsEventsDto>> GetEventsAsync(int start, int count);
+        Task<IEnumerable<MonitoringsEventsDto>> GetEventsAsync(int start, int count);
     }
 }

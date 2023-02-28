@@ -58,10 +58,10 @@
         {
             return ValueTask.CompletedTask;
         }
-        
+
         _paginationManager.PageChangedEvent -= OnPageChanged;
         _paginationManager.Close();
-        
+
         return ValueTask.CompletedTask;
     }
 }

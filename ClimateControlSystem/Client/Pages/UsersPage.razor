@@ -7,7 +7,7 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_users is null || _users.Count == 0)
+        @if (_users.Count == 0)
         {
             <p>
                 <em>Загрузка...</em>
@@ -47,11 +47,11 @@
 </AuthorizeView>
 
 @code {
-    private List<UserDto> _users;
+    private readonly List<UserDto> _users = new();
 
     protected override async Task OnInitializedAsync()
     {
-        _users = await UsersService.GetUsers();
+        _users.AddRange(await UsersService.GetUsers());
     }
 
     void ShowUser(int id)

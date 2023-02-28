@@ -1,6 +1,7 @@
 ﻿using ClimateControlSystem.Shared.Common;
 using Microsoft.AspNetCore.Components;
 using System.Net.Http.Json;
+using ClimateControlSystem.Client.Services.AuthenticationService;
 
 namespace ClimateControlSystem.Client.Services.UsersService
 {
@@ -8,46 +9,102 @@ namespace ClimateControlSystem.Client.Services.UsersService
     {
         private readonly HttpClient _httpClient;
         private readonly NavigationManager _navigationManager;
-        
-        public UsersService(HttpClient httpClient, NavigationManager navigationManager)
+        private readonly IAuthenticationService _authService;
+
+        public UsersService(HttpClient httpClient, NavigationManager navigationManager, IAuthenticationService authService)
         {
             _httpClient = httpClient;
             _navigationManager = navigationManager;
+            _authService = authService;
         }
 
         public async Task<UserDto?> GetUser(int id)
         {
-            var result = await _httpClient.GetFromJsonAsync<UserDto>($"api/user/{id}");
+            try
+            {
+                var result = await _httpClient.GetFromJsonAsync<UserDto>($"api/user/{id}");
+                
+                return result;
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await _authService.Logout();
+                }
+            }
 
-            return result;
+            return null;
         }
 
-        public async Task<List<UserDto>> GetUsers()
+        public async Task<IEnumerable<UserDto>> GetUsers()
         {
-            var result = await _httpClient.GetFromJsonAsync<List<UserDto>>("api/user");
+            try
+            {
+                var result = await _httpClient.GetFromJsonAsync<List<UserDto>>("api/user");
+                
+                return result ?? Enumerable.Empty<UserDto>();
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await _authService.Logout();
+                }
+            }
 
-            return result;
+            return Enumerable.Empty<UserDto>();
         }
 
         public async Task CreateUser(UserDto user)
         {
-            var result = await _httpClient.PostAsJsonAsync("api/user", user);
+            try
+            {
+                var result = await _httpClient.PostAsJsonAsync("api/user", user);
 
-            await SetUsers(result);
+                await SetUsers(result);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await _authService.Logout();
+                }
+            }
         }
 
         public async Task UpdateUser(UserDto user)
         {
-            var result = await _httpClient.PutAsJsonAsync($"api/user/{user.Id}", user);
+            try
+            {
+                var result = await _httpClient.PutAsJsonAsync($"api/user/{user.Id}", user);
 
-            await SetUsers(result);
+                await SetUsers(result);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await _authService.Logout();
+                }
+            }
         }
 
         public async Task DeleteUser(int id)
         {
-            var result = await _httpClient.DeleteAsync($"api/user/{id}");
+            try
+            {
+                var result = await _httpClient.DeleteAsync($"api/user/{id}");
             
-            await SetUsers(result);
+                await SetUsers(result);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
+                {
+                    await _authService.Logout();
+                }
+            }
         }
 
         private async Task SetUsers(HttpResponseMessage result)
