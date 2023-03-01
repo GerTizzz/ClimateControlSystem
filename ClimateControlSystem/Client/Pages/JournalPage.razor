@@ -10,7 +10,7 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_forecastings.Any() is false)
+        @if (_forecastings is null || _forecastings.Any() is false)
         {
             <p>
                 <em>Загрузка...</em>
@@ -97,20 +97,19 @@
     private const int StartRecordsRequestCount = 0;
     private const string NoValueString = "-";
 
-    private readonly List<ForecastingDto> _forecastings = new(RecordsPerPage);
+    private List<ForecastingDto> _forecastings;
     private long _forecastingsRecordsCount;
 
     protected override async Task OnInitializedAsync()
     {
         _forecastingsRecordsCount = await MonitoringService.GetCountAsync();
 
-        _forecastings.AddRange(await MonitoringService.GetForecastingsAsync(StartRecordsRequestCount, RecordsPerPage));
+        _forecastings = await MonitoringService.GetForecastingsAsync(StartRecordsRequestCount, RecordsPerPage);
     }
 
     private async Task OnPageChanged(RecordsRequest request)
     {
-        _forecastings.Clear();
-        _forecastings.AddRange(await MonitoringService.GetForecastingsAsync(request.RecordsOffset, request.RecordsCount));
+        _forecastings = await MonitoringService.GetForecastingsAsync(request.RecordsOffset, request.RecordsCount);
     }
 
 }

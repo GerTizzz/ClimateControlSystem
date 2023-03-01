@@ -20,7 +20,7 @@ namespace ClimateControlSystem.Server.Persistence.Context
 
         public PredictionsDbContext(DbContextOptions options) : base(options)
         {
-
+            Database.Migrate();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

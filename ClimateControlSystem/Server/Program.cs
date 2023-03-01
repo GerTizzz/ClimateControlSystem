@@ -17,9 +17,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//C:\Users\miste\Desktop\DC Climate Control System\ClimateControlSystem\ClimateControlSystem\Server\Resources\PredictionEngineResources\MlModel\keras model\
 string _modelLocation = Directory.GetCurrentDirectory() + "\\" + builder.Configuration["ModelLocationPath"];
-string _predictionDbConnectionString = builder.Configuration.GetConnectionString("PredictionsDbConnection");
+string _connectionString = builder.Configuration.GetConnectionString("MicroclimateMonitoringDbConnection");
 
 builder.Services.AddSingleton<IConfigSingleton, ConfigSingleton>();
 
@@ -53,8 +52,9 @@ builder.Services.AddMediatR(typeof(MediatREntrypoint).Assembly);
 builder.Services.AddAutoMapper(typeof(AppMappingProfile));
 builder.Services.AddDbContext<PredictionsDbContext>(options =>
 {
-    options.UseSqlServer(_predictionDbConnectionString);
+    options.UseSqlServer(_connectionString);
 });
+
 builder.Services.AddRazorPages();
 
 builder.Services.AddGrpc();

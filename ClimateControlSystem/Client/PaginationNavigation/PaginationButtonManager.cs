@@ -25,19 +25,18 @@ namespace ClimateControlSystem.Client.PaginationNavigation
 
         public PaginationButtonManager(long recordsCount, int recordsPerPage)
         {
+            if (recordsCount < 0) throw new ArgumentException();
+            if (recordsPerPage < 1) throw new ArgumentException();
+
+            _recordsPerPage = recordsPerPage;
+
             PaginationButtons = new List<BasePaginationButton>(PaginationButtonsCount);
 
-            UpdatePaginationInfo(recordsCount, recordsPerPage);
+            _lastPageNumber = CalculateLastPageNumber(recordsCount, recordsPerPage);
+
+            _currentPageNumber = StartPageNumber;
 
             InitializeButtons();
-
-            UpdateButtonsContent();
-        }
-
-
-        public void UpdateRecordsCount(int recordsCount, int recordsPerPage)
-        {
-            UpdatePaginationInfo(recordsCount, recordsPerPage);
 
             UpdateButtonsContent();
         }
@@ -53,17 +52,6 @@ namespace ClimateControlSystem.Client.PaginationNavigation
             SetSpecialPagesButtonsAvailability();
 
             UpdateNumberPages(new VisiblePagesRange(StartPageNumber, _numberOfPaginationButtonsCount));
-        }
-
-        private void UpdatePaginationInfo(long recordsCount, int recordsPerPage)
-        {
-            if (recordsCount < 0) throw new ArgumentException();
-            if (recordsPerPage < 1) throw new ArgumentException();
-
-            _recordsPerPage = recordsPerPage;
-
-            _lastPageNumber = CalculateLastPageNumber(recordsCount, recordsPerPage);
-            _currentPageNumber = StartPageNumber;
         }
 
         private static int CalculateLastPageNumber(long recordsCount, int recordsPerPage)

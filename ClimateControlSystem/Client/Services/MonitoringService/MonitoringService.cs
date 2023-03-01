@@ -53,13 +53,13 @@ namespace ClimateControlSystem.Client.Services.MonitoringService
             return 0;
         }
 
-        public async Task<IEnumerable<BaseMonitoringDto>> GetBaseMonitoringsAsync(int start = 0, int count = 25)
+        public async Task<List<BaseMonitoringDto>> GetBaseMonitoringsAsync(int start = 0, int count = 25)
         {
             try
             {
                 var result = await _httpClient.GetFromJsonAsync<List<BaseMonitoringDto>>($"api/monitoring/monitorings/{start}/{count}");
 
-                return result?.Reverse<BaseMonitoringDto>().ToList() ?? Enumerable.Empty<BaseMonitoringDto>();
+                return result?.Reverse<BaseMonitoringDto>().ToList() ?? Enumerable.Empty<BaseMonitoringDto>().ToList();
             }
             catch (HttpRequestException e)
             {
@@ -69,16 +69,16 @@ namespace ClimateControlSystem.Client.Services.MonitoringService
                 }
             }
 
-            return Enumerable.Empty<BaseMonitoringDto>();
+            return Enumerable.Empty<BaseMonitoringDto>().ToList();
         }
 
-        public async Task<IEnumerable<MonitoringWithAccuracyDto>> GetMonitoringsWithAccuraciesAsync(int start = 0, int count = 25)
+        public async Task<List<MonitoringWithAccuracyDto>> GetMonitoringsWithAccuraciesAsync(int start = 0, int count = 25)
         {
             try
             {
                 var result = await _httpClient.GetFromJsonAsync<List<MonitoringWithAccuracyDto>>($"api/monitoring/monitoringswithaccuracies/{start}/{count}");
 
-                return result?.Reverse<MonitoringWithAccuracyDto>().ToList() ?? Enumerable.Empty<MonitoringWithAccuracyDto>();
+                return result?.Reverse<MonitoringWithAccuracyDto>().ToList() ?? Enumerable.Empty<MonitoringWithAccuracyDto>().ToList();
             }
             catch (HttpRequestException e)
             {
@@ -88,16 +88,16 @@ namespace ClimateControlSystem.Client.Services.MonitoringService
                 }
             }
 
-            return Enumerable.Empty<MonitoringWithAccuracyDto>();
+            return Enumerable.Empty<MonitoringWithAccuracyDto>().ToList();
         }
 
-        public async Task<IEnumerable<ForecastingDto>> GetForecastingsAsync(int offsetFromTheEnd, int count)
+        public async Task<List<ForecastingDto>> GetForecastingsAsync(int offsetFromTheEnd, int count)
         {
             try
             {
                 var result = await _httpClient.GetFromJsonAsync<List<ForecastingDto>>($"api/monitoring/monitoringsforecastings/{offsetFromTheEnd}/{count}");
                 
-                return result ?? Enumerable.Empty<ForecastingDto>();
+                return result ?? Enumerable.Empty<ForecastingDto>().ToList();
             }
             catch (HttpRequestException e)
             {
@@ -107,16 +107,16 @@ namespace ClimateControlSystem.Client.Services.MonitoringService
                 }
             }
 
-            return Enumerable.Empty<ForecastingDto>();
+            return Enumerable.Empty<ForecastingDto>().ToList();
         }
 
-        public async Task<IEnumerable<MonitoringsEventsDto>> GetEventsAsync(int start = 0, int count = 25)
+        public async Task<List<MonitoringsEventsDto>> GetEventsAsync(int start = 0, int count = 25)
         {
             try
             {
                 var result = await _httpClient.GetFromJsonAsync<List<MonitoringsEventsDto>>($"api/monitoring/monitoringsevents/{start}/{count}");
                 
-                return result ?? Enumerable.Empty<MonitoringsEventsDto>();
+                return result ?? Enumerable.Empty<MonitoringsEventsDto>().ToList();
             }
             catch (HttpRequestException e)
             {
@@ -126,7 +126,7 @@ namespace ClimateControlSystem.Client.Services.MonitoringService
                 }
             }
 
-            return Enumerable.Empty<MonitoringsEventsDto>();
+            return Enumerable.Empty<MonitoringsEventsDto>().ToList();
         }
     }
 }

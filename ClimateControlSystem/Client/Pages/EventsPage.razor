@@ -9,7 +9,7 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_monitoringEvents.Any() is false)
+        @if (_monitoringEvents is null || _monitoringEvents.Any() is false)
         {
             <p><em>Загрузка...</em></p>
         }
@@ -82,19 +82,19 @@
     private const int StartRecordsRequestCount = 0;
 
     private long _monitoringEventsCount;
-    private readonly List<MonitoringsEventsDto> _monitoringEvents = new();
+    private List<MonitoringsEventsDto> _monitoringEvents;
 
     protected override async Task OnInitializedAsync()
     {
         _monitoringEventsCount = await MonitoringService.GetEventsCountAsync();
 
-        _monitoringEvents.AddRange(await MonitoringService.GetEventsAsync(StartRecordsRequestCount, RecordsPerPage));
+        _monitoringEvents = await MonitoringService.GetEventsAsync(StartRecordsRequestCount, RecordsPerPage);
     }
 
     private async Task OnPageChanged(RecordsRequest request)
     {
         _monitoringEvents.Clear();
         
-        _monitoringEvents.AddRange(await MonitoringService.GetEventsAsync(request.RecordsOffset, request.RecordsCount));
+        _monitoringEvents = await MonitoringService.GetEventsAsync(request.RecordsOffset, request.RecordsCount);
     }
 }

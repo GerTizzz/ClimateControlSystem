@@ -12,7 +12,7 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_monitorings.Any() is false)
+        @if (_monitorings is null || _monitorings.Any() is false)
         {
             <p>
                 <em>Загрузка...</em>
@@ -44,7 +44,7 @@
 
     private ConfigsDto _config;
 
-    private readonly List<MonitoringWithAccuracyDto> _monitorings = new(RecordsPerPage);
+    private List<MonitoringWithAccuracyDto> _monitorings;
 
     private Line _temperatureChart;
     private Line _humidityChart;
@@ -54,9 +54,9 @@
     private LineConfig _humidityConfig;
     private LineConfig _accuracyConfig;
 
-    private readonly List<GraphicData> _temperatureData = new(RecordsPerPage);
-    private readonly List<GraphicData> _humidityData = new(RecordsPerPage);
-    private readonly List<GraphicData> _accuracyData = new(RecordsPerPage);
+    private List<GraphicData> _temperatureData;
+    private List<GraphicData> _humidityData;
+    private List<GraphicData> _accuracyData;
 
     private long _monitoringsRecordsCount;
 
@@ -66,21 +66,18 @@
 
         _monitoringsRecordsCount = await MonitoringService.GetCountAsync();
 
-        _monitorings.AddRange(await MonitoringService.GetMonitoringsWithAccuraciesAsync(StartRecordsRequestCount, RecordsPerPage));
+        _monitorings = await MonitoringService.GetMonitoringsWithAccuraciesAsync(StartRecordsRequestCount, RecordsPerPage);
 
         SetGraphicsConfigs();
     }
 
     private void CalculateGraphicsData()
     {
-        _temperatureData.Clear();
-        _temperatureData.AddRange(AntChartHelper.GetTemperatureData(_monitorings, _config));
+        _temperatureData = AntChartHelper.GetTemperatureData(_monitorings, _config).ToList();
 
-        _humidityData.Clear();
-        _humidityData.AddRange(AntChartHelper.GetHumidityData(_monitorings, _config));
+        _humidityData = AntChartHelper.GetHumidityData(_monitorings, _config).ToList();
 
-        _accuracyData.Clear();
-        _accuracyData.AddRange(AntChartHelper.GetAccuracyData(_monitorings));
+        _accuracyData = AntChartHelper.GetAccuracyData(_monitorings).ToList();
     }
 
     private void SetGraphicsConfigs()
@@ -94,8 +91,7 @@
 
     private async Task OnPageChanged(RecordsRequest request)
     {
-        _monitorings.Clear();
-        _monitorings.AddRange(await MonitoringService.GetMonitoringsWithAccuraciesAsync(request.RecordsOffset, request.RecordsCount));
+        _monitorings = await MonitoringService.GetMonitoringsWithAccuraciesAsync(request.RecordsOffset, request.RecordsCount);
 
         await RerenderGraphics();
     }
