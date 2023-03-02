@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Protos;
-using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Resources.Domain;
 using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
@@ -19,6 +18,7 @@ namespace ClimateControlSystem.Server.Mapping
 
             #endregion
 
+
             #region Domain-To-Domain
 
             CreateMap<ActualData, FeaturesData>();
@@ -34,15 +34,15 @@ namespace ClimateControlSystem.Server.Mapping
                         property.ClusterLoad,
                         property.CpuUsage,
                         property.ClusterTemperature,
-                        property.MeasuredTemperature,
-                        property.MeasuredHumidity,
+                        property.Temperature,
+                        property.Humidity,
                         property.AirHumidityOutside,
                         property.AirDryTemperatureOutside,
                         property.AirWetTemperatureOutside,
                         property.WindSpeed,
                         property.WindDirection,
                         property.WindEnthalpy,
-                        property.MeanCoolingValue
+                        property.CoolingValue
                     }));
 
             CreateMap<TensorPredictionResult, Prediction>()

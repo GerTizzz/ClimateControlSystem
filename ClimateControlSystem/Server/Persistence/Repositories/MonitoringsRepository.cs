@@ -81,6 +81,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                     .Include(micro => micro.Prediction)
                         .ThenInclude(prediction => prediction.Features)
                     .Include(micro => micro.Accuracy)
+                    .Include(micro => micro.ActualData)
                     .OrderByDescending(micro => micro.Id)
                     .Skip(requestLimits.Start)
                     .Take(requestLimits.Count);
@@ -90,7 +91,8 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
                     {
                         TracedTime = micro.TracedTime,
                         Prediction = micro.Prediction,
-                        Accuracy = micro.Accuracy
+                        Accuracy = micro.Accuracy,
+                        ActualData = micro.ActualData
                     })
                     .ToListAsync();
 
@@ -171,7 +173,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             {
                 if (await _context.Monitorings.AnyAsync() is false)
                 {
-                    _context.Monitorings.Add(new MonitoringsEntity()
+                    await _context.Monitorings.AddAsync(new MonitoringsEntity()
                     {
                         ActualData = monitoring.ActualData,
                         TracedTime = monitoring.TracedTime

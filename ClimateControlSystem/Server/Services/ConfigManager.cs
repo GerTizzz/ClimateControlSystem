@@ -1,6 +1,6 @@
 ﻿using ClimateControlSystem.Server.Domain.Services;
 using ClimateControlSystem.Server.Domain.Singletons;
-using ClimateControlSystem.Server.Resources.Common;
+using ClimateControlSystem.Server.Resources.Domain;
 using ClimateControlSystem.Server.Services.MediatR.Commands.ConfigRepository;
 using MediatR;
 

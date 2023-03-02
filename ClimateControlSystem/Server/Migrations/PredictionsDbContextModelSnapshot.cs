@@ -122,16 +122,16 @@ namespace ClimateControlSystem.Server.Migrations
                     b.Property<float>("ClusterTemperature")
                         .HasColumnType("real");
 
+                    b.Property<float>("CoolingValue")
+                        .HasColumnType("real");
+
                     b.Property<float>("CpuUsage")
                         .HasColumnType("real");
 
-                    b.Property<float>("MeanCoolingValue")
+                    b.Property<float>("Humidity")
                         .HasColumnType("real");
 
-                    b.Property<float>("MeasuredHumidity")
-                        .HasColumnType("real");
-
-                    b.Property<float>("MeasuredTemperature")
+                    b.Property<float>("Temperature")
                         .HasColumnType("real");
 
                     b.Property<float>("WindDirection")

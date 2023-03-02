@@ -1,5 +1,5 @@
 ﻿using ClimateControlSystem.Server.Protos;
-using ClimateControlSystem.Server.Resources.Common;
+using ClimateControlSystem.Server.Resources.Domain;
 using ClimateControlSystem.Server.Services.Queries;
 using Grpc.Core;
 using MediatR;

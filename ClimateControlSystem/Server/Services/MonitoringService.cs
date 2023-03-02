@@ -1,6 +1,5 @@
 ﻿using ClimateControlSystem.Server.Domain.Services;
 using ClimateControlSystem.Server.Infrastructure;
-using ClimateControlSystem.Server.Resources.Common;
 using ClimateControlSystem.Server.Resources.Domain;
 using ClimateControlSystem.Server.Services.MediatR.Commands;
 using ClimateControlSystem.Server.Services.MediatR.Commands.MonitoringsRepository;
@@ -60,8 +59,8 @@ namespace ClimateControlSystem.Server.Services
         {
             return new ActualData()
             {
-                Temperature = features.MeasuredTemperature,
-                Humidity = features.MeasuredHumidity
+                Temperature = features.Temperature,
+                Humidity = features.Humidity
             };
         }
 

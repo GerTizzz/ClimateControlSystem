@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Resources.Common;
+using ClimateControlSystem.Server.Resources.Domain;
 using ClimateControlSystem.Server.Services.MediatR.Queries.ConfigRepository;
 using MediatR;
 

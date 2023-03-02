@@ -6,5 +6,6 @@
         public FeaturesDto? Features { get; init; }
         public PredictionDto? Prediction { get; init; }
         public AccuracyDto? Accuracy { get; init; }
+        public ActualDataDto? ActualData { get; init; }
     }
 }

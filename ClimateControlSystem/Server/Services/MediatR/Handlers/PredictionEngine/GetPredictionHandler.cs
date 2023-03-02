@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Resources.Common;
-using ClimateControlSystem.Server.Services.MediatR.Queries;
+using ClimateControlSystem.Server.Resources.Domain;
 using ClimateControlSystem.Server.Services.MediatR.Queries.PredictionEngine;
 using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
 using MediatR;

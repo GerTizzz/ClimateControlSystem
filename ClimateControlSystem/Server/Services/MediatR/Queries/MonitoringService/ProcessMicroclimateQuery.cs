@@ -1,5 +1,5 @@
 ﻿using ClimateControlSystem.Server.Protos;
-using ClimateControlSystem.Server.Resources.Common;
+using ClimateControlSystem.Server.Resources.Domain;
 using MediatR;
 
 namespace ClimateControlSystem.Server.Services.Queries

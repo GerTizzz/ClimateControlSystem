@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Resources.Common;
+using ClimateControlSystem.Server.Resources.Domain;
 using ClimateControlSystem.Server.Services.Queries;
 using MediatR;
 

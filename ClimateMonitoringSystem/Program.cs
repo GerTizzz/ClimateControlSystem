@@ -8,7 +8,7 @@ namespace ClimateMonitoringSystem
 {
     internal class Program
     {
-        private static int rawIndex = 1;
+        private static int rawIndex = 0;
 
         static async Task Main(string[] args)
         {
@@ -80,27 +80,28 @@ namespace ClimateMonitoringSystem
                 requestData[i] = dataSet[rawIndex][i];
             }
 
-            rawIndex++;
-            if (rawIndex == dataSet.GetLength(0))
-            {
-                rawIndex = 0;
-            }
-
             ClimateMonitoringRequest request = new ClimateMonitoringRequest()
             {
                 ClusterLoad = requestData[0],
                 CpuUsage = requestData[1],
                 ClusterTemperature = requestData[2],
-                MeasuredTemperature = requestData[3],
-                MeasuredHumidity = requestData[4],
+                Temperature = requestData[3],
+                Humidity = requestData[4],
                 AirHumidityOutside = requestData[5],
                 AirDryTemperatureOutside = requestData[6],
                 AirWetTemperatureOutside = requestData[7],
                 WindSpeed = requestData[8],
                 WindDirection = requestData[9],
                 WindEnthalpy = requestData[10],
-                MeanCoolingValue = requestData[11]
+                CoolingValue = requestData[11]
             };
+
+            rawIndex++;
+
+            if (rawIndex == dataSet.GetLength(0) - 1)
+            {
+                rawIndex = 0;
+            }
 
             return request;
         }

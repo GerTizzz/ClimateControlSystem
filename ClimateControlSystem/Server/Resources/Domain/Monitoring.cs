@@ -1,6 +1,4 @@
-﻿using ClimateControlSystem.Server.Resources.Domain;
-
-namespace ClimateControlSystem.Server.Resources.Common
+﻿namespace ClimateControlSystem.Server.Resources.Domain
 {
     public class Monitoring
     {

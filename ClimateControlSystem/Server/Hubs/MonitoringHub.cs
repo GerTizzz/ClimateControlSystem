@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using ClimateControlSystem.Server.Resources.Common;
+using ClimateControlSystem.Server.Resources.Domain;
 using ClimateControlSystem.Shared.Responses;
 using Microsoft.AspNetCore.SignalR;
 

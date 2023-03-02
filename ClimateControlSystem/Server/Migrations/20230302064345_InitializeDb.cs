@@ -63,15 +63,15 @@ namespace ClimateControlSystem.Server.Migrations
                     ClusterLoad = table.Column<float>(type: "real", nullable: false),
                     CpuUsage = table.Column<float>(type: "real", nullable: false),
                     ClusterTemperature = table.Column<float>(type: "real", nullable: false),
-                    MeasuredTemperature = table.Column<float>(type: "real", nullable: false),
-                    MeasuredHumidity = table.Column<float>(type: "real", nullable: false),
+                    Temperature = table.Column<float>(type: "real", nullable: false),
+                    Humidity = table.Column<float>(type: "real", nullable: false),
                     AirHumidityOutside = table.Column<float>(type: "real", nullable: false),
                     AirDryTemperatureOutside = table.Column<float>(type: "real", nullable: false),
                     AirWetTemperatureOutside = table.Column<float>(type: "real", nullable: false),
                     WindSpeed = table.Column<float>(type: "real", nullable: false),
                     WindDirection = table.Column<float>(type: "real", nullable: false),
                     WindEnthalpy = table.Column<float>(type: "real", nullable: false),
-                    MeanCoolingValue = table.Column<float>(type: "real", nullable: false)
+                    CoolingValue = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
                 {
