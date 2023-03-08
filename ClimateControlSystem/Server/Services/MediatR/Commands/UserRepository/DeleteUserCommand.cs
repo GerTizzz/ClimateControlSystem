@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Commands.UserRepository;
+namespace ClimateControl.Server.Services.MediatR.Commands.UserRepository;
 
 public sealed class DeleteUserCommand : IRequest<bool>
 {

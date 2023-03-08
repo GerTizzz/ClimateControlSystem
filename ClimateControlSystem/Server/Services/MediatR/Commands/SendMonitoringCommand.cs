@@ -1,7 +1,6 @@
-﻿using ClimateControlSystem.Server.Resources.Domain;
-using MediatR;
+﻿using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Commands
+namespace ClimateControl.Server.Services.MediatR.Commands
 {
     public sealed class SendMonitoringCommand : IRequest<bool>
     {

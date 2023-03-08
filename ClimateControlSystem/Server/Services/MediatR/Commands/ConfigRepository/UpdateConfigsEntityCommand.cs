@@ -1,7 +1,6 @@
-﻿using ClimateControlSystem.Server.Resources.Domain;
-using MediatR;
+﻿using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Commands.ConfigRepository;
+namespace ClimateControl.Server.Services.MediatR.Commands.ConfigRepository;
 
 public sealed class UpdateConfigsEntityCommand : IRequest<bool>
 {

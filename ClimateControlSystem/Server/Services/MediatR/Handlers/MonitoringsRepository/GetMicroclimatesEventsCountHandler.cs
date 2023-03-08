@@ -1,8 +1,8 @@
-﻿using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Services.MediatR.Queries.MonitoringsRepository;
+﻿using ClimateControl.Server.Infrastructure.Repositories;
+using ClimateControl.Server.Services.MediatR.Queries.MonitoringsRepository;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MicroclimateRepository
+namespace ClimateControl.Server.Services.MediatR.Handlers.MonitoringsRepository
 {
     public sealed class GetMicroclimatesEventsCountHandler : IRequestHandler<GetMicroclimatesEventsCountQuery, long>
     {

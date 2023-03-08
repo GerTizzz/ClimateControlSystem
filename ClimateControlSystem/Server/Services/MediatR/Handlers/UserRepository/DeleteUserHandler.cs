@@ -1,8 +1,8 @@
-﻿using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Services.MediatR.Commands.UserRepository;
+﻿using ClimateControl.Server.Infrastructure.Repositories;
+using ClimateControl.Server.Services.MediatR.Commands.UserRepository;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers.UserRepository;
+namespace ClimateControl.Server.Services.MediatR.Handlers.UserRepository;
 
 public sealed class DeleteUserHandler : IRequestHandler<DeleteUserCommand, bool>
 {

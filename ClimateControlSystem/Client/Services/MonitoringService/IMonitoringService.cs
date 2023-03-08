@@ -1,6 +1,6 @@
-﻿using ClimateControlSystem.Shared.Responses;
+﻿using ClimateControl.Shared.Dtos;
 
-namespace ClimateControlSystem.Client.Services.MonitoringService
+namespace ClimateControl.WebClient.Services.MonitoringService
 {
     public interface IMonitoringService
     {

@@ -1,11 +1,11 @@
 ﻿using Blazored.LocalStorage;
-using ClimateControlSystem.Client.Authentication;
-using ClimateControlSystem.Shared.Common;
+using ClimateControl.Shared.Dtos;
+using ClimateControl.WebClient.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
-namespace ClimateControlSystem.Client.Services.AuthenticationService
+namespace ClimateControl.WebClient.Services.AuthenticationService
 {
     public class AuthenticationService : IAuthenticationService
     {

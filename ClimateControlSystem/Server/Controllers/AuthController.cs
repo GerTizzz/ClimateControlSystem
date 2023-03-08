@@ -1,8 +1,8 @@
-﻿using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Shared.Common;
+﻿using ClimateControl.Server.Infrastructure.Services;
+using ClimateControl.Shared.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ClimateControlSystem.Server.Controllers
+namespace ClimateControl.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

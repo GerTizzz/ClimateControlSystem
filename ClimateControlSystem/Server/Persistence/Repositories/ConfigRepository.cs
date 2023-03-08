@@ -1,9 +1,9 @@
-﻿using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Persistence.Context;
-using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
+﻿using ClimateControl.Server.Resources.Repository.TablesEntities;
+using ClimateControl.Server.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using ClimateControl.Server.Infrastructure.Repositories;
 
-namespace ClimateControlSystem.Server.Persistence.Repositories
+namespace ClimateControl.Server.Persistence.Repositories
 {
     public class ConfigRepository : IConfigRepository
     {
@@ -20,7 +20,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             {
                 throw new ArgumentNullException(nameof(configToUpdate));
             }
-            
+
             try
             {
                 var existingConfig = await _context.Configs.OrderBy(config => config.Id).FirstAsync();
@@ -46,7 +46,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
         public async Task<ConfigsEntity> GetConfigAsync()
         {
             var configEntity = await _context.Configs.OrderBy(config => config.Id).FirstAsync();
-            
+
             return configEntity;
         }
     }

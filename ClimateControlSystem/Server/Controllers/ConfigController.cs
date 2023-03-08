@@ -1,11 +1,11 @@
-﻿using ClimateControlSystem.Server.Services.MediatR.Commands.ConfigManager;
-using ClimateControlSystem.Server.Services.MediatR.Queries.ConfigManager;
-using ClimateControlSystem.Shared.Common;
+﻿using ClimateControl.Server.Services.MediatR.Commands.ConfigManager;
+using ClimateControl.Server.Services.MediatR.Queries.ConfigManager;
+using ClimateControl.Shared.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ClimateControlSystem.Server.Controllers
+namespace ClimateControl.Server.Controllers
 {
     [Route("api/[controller]")]
     [Authorize(Roles = "Admin")]
@@ -23,7 +23,7 @@ namespace ClimateControlSystem.Server.Controllers
         public async Task<ActionResult<ConfigsDto>> GetConfig()
         {
             var config = await _mediator.Send(new GetConfigDtoQuery());
-            
+
             return Ok(config);
         }
 

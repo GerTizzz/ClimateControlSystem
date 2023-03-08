@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
-using ClimateControlSystem.Server.Services.MediatR.Commands.ConfigRepository;
+using ClimateControl.Server.Infrastructure.Repositories;
+using ClimateControl.Server.Resources.Repository.TablesEntities;
+using ClimateControl.Server.Services.MediatR.Commands.ConfigRepository;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers.ConfigRepository;
+namespace ClimateControl.Server.Services.MediatR.Handlers.ConfigRepository;
 
 public sealed class UpdateConfigsEntityHandler : IRequestHandler<UpdateConfigsEntityCommand, bool>
 {

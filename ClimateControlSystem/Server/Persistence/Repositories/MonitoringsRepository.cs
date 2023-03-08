@@ -1,10 +1,10 @@
-﻿using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Infrastructure;
-using ClimateControlSystem.Server.Persistence.Context;
-using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
+﻿using ClimateControl.Server.Resources.Repository.TablesEntities;
+using ClimateControl.Server.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using ClimateControl.Server.Resources.Infrastructure;
+using ClimateControl.Server.Infrastructure.Repositories;
 
-namespace ClimateControlSystem.Server.Persistence.Repositories
+namespace ClimateControl.Server.Persistence.Repositories
 {
     public class MonitoringsRepository : IMonitoringsRepository
     {

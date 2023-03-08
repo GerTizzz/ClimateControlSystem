@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ClimateControlSystem.Server.Resources.Repository.TablesEntities
+namespace ClimateControl.Server.Resources.Repository.TablesEntities
 {
     public class ActualDataEntity
     {

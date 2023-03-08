@@ -1,6 +1,6 @@
-﻿using ClimateControlSystem.Client.PagesNavigation;
+﻿using ClimateControl.WebClient.NavigationPages;
 
-namespace ClimateControlSystem.Client.PaginationNavigation
+namespace ClimateControl.WebClient.PaginationNavigation
 {
     public sealed class PaginationButtonManager
     {
@@ -57,12 +57,12 @@ namespace ClimateControlSystem.Client.PaginationNavigation
         private static int CalculateLastPageNumber(long recordsCount, int recordsPerPage)
         {
             var lastPageNumber = (int)(recordsCount / recordsPerPage);
-            
+
             if (recordsCount % recordsPerPage != 0)
             {
                 lastPageNumber += 1;
             }
-            
+
             return lastPageNumber;
         }
 
@@ -192,12 +192,12 @@ namespace ClimateControlSystem.Client.PaginationNavigation
             {
                 if (startPageRangeNumber < StartPageNumber)
                 {
-                    endPageRangeNumber += (StartPageNumber - startPageRangeNumber);
+                    endPageRangeNumber += StartPageNumber - startPageRangeNumber;
                     return new VisiblePagesRange(StartPageNumber, endPageRangeNumber);
                 }
                 else if (endPageRangeNumber > _lastPageNumber)
                 {
-                    startPageRangeNumber -= (endPageRangeNumber - _lastPageNumber);
+                    startPageRangeNumber -= endPageRangeNumber - _lastPageNumber;
                     return new VisiblePagesRange(startPageRangeNumber, _lastPageNumber);
                 }
             }

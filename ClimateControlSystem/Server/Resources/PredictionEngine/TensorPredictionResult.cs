@@ -1,4 +1,4 @@
-﻿namespace ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources
+﻿namespace ClimateControl.Server.Resources.PredictionEngine
 {
     public sealed class TensorPredictionResult
     {

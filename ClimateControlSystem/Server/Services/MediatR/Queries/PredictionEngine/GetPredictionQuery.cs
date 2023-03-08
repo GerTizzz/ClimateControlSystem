@@ -1,7 +1,6 @@
-﻿using ClimateControlSystem.Server.Resources.Domain;
-using MediatR;
+﻿using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Queries.PredictionEngine
+namespace ClimateControl.Server.Services.MediatR.Queries.PredictionEngine
 {
     public sealed class GetPredictionQuery : IRequest<Prediction>
     {

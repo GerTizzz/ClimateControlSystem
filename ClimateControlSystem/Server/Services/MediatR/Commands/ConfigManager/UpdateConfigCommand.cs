@@ -1,7 +1,7 @@
-﻿using ClimateControlSystem.Shared.Common;
+﻿using ClimateControl.Shared.Dtos;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Commands.ConfigManager;
+namespace ClimateControl.Server.Services.MediatR.Commands.ConfigManager;
 
 public sealed class UpdateConfigCommand : IRequest<bool>
 {

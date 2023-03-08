@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "ClimateMonitoringSystem.Protos";
+option csharp_namespace = "ClimateControl.MonitoringSystem.Protos";
 
 package monitoring;
 

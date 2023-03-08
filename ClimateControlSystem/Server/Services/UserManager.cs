@@ -1,11 +1,11 @@
-﻿using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
-using ClimateControlSystem.Server.Services.MediatR.Commands.UserRepository;
-using ClimateControlSystem.Server.Services.MediatR.Queries.UserRepository;
-using ClimateControlSystem.Shared.Common;
+﻿using ClimateControl.Server.Resources.Repository.TablesEntities;
+using ClimateControl.Server.Services.MediatR.Commands.UserRepository;
+using ClimateControl.Server.Services.MediatR.Queries.UserRepository;
 using MediatR;
+using ClimateControl.Shared.Dtos;
+using ClimateControl.Server.Infrastructure.Services;
 
-namespace ClimateControlSystem.Server.Services
+namespace ClimateControl.Server.Services
 {
     public sealed class UserManager : IUserManager
     {
@@ -26,7 +26,7 @@ namespace ClimateControlSystem.Server.Services
         public async Task<List<UserDto>> GetUsers()
         {
             var users = await _mediator.Send(new GetUsersQuery());
-            
+
             return users;
         }
 
@@ -47,14 +47,14 @@ namespace ClimateControlSystem.Server.Services
         public async Task<bool> DeleteUser(int id)
         {
             var result = await _mediator.Send(new DeleteUserCommand(id));
-            
+
             return result;
         }
 
         public async Task<UserEntity?> GetUserByName(string name)
         {
             var userEntity = await _mediator.Send(new GetUserByNameQuery(name));
-            
+
             return userEntity;
         }
     }

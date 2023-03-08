@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
-using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Services.MediatR.Queries.ConfigManager;
-using ClimateControlSystem.Shared.Common;
+using ClimateControl.Server.Services.MediatR.Queries.ConfigManager;
+using ClimateControl.Shared.Dtos;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers.ConfigManager;
+namespace ClimateControl.Server.Services.MediatR.Handlers.ConfigManager;
 
 public sealed class GetConfigDtoHandler : IRequestHandler<GetConfigDtoQuery, ConfigsDto>
 {

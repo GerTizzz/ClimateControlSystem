@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ClimateControlSystem.Server.Resources.Repository.TablesEntities
+namespace ClimateControl.Server.Resources.Repository.TablesEntities
 {
     public sealed class MonitoringsEntity
     {
@@ -11,7 +11,7 @@ namespace ClimateControlSystem.Server.Resources.Repository.TablesEntities
         public int? PredictionId { get; set; }
         public PredictionsEntity? Prediction { get; set; }
         public int? AccuracyId { get; set; }
-        public AccuracysEntity? Accuracy { get; set; }  
+        public AccuracysEntity? Accuracy { get; set; }
         public int? ActualDataId { get; set; }
         public ActualDataEntity? ActualData { get; set; }
         public int? MicroclimatesEventId { get; set; }

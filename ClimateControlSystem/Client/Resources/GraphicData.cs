@@ -1,4 +1,4 @@
-﻿namespace ClimateControlSystem.Client.Resources
+﻿namespace ClimateControl.WebClient.Resources
 {
     public record GraphicData
     {

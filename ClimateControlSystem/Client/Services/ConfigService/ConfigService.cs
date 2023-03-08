@@ -1,8 +1,8 @@
-﻿using ClimateControlSystem.Client.Services.AuthenticationService;
-using ClimateControlSystem.Shared.Common;
+﻿using ClimateControl.Shared.Dtos;
+using ClimateControl.WebClient.Services.AuthenticationService;
 using System.Net.Http.Json;
 
-namespace ClimateControlSystem.Client.Services.ConfigService
+namespace ClimateControl.WebClient.Services.ConfigService
 {
     public class ConfigService : IConfigService
     {
@@ -39,7 +39,7 @@ namespace ClimateControlSystem.Client.Services.ConfigService
             try
             {
                 var result = await _httpClient.PutAsJsonAsync($"api/config/", config);
-                
+
                 return await UpdateConfigResponse(result);
             }
             catch (HttpRequestException e)
@@ -49,7 +49,7 @@ namespace ClimateControlSystem.Client.Services.ConfigService
                     await _authService.Logout();
                 }
             }
-            
+
             return false;
         }
 

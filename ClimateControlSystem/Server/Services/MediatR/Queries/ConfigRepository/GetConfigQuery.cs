@@ -1,9 +1,8 @@
-﻿using ClimateControlSystem.Server.Resources.Domain;
-using MediatR;
+﻿using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Queries.ConfigRepository;
+namespace ClimateControl.Server.Services.MediatR.Queries.ConfigRepository;
 
 public sealed class GetConfigQuery : IRequest<Config>
 {
-    
+
 }

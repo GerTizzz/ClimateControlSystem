@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
-using ClimateControlSystem.Server.Protos;
-using ClimateControlSystem.Server.Resources.Domain;
-using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
-using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
-using ClimateControlSystem.Shared.Common;
-using ClimateControlSystem.Shared.Responses;
+using ClimateControl.Server.Resources.PredictionEngine;
+using ClimateControl.Server.Resources.Repository.TablesEntities;
+using ClimateControl.Server.Services.gRPC.Protos;
+using ClimateControl.Shared.Dtos;
 
-namespace ClimateControlSystem.Server.Mapping
+namespace ClimateControl.Server.Mapping
 {
     public class AppMappingProfile : Profile
     {

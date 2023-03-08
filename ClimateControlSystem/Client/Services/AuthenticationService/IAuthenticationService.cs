@@ -1,6 +1,6 @@
-﻿using ClimateControlSystem.Shared.Common;
+﻿using ClimateControl.Shared.Dtos;
 
-namespace ClimateControlSystem.Client.Services.AuthenticationService
+namespace ClimateControl.WebClient.Services.AuthenticationService
 {
     public interface IAuthenticationService
     {

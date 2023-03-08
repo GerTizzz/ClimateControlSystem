@@ -1,14 +1,14 @@
-﻿using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
-using ClimateControlSystem.Shared.Common;
-using ClimateControlSystem.Shared.Enums;
+﻿using ClimateControl.Server.Resources.Repository.TablesEntities;
+using ClimateControl.Shared.Enums;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using ClimateControl.Shared.Dtos;
+using ClimateControl.Server.Infrastructure.Services;
 
-namespace ClimateControlSystem.Server.Services
+namespace ClimateControl.Server.Services
 {
     public class AuthenticateManager : IAuthenticateManager
     {

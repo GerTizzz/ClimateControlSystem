@@ -1,9 +1,9 @@
-﻿using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
-using ClimateControlSystem.Shared.Enums;
+﻿using ClimateControl.Server.Resources.Repository.TablesEntities;
+using ClimateControl.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace ClimateControlSystem.Server.Persistence.Context
+namespace ClimateControl.Server.Persistence.Context
 {
     public class PredictionsDbContext : DbContext
     {

@@ -1,9 +1,10 @@
 ﻿using Blazored.LocalStorage;
+using ClimateControl.WebClient.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 
-namespace ClimateControlSystem.Client.Authentication
+namespace ClimateControl.WebClient.Authentication
 {
     public class AuthStateProvider : AuthenticationStateProvider
     {
@@ -11,7 +12,7 @@ namespace ClimateControlSystem.Client.Authentication
         private readonly ILocalStorageService _localStorage;
         private readonly AuthenticationState _anonymous;
 
-        public AuthStateProvider(HttpClient client, ILocalStorageService localStorageService) 
+        public AuthStateProvider(HttpClient client, ILocalStorageService localStorageService)
         {
             _localStorage = localStorageService;
             _httpClient = client;

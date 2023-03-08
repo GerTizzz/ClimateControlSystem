@@ -1,9 +1,9 @@
-﻿using ClimateControlSystem.Shared.Common;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using System.Net.Http.Json;
-using ClimateControlSystem.Client.Services.AuthenticationService;
+using ClimateControl.WebClient.Services.AuthenticationService;
+using ClimateControl.Shared.Dtos;
 
-namespace ClimateControlSystem.Client.Services.UsersService
+namespace ClimateControl.WebClient.Services.UsersService
 {
     public class UsersService : IUsersService
     {
@@ -23,7 +23,7 @@ namespace ClimateControlSystem.Client.Services.UsersService
             try
             {
                 var result = await _httpClient.GetFromJsonAsync<UserDto>($"api/user/{id}");
-                
+
                 return result;
             }
             catch (HttpRequestException e)
@@ -42,7 +42,7 @@ namespace ClimateControlSystem.Client.Services.UsersService
             try
             {
                 var result = await _httpClient.GetFromJsonAsync<List<UserDto>>("api/user");
-                
+
                 return result ?? Enumerable.Empty<UserDto>();
             }
             catch (HttpRequestException e)
@@ -95,7 +95,7 @@ namespace ClimateControlSystem.Client.Services.UsersService
             try
             {
                 var result = await _httpClient.DeleteAsync($"api/user/{id}");
-            
+
                 await SetUsers(result);
             }
             catch (HttpRequestException e)

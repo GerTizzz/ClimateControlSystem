@@ -1,10 +1,9 @@
-﻿using ClimateControlSystem.Server.Protos;
-using ClimateControlSystem.Server.Resources.Domain;
-using ClimateControlSystem.Server.Services.Queries;
+﻿using ClimateControl.Server.Services.MediatR.Queries.MonitoringService;
 using Grpc.Core;
+using ClimateControl.Server.Services.gRPC.Protos;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.gRPC
+namespace ClimateControl.Server.Services.gRPC
 {
     public sealed class ClimateDataReciever : ClimateMonitoring.ClimateMonitoringBase
     {
@@ -18,7 +17,7 @@ namespace ClimateControlSystem.Server.Services.gRPC
         public override async Task<ClimateMonitoringReply> SendDataToPredict(ClimateMonitoringRequest grpcRequest, ServerCallContext context)
         {
             var reply = new ClimateMonitoringReply();
-            
+
             try
             {
                 Prediction predictionResult = await _mediatr.Send(new ProcessMicroclimateQuery(grpcRequest));

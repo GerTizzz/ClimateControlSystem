@@ -1,9 +1,9 @@
-﻿using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
+﻿using ClimateControl.Server.Infrastructure.Services;
+using ClimateControl.Server.Resources.PredictionEngine;
 using Microsoft.ML;
 using Microsoft.ML.Transforms;
 
-namespace ClimateControlSystem.Server.Services
+namespace ClimateControl.Server.Services
 {
     public sealed class PredictionEngineService : IPredictionEngineService
     {

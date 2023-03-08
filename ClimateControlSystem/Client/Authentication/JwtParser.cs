@@ -1,14 +1,14 @@
 ﻿using System.Security.Claims;
 using System.Text.Json;
 
-namespace ClimateControlSystem.Client.Authentication
+namespace ClimateControl.WebClient.Authentication
 {
     public static class JwtParser
     {
         public static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
         {
             var claims = new List<Claim>();
-            
+
             var payload = jwt.Split('.')[1];
 
             var jsonBytes = ParseBase64WithoutPadding(payload);
@@ -19,7 +19,7 @@ namespace ClimateControlSystem.Client.Authentication
             {
                 return claims;
             }
-            
+
             ExtractRolesFromJwt(claims, keyValuePairs);
 
             claims.AddRange(keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())));
@@ -35,7 +35,7 @@ namespace ClimateControlSystem.Client.Authentication
             {
                 return;
             }
-            
+
             var parsedRoles = roles.ToString().Trim().TrimStart('[').TrimEnd(']').Split(',');
 
             if (parsedRoles.Length > 1)

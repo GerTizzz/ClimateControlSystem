@@ -1,19 +1,21 @@
-using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Domain.Singletons;
-using ClimateControlSystem.Server.Hubs;
-using ClimateControlSystem.Server.Mapping;
-using ClimateControlSystem.Server.Persistence.Context;
-using ClimateControlSystem.Server.Persistence.Repositories;
-using ClimateControlSystem.Server.Services;
-using ClimateControlSystem.Server.Services.gRPC;
-using ClimateControlSystem.Server.Services.MediatR;
+global using ClimateControl.Domain.Services;
+global using ClimateControl.Domain.Resources;
+global using ClimateControl.Domain.Singletons;
+using ClimateControl.Server.Hubs;
+using ClimateControl.Server.Mapping;
+using ClimateControl.Server.Persistence.Context;
+using ClimateControl.Server.Persistence.Repositories;
+using ClimateControl.Server.Services;
+using ClimateControl.Server.Services.gRPC;
+using ClimateControl.Server.Services.MediatR;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using ClimateControl.Server.Infrastructure.Services;
+using ClimateControl.Server.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

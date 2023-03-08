@@ -1,23 +1,24 @@
-﻿using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
-using ClimateControlSystem.Server.Services.MediatR.Queries.UserRepository;
+﻿using ClimateControl.Server.Infrastructure.Repositories;
+using ClimateControl.Server.Resources.Repository.TablesEntities;
+using ClimateControl.Server.Services.MediatR.Queries.UserRepository;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers.UserRepository;
-
-public sealed class GetUserByNameHandler : IRequestHandler<GetUserByNameQuery, UserEntity?>
+namespace ClimateControl.Server.Services.MediatR.Handlers.UserRepository
 {
-    private readonly IUserRepository _userRepository;
-
-    public GetUserByNameHandler(IUserRepository userRepository)
+    public sealed class GetUserByNameHandler : IRequestHandler<GetUserByNameQuery, UserEntity?>
     {
-        _userRepository = userRepository;
-    }
+        private readonly IUserRepository _userRepository;
 
-    public async Task<UserEntity?> Handle(GetUserByNameQuery request, CancellationToken cancellationToken)
-    {
-        var userEntity = await _userRepository.GetUserByName(request.Name);
-        
-        return userEntity;
+        public GetUserByNameHandler(IUserRepository userRepository)
+        {
+            _userRepository = userRepository;
+        }
+
+        public async Task<UserEntity?> Handle(GetUserByNameQuery request, CancellationToken cancellationToken)
+        {
+            var userEntity = await _userRepository.GetUserByName(request.Name);
+
+            return userEntity;
+        }
     }
 }

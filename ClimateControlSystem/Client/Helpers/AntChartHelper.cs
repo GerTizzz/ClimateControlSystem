@@ -1,9 +1,8 @@
 ﻿using AntDesign.Charts;
-using ClimateControlSystem.Client.Resources;
-using ClimateControlSystem.Shared.Common;
-using ClimateControlSystem.Shared.Responses;
+using ClimateControl.Shared.Dtos;
+using ClimateControl.WebClient.Resources;
 
-namespace ClimateControlSystem.Client.Helpers
+namespace ClimateControl.WebClient.Helpers
 {
     public static class AntChartHelper
     {
@@ -13,7 +12,7 @@ namespace ClimateControlSystem.Client.Helpers
         {
             return monitoring.TracedTime.HasValue is false ? string.Empty : monitoring.TracedTime.Value.ToString("HH:mm:ss");
         }
-        
+
         public static IEnumerable<GraphicData> GetAccuracyData(List<MonitoringWithAccuracyDto> monitorings)
         {
             foreach (var monitoring in monitorings)
@@ -51,7 +50,7 @@ namespace ClimateControlSystem.Client.Helpers
 
             return temperatureData;
         }
-        
+
         private static IEnumerable<GraphicData> GetGraphicDataForTemperatureMonitoring(BaseMonitoringDto monitoring, ConfigsDto config)
         {
             var graphicsData = new List<GraphicData>();
@@ -62,7 +61,7 @@ namespace ClimateControlSystem.Client.Helpers
             {
                 return Enumerable.Empty<GraphicData>();
             }
-            
+
             if (monitoring.Prediction is not null)
             {
                 graphicsData.Add(new GraphicData(time,
@@ -112,13 +111,13 @@ namespace ClimateControlSystem.Client.Helpers
                 return new List<GraphicData>();
             }
         }
-        
+
         private static IEnumerable<GraphicData> GetGraphicDataForHumidityMonitoring(BaseMonitoringDto monitoring, ConfigsDto config)
         {
             var graphicsData = new List<GraphicData>();
 
             var time = monitoring.GetXAxisDateTimeLabel();
-            
+
             if (string.IsNullOrEmpty(time))
             {
                 return Enumerable.Empty<GraphicData>();
@@ -143,14 +142,14 @@ namespace ClimateControlSystem.Client.Helpers
 
             return graphicsData;
         }
-        
+
         private static bool TrySetDateTimeBasedOnNeighbors<T>(IList<T> monitorings, int index, ConfigsDto monitoringConfig) where T : BaseMonitoringDto
         {
             if (monitorings.Any() is false || index < 0)
             {
                 return false;
             }
-            
+
             var firstMonWithTime = monitorings.First(mon => mon.TracedTime.HasValue);
 
             var elementWithTimeIndex = monitorings.IndexOf(firstMonWithTime);
@@ -159,7 +158,7 @@ namespace ClimateControlSystem.Client.Helpers
             {
                 return false;
             }
-            
+
             var firstNotNullTime = firstMonWithTime.TracedTime.Value;
 
             var resultTime = firstNotNullTime.AddSeconds((index - elementWithTimeIndex) * monitoringConfig.PredictionTimeIntervalSeconds);
@@ -233,8 +232,8 @@ namespace ClimateControlSystem.Client.Helpers
                 SeriesField = $"{nameof(GraphicData.type)}",
                 Point = new LineViewConfigPoint()
                 {
-                    Style = new GraphicStyle() 
-                    { 
+                    Style = new GraphicStyle()
+                    {
                         LineWidth = 3,
                         FillOpacity = 5
                     },

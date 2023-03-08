@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
-using ClimateControlSystem.Server.Resources.Domain;
-using ClimateControlSystem.Shared.Responses;
+using ClimateControl.Shared.Dtos;
 using Microsoft.AspNetCore.SignalR;
 
-namespace ClimateControlSystem.Server.Hubs
+namespace ClimateControl.Server.Hubs
 {
     public class MonitoringHub : Hub
     {

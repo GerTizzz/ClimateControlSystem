@@ -1,4 +1,4 @@
-﻿namespace ClimateControlSystem.Server.Services.MediatR
+﻿namespace ClimateControl.Server.Services.MediatR
 {
     public class MediatREntrypoint
     {

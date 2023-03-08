@@ -1,7 +1,7 @@
-﻿using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
+﻿using ClimateControl.Server.Resources.Repository.TablesEntities;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Queries.UserRepository;
+namespace ClimateControl.Server.Services.MediatR.Queries.UserRepository;
 
 public sealed class GetUserByNameQuery : IRequest<UserEntity?>
 {

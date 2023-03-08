@@ -1,4 +1,4 @@
-﻿namespace ClimateControlSystem.Client.PaginationNavigation
+﻿namespace ClimateControl.WebClient.PaginationNavigation
 {
     public struct VisiblePagesRange
     {

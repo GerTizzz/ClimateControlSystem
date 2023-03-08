@@ -1,4 +1,6 @@
-﻿namespace ClimateControlSystem.Client.PagesNavigation
+﻿using ClimateControl.WebClient.PaginationNavigation;
+
+namespace ClimateControl.WebClient.NavigationPages
 {
     public sealed class NumberPaginationButton : BasePaginationButton
     {

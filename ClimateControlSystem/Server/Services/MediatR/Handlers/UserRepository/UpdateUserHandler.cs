@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Resources.Authentication;
-using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
-using ClimateControlSystem.Server.Services.MediatR.Commands.UserRepository;
+using ClimateControl.Server.Helpers;
+using ClimateControl.Server.Infrastructure.Repositories;
+using ClimateControl.Server.Resources.Repository.TablesEntities;
+using ClimateControl.Server.Services.MediatR.Commands.UserRepository;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers.UserRepository;
+namespace ClimateControl.Server.Services.MediatR.Handlers.UserRepository;
 
 public sealed class UpdateUserHandler : IRequestHandler<UpdateUserCommand, bool>
 {
@@ -26,9 +26,9 @@ public sealed class UpdateUserHandler : IRequestHandler<UpdateUserCommand, bool>
 
         userEntity.PasswordHash = passwordHash;
         userEntity.PasswordSalt = passwordSalt;
-        
+
         var result = await _userRepository.UpdateUser(userEntity, request.Id);
-        
+
         return result;
     }
 }

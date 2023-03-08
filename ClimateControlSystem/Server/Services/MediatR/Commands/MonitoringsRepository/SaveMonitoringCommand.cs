@@ -1,7 +1,6 @@
-﻿using ClimateControlSystem.Server.Resources.Domain;
-using MediatR;
+﻿using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Commands.MonitoringsRepository
+namespace ClimateControl.Server.Services.MediatR.Commands.MonitoringsRepository
 {
     public sealed class SaveMonitoringCommand : IRequest<bool>
     {

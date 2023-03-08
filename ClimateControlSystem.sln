@@ -3,17 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateControlSystem.Server", "ClimateControlSystem\Server\ClimateControlSystem.Server.csproj", "{8C954607-32F1-45D1-BED5-74E8255A1491}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateControl.Server", "ClimateControlSystem\Server\ClimateControl.Server.csproj", "{8C954607-32F1-45D1-BED5-74E8255A1491}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateControlSystem.Client", "ClimateControlSystem\Client\ClimateControlSystem.Client.csproj", "{283E31D6-38A9-4896-A57A-7CCB21EFF69F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateControl.WebClient", "ClimateControlSystem\Client\ClimateControl.WebClient.csproj", "{283E31D6-38A9-4896-A57A-7CCB21EFF69F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateControlSystem.Shared", "ClimateControlSystem\Shared\ClimateControlSystem.Shared.csproj", "{24CB1ACA-EC6B-4E7F-ADD1-CC06CA0FF8F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateControl.Shared", "ClimateControlSystem\Shared\ClimateControl.Shared.csproj", "{24CB1ACA-EC6B-4E7F-ADD1-CC06CA0FF8F4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateMonitoringSystem", "ClimateMonitoringSystem\ClimateMonitoringSystem.csproj", "{4D1B723A-DEA1-4A50-9A7B-8CFAF1A214C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimateControl.MonitoringSystem", "ClimateMonitoringSystem\ClimateControl.MonitoringSystem.csproj", "{4D1B723A-DEA1-4A50-9A7B-8CFAF1A214C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateControlSystem.ServerInfrastructreTests", "ClimateControlSystem.ServerInfrastructreTests\ClimateControlSystem.ServerInfrastructreTests.csproj", "{FC387BE9-7969-4D3E-B8E5-8F0953CA4263}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server.Tests", "ClimateControlSystem.ServerInfrastructreTests\Server.Tests.csproj", "{FC387BE9-7969-4D3E-B8E5-8F0953CA4263}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AACB218D-321D-4D3D-A769-0E1022D7651C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{198EA68E-E6D4-4F8A-B164-DE8946FC3D54}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E722F3FF-68A0-4019-91E8-63EDFE7D0652}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimateControl.Domain", "ClimateControl.Domain\ClimateControl.Domain.csproj", "{8219FAC5-A5C5-427C-8683-26E42CC2447C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,12 +45,21 @@ Global
 		{FC387BE9-7969-4D3E-B8E5-8F0953CA4263}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC387BE9-7969-4D3E-B8E5-8F0953CA4263}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC387BE9-7969-4D3E-B8E5-8F0953CA4263}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8219FAC5-A5C5-427C-8683-26E42CC2447C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8219FAC5-A5C5-427C-8683-26E42CC2447C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8219FAC5-A5C5-427C-8683-26E42CC2447C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8219FAC5-A5C5-427C-8683-26E42CC2447C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{FC387BE9-7969-4D3E-B8E5-8F0953CA4263} = {AACB218D-321D-4D3D-A769-0E1022D7651C}
+		{8C954607-32F1-45D1-BED5-74E8255A1491} = {198EA68E-E6D4-4F8A-B164-DE8946FC3D54}
+		{283E31D6-38A9-4896-A57A-7CCB21EFF69F} = {198EA68E-E6D4-4F8A-B164-DE8946FC3D54}
+		{24CB1ACA-EC6B-4E7F-ADD1-CC06CA0FF8F4} = {198EA68E-E6D4-4F8A-B164-DE8946FC3D54}
+		{4D1B723A-DEA1-4A50-9A7B-8CFAF1A214C5} = {198EA68E-E6D4-4F8A-B164-DE8946FC3D54}
+		{FC387BE9-7969-4D3E-B8E5-8F0953CA4263} = {E722F3FF-68A0-4019-91E8-63EDFE7D0652}
+		{8219FAC5-A5C5-427C-8683-26E42CC2447C} = {198EA68E-E6D4-4F8A-B164-DE8946FC3D54}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9E6E2880-688D-42C1-AA8B-0F546D080627}

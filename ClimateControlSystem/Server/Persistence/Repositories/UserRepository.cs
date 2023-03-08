@@ -1,9 +1,9 @@
-﻿using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Persistence.Context;
-using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
+﻿using ClimateControl.Server.Resources.Repository.TablesEntities;
+using ClimateControl.Server.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using ClimateControl.Server.Infrastructure.Repositories;
 
-namespace ClimateControlSystem.Server.Persistence.Repositories
+namespace ClimateControl.Server.Persistence.Repositories
 {
     public class UserRepository : IUserRepository
     {
@@ -28,7 +28,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             {
                 throw new ArgumentOutOfRangeException(nameof(id));
             }
-            
+
             var user = await _context.Users
                 .OrderBy(user => user.Id)
                 .FirstOrDefaultAsync(user => user.Id == id);
@@ -42,7 +42,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             {
                 throw new ArgumentNullException(nameof(newUser));
             }
-            
+
             if (_context.Users.Any(user => user.Name == newUser.Name))
             {
                 return false;
@@ -60,7 +60,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             {
                 throw new ArgumentNullException(nameof(userName));
             }
-            
+
             return await _context.Users.OrderBy(user => user.Id)
                 .FirstOrDefaultAsync(user => user.Name == userName);
         }
@@ -100,7 +100,7 @@ namespace ClimateControlSystem.Server.Persistence.Repositories
             {
                 throw new ArgumentOutOfRangeException(nameof(id));
             }
-            
+
             var requiredUser = await _context.Users
                 .FirstOrDefaultAsync(user => user.Id == id);
 

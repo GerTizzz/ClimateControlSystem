@@ -1,6 +1,6 @@
-﻿using ClimateControlSystem.Shared.Common;
+﻿using ClimateControl.Shared.Dtos;
 
-namespace ClimateControlSystem.Client.Services.ConfigService
+namespace ClimateControl.WebClient.Services.ConfigService
 {
     public interface IConfigService
     {

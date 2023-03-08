@@ -1,8 +1,7 @@
-﻿using ClimateControlSystem.Server.Protos;
-using ClimateControlSystem.Server.Resources.Domain;
+﻿using ClimateControl.Server.Services.gRPC.Protos;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.Queries
+namespace ClimateControl.Server.Services.MediatR.Queries.MonitoringService
 {
     /// <summary>
     /// This query isn't supposed to return any result, but it does only to see the result in the client

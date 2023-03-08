@@ -1,10 +1,7 @@
-﻿using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Domain.Singletons;
-using ClimateControlSystem.Server.Resources.Domain;
-using ClimateControlSystem.Server.Services.MediatR.Commands.ConfigRepository;
+﻿using ClimateControl.Server.Services.MediatR.Commands.ConfigRepository;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services
+namespace ClimateControl.Server.Services
 {
     public sealed class ConfigManager : IConfigManager
     {

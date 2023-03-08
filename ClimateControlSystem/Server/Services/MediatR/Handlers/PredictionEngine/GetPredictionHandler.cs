@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
-using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Resources.Domain;
-using ClimateControlSystem.Server.Services.MediatR.Queries.PredictionEngine;
-using ClimateControlSystem.Server.Services.PredictionEngine.PredictionEngineResources;
+using ClimateControl.Server.Infrastructure.Services;
+using ClimateControl.Server.Resources.PredictionEngine;
+using ClimateControl.Server.Services.MediatR.Queries.PredictionEngine;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers.PredictionEngine
+namespace ClimateControl.Server.Services.MediatR.Handlers.PredictionEngine
 {
     public sealed class GetPredictionHandler : IRequestHandler<GetPredictionQuery, Prediction>
     {

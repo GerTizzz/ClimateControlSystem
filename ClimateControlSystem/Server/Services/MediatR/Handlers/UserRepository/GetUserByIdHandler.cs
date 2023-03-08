@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Services.MediatR.Queries.UserRepository;
-using ClimateControlSystem.Shared.Common;
+using ClimateControl.Server.Infrastructure.Repositories;
+using ClimateControl.Server.Services.MediatR.Queries.UserRepository;
+using ClimateControl.Shared.Dtos;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers.UserRepository;
+namespace ClimateControl.Server.Services.MediatR.Handlers.UserRepository;
 
 public sealed class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, UserDto?>
 {
@@ -20,9 +20,9 @@ public sealed class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, UserD
     public async Task<UserDto?> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
         var userEntity = await _userRepository.GetUser(request.Id);
-        
+
         var userDto = _mapper.Map<UserDto>(userEntity);
-        
+
         return userDto;
     }
 }

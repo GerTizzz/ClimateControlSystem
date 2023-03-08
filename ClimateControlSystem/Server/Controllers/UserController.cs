@@ -1,9 +1,9 @@
-﻿using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Shared.Common;
+﻿using ClimateControl.Server.Infrastructure.Services;
+using ClimateControl.Shared.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ClimateControlSystem.Server.Controllers
+namespace ClimateControl.Server.Controllers
 {
     [Route("api/[controller]")]
     [Authorize(Roles = "Admin")]
@@ -21,7 +21,7 @@ namespace ClimateControlSystem.Server.Controllers
         public async Task<ActionResult<List<UserDto>>> GetUsers()
         {
             var users = await _userManager.GetUsers();
-            
+
             return Ok(users);
         }
 
@@ -51,7 +51,7 @@ namespace ClimateControlSystem.Server.Controllers
         public async Task<ActionResult<bool>> UpdateUser(UserDto user, int id)
         {
             var hasUpdated = await _userManager.UpdateUser(user, id);
-            
+
             return Ok(hasUpdated);
         }
 

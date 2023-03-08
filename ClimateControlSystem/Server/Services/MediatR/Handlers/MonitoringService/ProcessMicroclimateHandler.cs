@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Resources.Domain;
-using ClimateControlSystem.Server.Services.Queries;
+using ClimateControl.Server.Services.MediatR.Queries.MonitoringService;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.Handlers
+namespace ClimateControl.Server.Services.MediatR.Handlers.MonitoringService
 {
     public class ProcessMicroclimateHandler : IRequestHandler<ProcessMicroclimateQuery, Prediction>
     {

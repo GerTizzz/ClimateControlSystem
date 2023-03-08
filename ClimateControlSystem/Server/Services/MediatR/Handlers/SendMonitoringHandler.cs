@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using ClimateControlSystem.Server.Hubs;
-using ClimateControlSystem.Server.Services.MediatR.Commands;
-using ClimateControlSystem.Shared.Responses;
+using ClimateControl.Server.Hubs;
+using ClimateControl.Server.Services.MediatR.Commands;
+using ClimateControl.Shared.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers
+namespace ClimateControl.Server.Services.MediatR.Handlers
 {
     public sealed class SendMonitoringHandler : IRequestHandler<SendMonitoringCommand, bool>
     {

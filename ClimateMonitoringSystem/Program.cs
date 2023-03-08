@@ -1,10 +1,10 @@
-﻿using ClimateMonitoringSystem.Protos;
+﻿using ClimateControl.MonitoringSystem.Protos;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.VisualBasic.FileIO;
-using Client = ClimateMonitoringSystem.Protos.ClimateMonitoring.ClimateMonitoringClient;
+using Client = ClimateControl.MonitoringSystem.Protos.ClimateMonitoring.ClimateMonitoringClient;
 
-namespace ClimateMonitoringSystem
+namespace ClimateControl.MonitoringSystem
 {
     internal class Program
     {
@@ -28,12 +28,12 @@ namespace ClimateMonitoringSystem
 
                 _ = SendRequestsOverStream(call, dataSet, sendingRequestTokenSource.Token);
 
-                #pragma warning disable CS8600
+#pragma warning disable CS8600
                 string command = Console.ReadLine();
 
                 while (command != "stop")
                 {
-                    #pragma warning disable CS8600
+#pragma warning disable CS8600
                     command = Console.ReadLine();
                 }
 
@@ -44,7 +44,7 @@ namespace ClimateMonitoringSystem
                 await getResponsesTask;
             }
 
-            Console.WriteLine("!!!Sending requests has been stopped!!!");            
+            Console.WriteLine("!!!Sending requests has been stopped!!!");
 
             Console.ReadLine();
         }

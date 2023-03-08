@@ -1,10 +1,10 @@
 using Blazored.LocalStorage;
-using ClimateControlSystem.Client;
-using ClimateControlSystem.Client.Authentication;
-using ClimateControlSystem.Client.Services.AuthenticationService;
-using ClimateControlSystem.Client.Services.ConfigService;
-using ClimateControlSystem.Client.Services.MonitoringService;
-using ClimateControlSystem.Client.Services.UsersService;
+using ClimateControl.WebClient.Authentication;
+using ClimateControl.WebClient.Services.AuthenticationService;
+using ClimateControl.WebClient.Services.ConfigService;
+using ClimateControl.WebClient.Services.MonitoringService;
+using ClimateControl.WebClient.Services.UsersService;
+using ClimateControl.WebClient;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;

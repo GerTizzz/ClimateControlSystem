@@ -1,8 +1,8 @@
-﻿using ClimateControlSystem.Server.Infrastructure;
-using ClimateControlSystem.Shared.Responses;
+﻿using ClimateControl.Server.Resources.Infrastructure;
+using ClimateControl.Shared.Dtos;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Queries.MonitoringsRepository
+namespace ClimateControl.Server.Services.MediatR.Queries.MonitoringsRepository
 {
     public sealed class GetMicroclimatesQuery : IRequest<List<ForecastingDto>>
     {

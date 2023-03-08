@@ -1,7 +1,7 @@
 ﻿@page "/journalpage"
-@using ClimateControlSystem.Client.PaginationNavigation
+@using ClimateControl.WebClient.PaginationNavigation
 @using System.Globalization
-@using ClimateControlSystem.Client.Services.MonitoringService
+@using ClimateControl.WebClient.Services.MonitoringService
 @inject IMonitoringService MonitoringService
 
 <PageTitle>Journal Page</PageTitle>
@@ -127,7 +127,7 @@
 
             <br/>
 
-            <ClimateControlSystem.Client.Components.PaginationComponent
+            <ClimateControl.WebClient.Components.PaginationComponent
                 RecordsCount=@_forecastingsRecordsCount
                 RecordsPerPage=@RecordsPerPage
                 PageChanged=@OnPageChanged/>

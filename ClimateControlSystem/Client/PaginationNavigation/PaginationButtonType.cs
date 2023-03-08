@@ -1,4 +1,4 @@
-﻿namespace ClimateControlSystem.Client.PagesNavigation
+﻿namespace ClimateControl.WebClient.PaginationNavigation
 {
     public enum PaginationButtonType
     {

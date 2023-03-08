@@ -1,9 +1,7 @@
-﻿using ClimateControlSystem.Server.Domain.Singletons;
-using ClimateControlSystem.Server.Resources.Domain;
-using ClimateControlSystem.Server.Services.MediatR.Queries.ConfigRepository;
+﻿using ClimateControl.Server.Services.MediatR.Queries.ConfigRepository;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services
+namespace ClimateControl.Server.Services
 {
     public sealed class ConfigSingleton : IConfigSingleton
     {

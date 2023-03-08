@@ -1,7 +1,7 @@
-﻿using ClimateControlSystem.Shared.Enums;
+﻿using ClimateControl.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace ClimateControlSystem.Server.Resources.Repository.TablesEntities
+namespace ClimateControl.Server.Resources.Repository.TablesEntities
 {
     public sealed class UserEntity
     {

@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Resources.Repository.TablesEntities;
-using ClimateControlSystem.Server.Services.MediatR.Commands.MonitoringsRepository;
+using ClimateControl.Server.Infrastructure.Repositories;
+using ClimateControl.Server.Resources.Repository.TablesEntities;
+using ClimateControl.Server.Services.MediatR.Commands.MonitoringsRepository;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers.MonitoringsRepository
+namespace ClimateControl.Server.Services.MediatR.Handlers.MonitoringsRepository
 {
     public sealed class SaveMonitoringHandler : IRequestHandler<SaveMonitoringCommand, bool>
     {

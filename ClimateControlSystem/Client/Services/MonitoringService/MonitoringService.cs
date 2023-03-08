@@ -1,8 +1,8 @@
-﻿using ClimateControlSystem.Client.Services.AuthenticationService;
-using ClimateControlSystem.Shared.Responses;
+﻿using ClimateControl.Shared.Dtos;
+using ClimateControl.WebClient.Services.AuthenticationService;
 using System.Net.Http.Json;
 
-namespace ClimateControlSystem.Client.Services.MonitoringService
+namespace ClimateControl.WebClient.Services.MonitoringService
 {
     public class MonitoringService : IMonitoringService
     {
@@ -96,7 +96,7 @@ namespace ClimateControlSystem.Client.Services.MonitoringService
             try
             {
                 var result = await _httpClient.GetFromJsonAsync<List<ForecastingDto>>($"api/monitoring/monitoringsforecastings/{offsetFromTheEnd}/{count}");
-                
+
                 return result ?? Enumerable.Empty<ForecastingDto>().ToList();
             }
             catch (HttpRequestException e)
@@ -115,7 +115,7 @@ namespace ClimateControlSystem.Client.Services.MonitoringService
             try
             {
                 var result = await _httpClient.GetFromJsonAsync<List<MonitoringsEventsDto>>($"api/monitoring/monitoringsevents/{start}/{count}");
-                
+
                 return result ?? Enumerable.Empty<MonitoringsEventsDto>().ToList();
             }
             catch (HttpRequestException e)

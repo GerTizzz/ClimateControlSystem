@@ -1,13 +1,13 @@
-﻿using ClimateControlSystem.Server.Domain.Services;
-using ClimateControlSystem.Server.Infrastructure;
-using ClimateControlSystem.Server.Resources.Domain;
-using ClimateControlSystem.Server.Services.MediatR.Commands;
-using ClimateControlSystem.Server.Services.MediatR.Commands.MonitoringsRepository;
-using ClimateControlSystem.Server.Services.MediatR.Queries.MonitoringsRepository;
-using ClimateControlSystem.Server.Services.MediatR.Queries.PredictionEngine;
+﻿using ClimateControl.Domain.Resources;
+using ClimateControl.Domain.Services;
+using ClimateControl.Server.Infrastructure.GenerativePatterns;
+using ClimateControl.Server.Services.MediatR.Commands;
+using ClimateControl.Server.Services.MediatR.Commands.MonitoringsRepository;
+using ClimateControl.Server.Services.MediatR.Queries.MonitoringsRepository;
+using ClimateControl.Server.Services.MediatR.Queries.PredictionEngine;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services
+namespace ClimateControl.Server.Services
 {
     public class MonitoringService : IMonitoringService
     {

@@ -1,11 +1,12 @@
-﻿using ClimateControlSystem.Server.Infrastructure;
-using ClimateControlSystem.Server.Services.MediatR.Queries.MonitoringsRepository;
-using ClimateControlSystem.Shared.Responses;
+﻿using ClimateControl.Server.Infrastructure;
+using ClimateControl.Server.Resources.Infrastructure;
+using ClimateControl.Server.Services.MediatR.Queries.MonitoringsRepository;
+using ClimateControl.Shared.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ClimateControlSystem.Server.Controllers
+namespace ClimateControl.Server.Controllers
 {
     [Route("api/[controller]")]
     [Authorize]

@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
-using ClimateControlSystem.Server.Domain.Repositories;
-using ClimateControlSystem.Server.Resources.Domain;
-using ClimateControlSystem.Server.Services.MediatR.Queries.ConfigRepository;
+using ClimateControl.Server.Infrastructure.Repositories;
+using ClimateControl.Server.Services.MediatR.Queries.ConfigRepository;
 using MediatR;
 
-namespace ClimateControlSystem.Server.Services.MediatR.Handlers.ConfigRepository;
+namespace ClimateControl.Server.Services.MediatR.Handlers.ConfigRepository;
 
 public sealed class GetConfigHandler : IRequestHandler<GetConfigQuery, Config>
 {
@@ -16,7 +15,7 @@ public sealed class GetConfigHandler : IRequestHandler<GetConfigQuery, Config>
         _configRepository = configRepository;
         _mapper = mapper;
     }
-    
+
     public async Task<Config> Handle(GetConfigQuery request, CancellationToken cancellationToken)
     {
         var configEntity = await _configRepository.GetConfigAsync();

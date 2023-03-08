@@ -1,6 +1,6 @@
-﻿using ClimateControlSystem.Shared.Common;
+﻿using ClimateControl.Shared.Dtos;
 
-namespace ClimateControlSystem.Client.Services.UsersService
+namespace ClimateControl.WebClient.Services.UsersService
 {
     public interface IUsersService
     {
