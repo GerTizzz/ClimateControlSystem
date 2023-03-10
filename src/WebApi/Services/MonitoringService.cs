@@ -1,0 +1,132 @@
+﻿using Domain.Entities;
+using MediatR;
+using WebApi.Infrastructure.GenerativePatterns;
+using WebApi.Services.MediatR.Commands;
+using WebApi.Services.MediatR.Commands.MonitoringsRepository;
+using WebApi.Services.MediatR.Queries.MonitoringsRepository;
+using WebApi.Services.MediatR.Queries.PredictionEngine;
+
+namespace WebApi.Services
+{
+    public class MonitoringService : IMonitoringService
+    {
+        private readonly IMediator _mediator;
+        private readonly IConfigManager _configManager;
+
+        public MonitoringService(IMediator mediator,
+                                 IConfigManager configManager)
+        {
+            _mediator = mediator;
+            _configManager = configManager;
+        }
+
+        public async Task<Prediction> Predict(FeaturesData featuresData)
+        {
+            var prediction = await GetPrediction(featuresData);
+
+            await ProcessMonitoringData(prediction, _configManager.Config);
+
+            return prediction;
+        }
+
+        private async Task ProcessMonitoringData(Prediction prediction, Config config)
+        {
+            var actualData = GetActualDataFromFeaturesData(prediction.Features);
+
+            var accuracy = await TryGetPredictionAccuracy(actualData);
+
+            var microclimatesEvent = await TryGetMicroclimatesEvents(prediction, config);
+
+            var monitoring = new MonitoringBuilder()
+                .AddActualData(actualData)
+                .AddAccuracy(accuracy)
+                .AddTracedTime(DateTimeOffset.Now)
+                .AddMicroclimatesEvent(microclimatesEvent)
+                .AddPrediction(prediction)
+                .Build();
+
+            await SaveMonitoring(monitoring);
+
+            await SendMonitoringToClients(monitoring);
+        }
+
+        /// <summary>
+        /// Актуальная дата должна приходить снаружи! Это временная заглушка, т.к. по данной методике прогнозирования используются
+        /// данные прогнозируемых величин. Из-за этого можно схитрить.
+        /// </summary>
+        private static ActualData GetActualDataFromFeaturesData(FeaturesData features)
+        {
+            return new ActualData
+            {
+                Temperature = features.Temperature,
+                Humidity = features.Humidity
+            };
+        }
+
+        private async Task<Accuracy?> TryGetPredictionAccuracy(ActualData? actualData)
+        {
+            var prediction = await TryGetLastPrediction();
+
+            if (actualData is null || prediction is null)
+            {
+                return null;
+            }
+
+            var temperature = 100f - Math.Abs(prediction.Temperature - actualData.Temperature) * 100f / actualData.Temperature;
+            var humidity = 100f - Math.Abs(prediction.Humidity - actualData.Humidity) * 100f / actualData.Humidity;
+
+            var accuracy = new Accuracy
+            {
+                Temperature = temperature,
+                Humidity = humidity
+            };
+
+            return accuracy;
+        }
+
+        private static Task<MicroclimatesEvents?> TryGetMicroclimatesEvents(Prediction prediction, Config config)
+        {
+            var microclimateEventBuilder = new MicroclimateEventBuilder();
+
+            if (prediction.Temperature >= config.UpperTemperatureWarningLimit)
+            {
+                microclimateEventBuilder.AddTemperatureEvent(prediction.Temperature - config.UpperTemperatureWarningLimit);
+            }
+            else if (prediction.Temperature <= config.LowerTemperatureWarningLimit)
+            {
+                microclimateEventBuilder.AddTemperatureEvent(prediction.Temperature - config.LowerTemperatureWarningLimit);
+            }
+
+            if (prediction.Humidity >= config.UpperHumidityWarningLimit)
+            {
+                microclimateEventBuilder.AddHumidityEvent(prediction.Humidity - config.UpperHumidityWarningLimit);
+            }
+            else if (prediction.Humidity <= config.LowerHumidityWarningLimit)
+            {
+                microclimateEventBuilder.AddHumidityEvent(prediction.Humidity - config.LowerHumidityWarningLimit);
+            }
+
+            return Task.FromResult(microclimateEventBuilder.Build());
+        }
+
+        private async Task<Prediction> GetPrediction(FeaturesData featuresData)
+        {
+            return await _mediator.Send(new GetPredictionQuery(featuresData));
+        }
+
+        private async Task<Prediction?> TryGetLastPrediction()
+        {
+            return await _mediator.Send(new TryGetLastPredictionQuery());
+        }
+
+        private async Task SendMonitoringToClients(Monitoring monitoring)
+        {
+            await _mediator.Send(new SendMonitoringCommand(monitoring));
+        }
+
+        private async Task SaveMonitoring(Monitoring monitoring)
+        {
+            await _mediator.Send(new SaveMonitoringCommand(monitoring));
+        }        
+    }
+}

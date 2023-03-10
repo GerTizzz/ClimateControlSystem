@@ -1,0 +1,67 @@
+﻿@implements IAsyncDisposable
+@using ClimateControl.WebClient.NavigationPages
+@using WebClient.PaginationNavigation
+
+<table align="center">
+    <tbody>
+        <tr>
+            @foreach (var pageButton in _paginationManager.PaginationButtons)
+            {
+                if (pageButton.IsEnabled)
+                {
+                <td style="font-size:medium">
+                    <button class="btn-primary" @onclick="@(e => pageButton.ChangePage())">
+                        @(pageButton.Title)
+                    </button>
+                </td>
+            }
+                else
+                {
+                    <td style="font-size:medium">
+
+                    </td>
+                }
+            }
+        </tr>
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public long RecordsCount { get; set; }
+    [Parameter]
+    public int RecordsPerPage { get; set; } 
+
+    private PaginationButtonManager _paginationManager;
+
+    [Parameter]
+    public EventCallback<RecordsRequest> PageChanged { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+            _paginationManager = new PaginationButtonManager(RecordsCount, RecordsPerPage);
+
+            _paginationManager.PageChangedEvent += OnPageChanged;
+
+        return Task.CompletedTask;
+    }
+
+    private void OnPageChanged(RecordsRequest request)
+    {
+        PageChanged.InvokeAsync(request);
+        StateHasChanged();
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        if (_paginationManager is null)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        _paginationManager.PageChangedEvent -= OnPageChanged;
+        _paginationManager.Close();
+
+        return ValueTask.CompletedTask;
+    }
+}

@@ -1,0 +1,164 @@
+﻿@page "/journalpage"
+@using System.Globalization
+@using global::Shared.Dtos
+@using WebClient.PaginationNavigation
+@using WebClient.Services.MonitoringService
+@inject IMonitoringService MonitoringService
+
+<PageTitle>Journal Page</PageTitle>
+
+<h3>Журнал прогнозов</h3>
+
+<AuthorizeView>
+    <Authorized>
+        @if (_forecastings is null || _forecastings.Any() is false)
+        {
+            <p>
+                <em>Загрузка...</em>
+            </p>
+        }
+        else
+        {
+            <table class="table-bordered" align="center">
+                <thead>
+                <tr>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Время измерения</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Загрузка кластера</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Использование ЦПУ</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Температура кластера</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Влажность снаружи</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Сухая температура снаружи</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Влажная температура снаружи</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Скорость ветра снаружи</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Направления ветра снаружи</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Энтальпия воздуха снаружи</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Температура охлаждения</th>
+
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Предыдущая температура воздуха</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Предыдущая влажность воздуха</th>
+
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Температура воздуха</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Влажность воздуха</th>
+
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Спрогнозированная температура</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Спрогнозированная влажность</th>
+
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Точность прогноза температуры</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Точность прогноза влажности</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var record in _forecastings)
+                {
+                    <tr>
+                        <td style="font-size:small; text-align:center">
+                            @if (record.TracedTime.HasValue)
+                            {
+                                @record.TracedTime.Value.ToString("HH:mm:ss")
+                                <br/>
+                                @record.TracedTime.Value.ToString("dd:MM:yyyy")
+                            }
+                            else
+                            {
+                                @NoValueString;
+                            }
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.Features is null ? NoValueString : record.Features.ClusterLoad.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.Features is null ? NoValueString : record.Features.CpuUsage.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.Features is null ? NoValueString : record.Features.ClusterTemperature.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.Features is null ? NoValueString : record.Features.AirHumidityOutside.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.Features is null ? NoValueString : record.Features.AirDryTemperatureOutside.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.Features is null ? NoValueString : record.Features.AirWetTemperatureOutside.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.Features is null ? NoValueString : record.Features.WindSpeed.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.Features is null ? NoValueString : record.Features.WindDirection.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.Features is null ? NoValueString : record.Features.WindEnthalpy.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.Features is null ? NoValueString : record.Features.CoolingValue.ToString(CultureInfo.InvariantCulture))
+                        </td>
+
+                        <td style="font-size:small; text-align:center">
+                            @(record.Features is null ? NoValueString : record.Features.Temperature.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.Features is null ? NoValueString : record.Features.Humidity.ToString(CultureInfo.InvariantCulture))
+                        </td>
+
+                        <td style="font-size:small; text-align:center">
+                            @(record.ActualData is null ? NoValueString : record.ActualData.Temperature.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.ActualData is null ? NoValueString : record.ActualData.Humidity.ToString(CultureInfo.InvariantCulture))
+                        </td>
+
+                        <td style="font-size:small; text-align:center">
+                            @(record.Prediction is null ? NoValueString : record.Prediction.Temperature.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.Prediction is null ? NoValueString : record.Prediction.Humidity.ToString(CultureInfo.InvariantCulture))
+                        </td>
+
+                        <td style="font-size:small; text-align:center">
+                            @(record.Accuracy is null ? NoValueString : record.Accuracy.Temperature.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.Accuracy is null ? NoValueString : record.Accuracy.Humidity.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+
+            <br/>
+
+            <PaginationComponent
+                RecordsCount=@_forecastingsRecordsCount
+                RecordsPerPage=@RecordsPerPage
+                PageChanged=@OnPageChanged/>
+
+            <br/>
+        }
+    </Authorized>
+    <NotAuthorized>
+        Вы не вошли в систему
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private const int RecordsPerPage = 15;
+    private const int StartRecordsRequestCount = 0;
+    private const string NoValueString = "-";
+
+    private List<ForecastingDto> _forecastings;
+    private long _forecastingsRecordsCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _forecastingsRecordsCount = await MonitoringService.GetCountAsync();
+
+        _forecastings = await MonitoringService.GetForecastingsAsync(StartRecordsRequestCount, RecordsPerPage);
+    }
+
+    private async Task OnPageChanged(RecordsRequest request)
+    {
+        _forecastings = await MonitoringService.GetForecastingsAsync(request.RecordsOffset, request.RecordsCount);
+    }
+
+}

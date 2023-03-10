@@ -1,0 +1,118 @@
+﻿@page "/graphicspage"
+@using global::Shared.Dtos
+@using WebClient.Helpers
+@using WebClient.PaginationNavigation
+@using WebClient.Resources
+@using WebClient.Services.ConfigService
+@using WebClient.Services.MonitoringService
+@inject IMonitoringService MonitoringService
+@inject IConfigService ConfigService
+
+<PageTitle>Graphics Page</PageTitle>
+
+<h3>Графики прогнозов</h3>
+
+<AuthorizeView>
+    <Authorized>
+        @if (_monitorings is null || _monitorings.Any() is false)
+        {
+            <p>
+                <em>Загрузка...</em>
+            </p>
+        }
+        else
+        {
+            <Line @ref="_temperatureChart" Data="_temperatureData" Config="_temperatureConfig"/>
+            <Line @ref="_humidityChart" Data="_humidityData" Config="_humidityConfig"/>
+            <Line @ref="_accuracyChart" Data="_accuracyData" Config="_accuracyConfig"/>
+
+            <br/>
+
+            <PaginationComponent RecordsCount=@_monitoringsRecordsCount
+                                 RecordsPerPage=@RecordsPerPage
+                                 PageChanged=@OnPageChanged/>
+
+            <br/>
+        }
+    </Authorized>
+    <NotAuthorized>
+        Вы не вошли в систему
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+    private const int RecordsPerPage = 15;
+    private const int StartRecordsRequestCount = 0;
+
+    private ConfigsDto _config;
+
+    private List<MonitoringWithAccuracyDto> _monitorings;
+
+    private Line _temperatureChart;
+    private Line _humidityChart;
+    private Line _accuracyChart;
+
+    private LineConfig _temperatureConfig;
+    private LineConfig _humidityConfig;
+    private LineConfig _accuracyConfig;
+
+    private List<GraphicData> _temperatureData;
+    private List<GraphicData> _humidityData;
+    private List<GraphicData> _accuracyData;
+
+    private long _monitoringsRecordsCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _config = await ConfigService.GetConfigAsync();
+
+        _monitoringsRecordsCount = await MonitoringService.GetCountAsync();
+
+        _monitorings = await MonitoringService.GetMonitoringsWithAccuraciesAsync(StartRecordsRequestCount, RecordsPerPage);
+
+        SetGraphicsConfigs();
+    }
+
+    private void CalculateGraphicsData()
+    {
+        _temperatureData = AntChartHelper.GetTemperatureData(_monitorings, _config).ToList();
+
+        _humidityData = AntChartHelper.GetHumidityData(_monitorings, _config).ToList();
+
+        _accuracyData = AntChartHelper.GetAccuracyData(_monitorings).ToList();
+    }
+
+    private void SetGraphicsConfigs()
+    {
+        CalculateGraphicsData();
+
+        _temperatureConfig = AntChartHelper.GetTemperatureLineConfig(_temperatureData);
+        _humidityConfig = AntChartHelper.GetHumidityLineConfig(_humidityData);
+        _accuracyConfig = AntChartHelper.GetAccuracyConfig(_accuracyData);
+    }
+
+    private async Task OnPageChanged(RecordsRequest request)
+    {
+        _monitorings = await MonitoringService.GetMonitoringsWithAccuraciesAsync(request.RecordsOffset, request.RecordsCount);
+
+        await RerenderGraphics();
+    }
+
+    private void UpdateGraphicsConfigs()
+    {
+        CalculateGraphicsData();
+
+        AntChartHelper.UpdateConfigsMinMaxLimits(ref _temperatureConfig, _temperatureData);
+        AntChartHelper.UpdateConfigsMinMaxLimits(ref _humidityConfig, _humidityData);
+        AntChartHelper.UpdateConfigsMinMaxLimits(ref _accuracyConfig, _accuracyData);
+    }
+
+    private async Task RerenderGraphics()
+    {
+        UpdateGraphicsConfigs();
+
+        await _temperatureChart.ChangeData(_temperatureData);
+        await _humidityChart.ChangeData(_humidityData);
+        await _accuracyChart.ChangeData(_accuracyData);
+    }
+}
