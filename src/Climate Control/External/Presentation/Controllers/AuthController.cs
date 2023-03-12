@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Services.Strategies;
+using Microsoft.AspNetCore.Mvc;
 using Shared.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Presentation.Controllers
 {
@@ -22,7 +18,7 @@ namespace Presentation.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(UserDto request)
         {
-            var token = await _authManager.GetTokenForUser(request);
+            var token = await _authManager.TryGetToken(request.Id, request.Password);
 
             if (string.IsNullOrEmpty(token))
             {

@@ -7,18 +7,20 @@ using System.Security.Cryptography;
 using System.Text;
 using MediatR;
 using Application.MediatR.UserRepository;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.Services.Implementations
 {
     public class AuthenticateManager : IAuthenticateManager
     {
         private readonly IMediator _mediator;
-        //private readonly IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
 
-        //public AuthenticateManager(IMediator mediator, IConfiguration configuration)
-        //{
-        //    _mediator = mediator;
-        //}
+        public AuthenticateManager(IMediator mediator, IConfiguration configuration)
+        {
+            _mediator = mediator;
+            _configuration = configuration;
+        }
 
         public async Task<string?> TryGetToken(Guid userId, string password)
         {
@@ -33,7 +35,7 @@ namespace Application.Services.Implementations
 
             if (VerifyPasswordHash(password, verifiedUser.PasswordHash, verifiedUser.PasswordSalt))
             {
-                //token = CreateToken(verifiedUser, _configuration.GetSection("AppSettings:Token").Value);
+                token = CreateToken(verifiedUser, _configuration.GetSection("AppSettings:Token").Value);
             }
 
             return token;

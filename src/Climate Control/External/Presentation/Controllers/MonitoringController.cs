@@ -1,4 +1,5 @@
-﻿using Application;
+﻿using Application.Primitives;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Dtos;
@@ -10,10 +11,17 @@ namespace Presentation.Controllers
     [ApiController]
     public class MonitoringController : ControllerBase
     {
+        private readonly IMediator _mediator;
+
+        public MonitoringController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
         [HttpGet("monitoringscount")]
         public async Task<ActionResult<long>> GetMonitoringsCount()
         {
-            var recordsCount = await Sender.Send(new GetMonitoringsCountQuery());
+            var recordsCount = await _mediator.Send(new GetMonitoringsCountQuery());
 
             return Ok(recordsCount);
         }

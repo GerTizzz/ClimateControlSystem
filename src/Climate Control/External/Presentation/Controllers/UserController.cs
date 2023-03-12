@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Dtos;
 
@@ -9,17 +10,17 @@ namespace Presentation.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserManager _userManager;
+        private readonly IMediator _mediator;
 
-        public UserController(IUserManager userManager)
+        public UserController(IMediator mediator)
         {
-            _userManager = userManager;
+            _mediator = mediator;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<UserDto>>> GetUsers()
         {
-            var users = await _userManager.GetUsers();
+            var users = await _mediator.GetUsers();
 
             return Ok(users);
         }
@@ -28,7 +29,7 @@ namespace Presentation.Controllers
         [Route("{id:string}")]
         public async Task<ActionResult<UserDto>> GetUser(string id)
         {
-            var requiredUser = await _userManager.GetUserById(id);
+            var requiredUser = await _mediator.GetUserById(id);
 
             if (requiredUser is null)
             {
@@ -41,7 +42,7 @@ namespace Presentation.Controllers
         [HttpPost]
         public async Task<ActionResult<bool>> CreateUser(UserDto user)
         {
-            var hasCreated = await _userManager.CreateUser(user);
+            var hasCreated = await _mediator.CreateUser(user);
 
             return Ok(hasCreated);
         }
@@ -49,7 +50,7 @@ namespace Presentation.Controllers
         [HttpPut]
         public async Task<ActionResult<bool>> UpdateUser(UserDto user)
         {
-            var hasUpdated = await _userManager.UpdateUser(user);
+            var hasUpdated = await _mediator.UpdateUser(user);
 
             return Ok(hasUpdated);
         }
@@ -57,7 +58,7 @@ namespace Presentation.Controllers
         [HttpDelete("{id:string}")]
         public async Task<ActionResult<bool>> DeleteUser(string id)
         {
-            var hasDeleted = await _userManager.DeleteUser(id);
+            var hasDeleted = await _mediator.DeleteUser(id);
 
             return Ok(hasDeleted);
         }

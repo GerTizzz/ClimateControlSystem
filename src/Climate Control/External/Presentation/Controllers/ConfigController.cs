@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.MediatR.ConfigManager;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Dtos;
 
@@ -9,10 +11,17 @@ namespace Presentation.Controllers
     [ApiController]
     public class ConfigController : ControllerBase
     {
+        private readonly IMediator _mediator;
+
+        public ConfigController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
         [HttpGet]
         public async Task<ActionResult<ConfigsDto>> GetConfig(CancellationToken cancellationToken)
         {
-            var config = await Sender.Send(new GetConfigDtoQuery(), cancellationToken);
+            var config = await _mediator.Send(new GetConfigDtoQuery(), cancellationToken);
 
             return Ok(config);
         }
