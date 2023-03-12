@@ -41,26 +41,26 @@ else
 @code {
 
     [Parameter]
-    public int? Id { get; set; }
+    public string Id { get; set; }
 
-    private readonly UserDto _user = new UserDto();
+    private readonly UserDto _user;
 
     private string _btnText = string.Empty;
 
     protected override Task OnInitializedAsync()
     {
-        _btnText = Id == null ? "Создать пользователя" : "Редактировать пользователя";
+        _btnText = string.IsNullOrEmpty(Id) ? "Создать пользователя" : "Редактировать пользователя";
         return Task.CompletedTask;
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        if (Id == null)
+        if (string.IsNullOrEmpty(Id))
         {
             return;
         }
         
-        var arrivedUser = await UsersService.GetUser(Id.Value);
+        var arrivedUser = await UsersService.GetUser(Id);
 
         if (arrivedUser is null)
         {

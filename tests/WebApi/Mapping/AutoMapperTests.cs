@@ -1,7 +1,7 @@
 using AutoMapper;
+using Domain.Entities;
 using Shared.Dtos;
 using WebApi.Mapping;
-using WebApi.Resources.Repository.TablesEntities;
 
 namespace WebApiTests.Mapping
 {
@@ -17,31 +17,9 @@ namespace WebApiTests.Mapping
         }
 
         [Test]
-        public void MonitoringEntityToBaseMonitoringDto()
-        {
-            _mapper.Map<BaseMonitoringDto>(new MonitoringsEntity()
-            {
-                Id = 0,
-                Prediction = new PredictionsEntity()
-                {
-                    Temperature = 1,
-                    Humidity = 2
-                },
-                ActualData = new ActualDataEntity()
-                {
-                    Temperature = 3,
-                    Humidity = 4
-                },
-                TracedTime = DateTime.Now
-            });
-
-            Assert.Pass();
-        }
-
-        [Test]
         public void PredictionsEntityToPredictionDto()
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<PredictionsEntity, PredictionDto>());
+            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Label, PredictionDto>());
 
             configuration.AssertConfigurationIsValid();
 
@@ -51,7 +29,7 @@ namespace WebApiTests.Mapping
         [Test]
         public void ActualDataEntityToActualDataDto()
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<ActualDataEntity, ActualDataDto>());
+            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Fact, ActualDataDto>());
 
             configuration.AssertConfigurationIsValid();
 

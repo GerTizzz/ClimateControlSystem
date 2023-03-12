@@ -52,11 +52,11 @@
                 {
                     <tr>
                         <td style="font-size:small; text-align:center">
-                            @if (record.TracedTime.HasValue)
+                            @if (record.Time.HasValue)
                             {
-                                @record.TracedTime.Value.ToString("HH:mm:ss")
+                                @record.Time.Value.ToString("HH:mm:ss")
                                 <br/>
-                                @record.TracedTime.Value.ToString("dd:MM:yyyy")
+                                @record.Time.Value.ToString("dd:MM:yyyy")
                             }
                             else
                             {
@@ -64,62 +64,62 @@
                             }
                         </td>
                         <td style="font-size:small; text-align:center">
-                            @(record.Features is null ? NoValueString : record.Features.ClusterLoad.ToString(CultureInfo.InvariantCulture))
+                            @(record.Feature is null ? NoValueString : record.Feature.ClusterLoad.ToString(CultureInfo.InvariantCulture))
                         </td>
                         <td style="font-size:small; text-align:center">
-                            @(record.Features is null ? NoValueString : record.Features.CpuUsage.ToString(CultureInfo.InvariantCulture))
+                            @(record.Feature is null ? NoValueString : record.Feature.CpuUsage.ToString(CultureInfo.InvariantCulture))
                         </td>
                         <td style="font-size:small; text-align:center">
-                            @(record.Features is null ? NoValueString : record.Features.ClusterTemperature.ToString(CultureInfo.InvariantCulture))
+                            @(record.Feature is null ? NoValueString : record.Feature.ClusterTemperature.ToString(CultureInfo.InvariantCulture))
                         </td>
                         <td style="font-size:small; text-align:center">
-                            @(record.Features is null ? NoValueString : record.Features.AirHumidityOutside.ToString(CultureInfo.InvariantCulture))
+                            @(record.Feature is null ? NoValueString : record.Feature.AirHumidityOutside.ToString(CultureInfo.InvariantCulture))
                         </td>
                         <td style="font-size:small; text-align:center">
-                            @(record.Features is null ? NoValueString : record.Features.AirDryTemperatureOutside.ToString(CultureInfo.InvariantCulture))
+                            @(record.Feature is null ? NoValueString : record.Feature.AirDryTemperatureOutside.ToString(CultureInfo.InvariantCulture))
                         </td>
                         <td style="font-size:small; text-align:center">
-                            @(record.Features is null ? NoValueString : record.Features.AirWetTemperatureOutside.ToString(CultureInfo.InvariantCulture))
+                            @(record.Feature is null ? NoValueString : record.Feature.AirWetTemperatureOutside.ToString(CultureInfo.InvariantCulture))
                         </td>
                         <td style="font-size:small; text-align:center">
-                            @(record.Features is null ? NoValueString : record.Features.WindSpeed.ToString(CultureInfo.InvariantCulture))
+                            @(record.Feature is null ? NoValueString : record.Feature.WindSpeed.ToString(CultureInfo.InvariantCulture))
                         </td>
                         <td style="font-size:small; text-align:center">
-                            @(record.Features is null ? NoValueString : record.Features.WindDirection.ToString(CultureInfo.InvariantCulture))
+                            @(record.Feature is null ? NoValueString : record.Feature.WindDirection.ToString(CultureInfo.InvariantCulture))
                         </td>
                         <td style="font-size:small; text-align:center">
-                            @(record.Features is null ? NoValueString : record.Features.WindEnthalpy.ToString(CultureInfo.InvariantCulture))
+                            @(record.Feature is null ? NoValueString : record.Feature.WindEnthalpy.ToString(CultureInfo.InvariantCulture))
                         </td>
                         <td style="font-size:small; text-align:center">
-                            @(record.Features is null ? NoValueString : record.Features.CoolingValue.ToString(CultureInfo.InvariantCulture))
-                        </td>
-
-                        <td style="font-size:small; text-align:center">
-                            @(record.Features is null ? NoValueString : record.Features.Temperature.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Features is null ? NoValueString : record.Features.Humidity.ToString(CultureInfo.InvariantCulture))
+                            @(record.Feature is null ? NoValueString : record.Feature.CoolingValue.ToString(CultureInfo.InvariantCulture))
                         </td>
 
                         <td style="font-size:small; text-align:center">
-                            @(record.ActualData is null ? NoValueString : record.ActualData.Temperature.ToString(CultureInfo.InvariantCulture))
+                            @(record.Feature is null ? NoValueString : record.Feature.Temperature.ToString(CultureInfo.InvariantCulture))
                         </td>
                         <td style="font-size:small; text-align:center">
-                            @(record.ActualData is null ? NoValueString : record.ActualData.Humidity.ToString(CultureInfo.InvariantCulture))
-                        </td>
-
-                        <td style="font-size:small; text-align:center">
-                            @(record.Prediction is null ? NoValueString : record.Prediction.Temperature.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Prediction is null ? NoValueString : record.Prediction.Humidity.ToString(CultureInfo.InvariantCulture))
+                            @(record.Feature is null ? NoValueString : record.Feature.Humidity.ToString(CultureInfo.InvariantCulture))
                         </td>
 
                         <td style="font-size:small; text-align:center">
-                            @(record.Accuracy is null ? NoValueString : record.Accuracy.Temperature.ToString(CultureInfo.InvariantCulture))
+                            @(record.Fact is null ? NoValueString : record.Fact.Temperature.ToString(CultureInfo.InvariantCulture))
                         </td>
                         <td style="font-size:small; text-align:center">
-                            @(record.Accuracy is null ? NoValueString : record.Accuracy.Humidity.ToString(CultureInfo.InvariantCulture))
+                            @(record.Fact is null ? NoValueString : record.Fact.Humidity.ToString(CultureInfo.InvariantCulture))
+                        </td>
+
+                        <td style="font-size:small; text-align:center">
+                            @(record.Label is null ? NoValueString : record.Label.Temperature.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.Label is null ? NoValueString : record.Label.Humidity.ToString(CultureInfo.InvariantCulture))
+                        </td>
+
+                        <td style="font-size:small; text-align:center">
+                            @(record.Error is null ? NoValueString : record.Error.Temperature.ToString(CultureInfo.InvariantCulture))
+                        </td>
+                        <td style="font-size:small; text-align:center">
+                            @(record.Error is null ? NoValueString : record.Error.Humidity.ToString(CultureInfo.InvariantCulture))
                         </td>
                     </tr>
                 }
