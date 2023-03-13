@@ -11,12 +11,17 @@ namespace Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services,
             string connectionString)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
             services.AddDbContext<ForecastDbContext>(options =>
             {
                 options.UseSqlServer(connectionString);
             });
 
-            services.AddScoped<IMonitoringsRepository, MonitoringsRepository>();
+            services.AddScoped<IForecastRepository, ForecastRepository>();
 
             services.AddScoped<IUserRepository, UserRepository>();
 

@@ -91,13 +91,13 @@ namespace WebClient.Services.MonitoringService
             return Enumerable.Empty<MonitoringWithAccuracyDto>().ToList();
         }
 
-        public async Task<List<ForecastingDto>> GetForecastingsAsync(int offsetFromTheEnd, int count)
+        public async Task<List<ForecastDto>> GetForecastingsAsync(int offsetFromTheEnd, int count)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<ForecastingDto>>($"api/monitoring/monitoringsforecastings/{offsetFromTheEnd}/{count}");
+                var result = await _httpClient.GetFromJsonAsync<List<ForecastDto>>($"api/monitoring/monitoringsforecastings/{offsetFromTheEnd}/{count}");
 
-                return result ?? Enumerable.Empty<ForecastingDto>().ToList();
+                return result ?? Enumerable.Empty<ForecastDto>().ToList();
             }
             catch (HttpRequestException e)
             {
@@ -107,16 +107,16 @@ namespace WebClient.Services.MonitoringService
                 }
             }
 
-            return Enumerable.Empty<ForecastingDto>().ToList();
+            return Enumerable.Empty<ForecastDto>().ToList();
         }
 
-        public async Task<List<MonitoringsEventsDto>> GetEventsAsync(int start = 0, int count = 25)
+        public async Task<List<WarningDto>> GetEventsAsync(int start = 0, int count = 25)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<MonitoringsEventsDto>>($"api/monitoring/monitoringsevents/{start}/{count}");
+                var result = await _httpClient.GetFromJsonAsync<List<WarningDto>>($"api/monitoring/monitoringsevents/{start}/{count}");
 
-                return result ?? Enumerable.Empty<MonitoringsEventsDto>().ToList();
+                return result ?? Enumerable.Empty<WarningDto>().ToList();
             }
             catch (HttpRequestException e)
             {
@@ -126,7 +126,7 @@ namespace WebClient.Services.MonitoringService
                 }
             }
 
-            return Enumerable.Empty<MonitoringsEventsDto>().ToList();
+            return Enumerable.Empty<WarningDto>().ToList();
         }
     }
 }

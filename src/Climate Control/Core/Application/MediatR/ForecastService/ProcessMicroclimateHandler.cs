@@ -6,10 +6,10 @@ namespace Application.MediatR.ForecastService
 {
     public class ProcessMicroclimateHandler : IRequestHandler<ProcessMicroclimateQuery, Label>
     {
-        private readonly IMonitoringService _predictionService;
+        private readonly IForecastService _predictionService;
         private readonly IMapper _mapper;
 
-        public ProcessMicroclimateHandler(IMonitoringService predictionService, IMapper mapper)
+        public ProcessMicroclimateHandler(IForecastService predictionService, IMapper mapper)
         {
             _predictionService = predictionService;
             _mapper = mapper;
@@ -17,7 +17,7 @@ namespace Application.MediatR.ForecastService
 
         public async Task<Label> Handle(ProcessMicroclimateQuery request, CancellationToken cancellationToken)
         {
-            var featuresData = _mapper.Map<Feature>(request.MonitoringRequest);
+            var featuresData = _mapper.Map<Feature>(request.ForecastRequest);
 
             return await _predictionService.Predict(featuresData);
         }

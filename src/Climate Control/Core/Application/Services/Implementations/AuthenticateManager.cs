@@ -1,13 +1,13 @@
-﻿using Application.Services.Strategies;
+﻿using Application.MediatR.UserRepository.Read;
+using Application.Services.Strategies;
 using Domain.Enumerations;
+using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using MediatR;
-using Application.MediatR.UserRepository;
-using Microsoft.Extensions.Configuration;
 
 namespace Application.Services.Implementations
 {

@@ -6,10 +6,10 @@ namespace Application.MediatR.ForecastRepository
 {
     public sealed class SaveForecastHandler : IRequestHandler<SaveForecastCommand, bool>
     {
-        private readonly IMonitoringsRepository _predictionRepository;
+        private readonly IForecastRepository _predictionRepository;
         private readonly IMapper _mapper;
 
-        public SaveForecastHandler(IMonitoringsRepository predictionRepository, IMapper mapper)
+        public SaveForecastHandler(IForecastRepository predictionRepository, IMapper mapper)
         {
             _predictionRepository = predictionRepository;
             _mapper = mapper;

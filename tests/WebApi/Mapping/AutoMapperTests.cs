@@ -1,9 +1,9 @@
+using Application.Mapping;
 using AutoMapper;
 using Domain.Entities;
 using Shared.Dtos;
-using WebApi.Mapping;
 
-namespace WebApiTests.Mapping
+namespace ApplicationTests.Mapping
 {
     public class AutoMapperTests
     {
@@ -19,7 +19,7 @@ namespace WebApiTests.Mapping
         [Test]
         public void PredictionsEntityToPredictionDto()
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Label, PredictionDto>());
+            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Label, LabelDto>());
 
             configuration.AssertConfigurationIsValid();
 
@@ -29,7 +29,7 @@ namespace WebApiTests.Mapping
         [Test]
         public void ActualDataEntityToActualDataDto()
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Fact, ActualDataDto>());
+            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Fact, FactDto>());
 
             configuration.AssertConfigurationIsValid();
 

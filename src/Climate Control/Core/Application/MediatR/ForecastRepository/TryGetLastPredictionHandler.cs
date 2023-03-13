@@ -6,10 +6,10 @@ namespace Application.MediatR.ForecastRepository
 {
     public sealed class TryGetLastPredictionHandler : IRequestHandler<TryGetLastPredictionQuery, Label?>
     {
-        private readonly IMonitoringsRepository _predictionRepository;
+        private readonly IForecastRepository _predictionRepository;
         private readonly IMapper _mapper;
 
-        public TryGetLastPredictionHandler(IMonitoringsRepository predictionRepository, IMapper mapper)
+        public TryGetLastPredictionHandler(IForecastRepository predictionRepository, IMapper mapper)
         {
             _predictionRepository = predictionRepository;
             _mapper = mapper;

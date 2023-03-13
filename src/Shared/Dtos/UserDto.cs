@@ -1,6 +1,4 @@
-﻿using Domain.Enumerations;
-
-namespace Shared.Dtos
+﻿namespace Shared.Dtos
 {
     public sealed record UserDto
     {
@@ -8,7 +6,7 @@ namespace Shared.Dtos
 
         public string Name { get; set; } = string.Empty;
 
-        public UserType Role { get; set; } = UserType.Undefined;
+        public string Role { get; set; } = string.Empty;
 
         public string Password { get; set; } = string.Empty;
     }

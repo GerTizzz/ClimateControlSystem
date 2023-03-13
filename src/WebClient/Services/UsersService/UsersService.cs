@@ -18,7 +18,7 @@ namespace WebClient.Services.UsersService
             _authService = authService;
         }
 
-        public async Task<UserDto?> GetUser(string id)
+        public async Task<UserDto?> GetUser(Guid id)
         {
             try
             {
@@ -90,7 +90,7 @@ namespace WebClient.Services.UsersService
             }
         }
 
-        public async Task DeleteUser(string id)
+        public async Task DeleteUser(Guid id)
         {
             try
             {

@@ -1,7 +1,7 @@
-﻿using WebApi.Resources.PredictionEngine;
-using WebApi.Services;
+﻿using Application.Primitives;
+using Application.Services.Implementations;
 
-namespace WebApiTests.PredictionEngine
+namespace ApplicationTests.PredictionEngine
 {
     public sealed class PredictionEngineTests
     {
@@ -9,14 +9,14 @@ namespace WebApiTests.PredictionEngine
 
         [Test]
         public async Task CheckPrediction()
-        {            
+        {
             //arrange
             var modelLocation = string.Join("\\", Directory.GetCurrentDirectory()
                 .Split('\\')
                 .TakeWhile(str => str != "tests")) + "\\mlModel";
 
             var predictionEngine = new PredictionEngineService(modelLocation);
-            
+
             var features = FeaturesData.Replace('.', ',').Split(';').Select(float.Parse).ToArray();
 
             var request = new TensorPredictionRequest()

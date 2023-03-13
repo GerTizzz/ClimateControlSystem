@@ -56,7 +56,7 @@
         _users.AddRange(await UsersService.GetUsers());
     }
 
-    void ShowUser(string id)
+    void ShowUser(Guid id)
     {
         NavigationManager.NavigateTo($"/user/{id}");
     }

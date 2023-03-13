@@ -5,11 +5,11 @@ namespace Application.MediatR.ForecastService
 {
     public sealed class ProcessMicroclimateQuery : IRequest<Label>
     {
-        public ClimateMonitoringRequest MonitoringRequest { get; }
+        public GrpcForecastRequest ForecastRequest { get; }
 
-        public ProcessMicroclimateQuery(ClimateMonitoringRequest monitoringRequest)
+        public ProcessMicroclimateQuery(GrpcForecastRequest forecastRequest)
         {
-            MonitoringRequest = monitoringRequest;
+            ForecastRequest = forecastRequest;
         }
     }
 }

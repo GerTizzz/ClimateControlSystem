@@ -8,10 +8,10 @@ namespace Application.MediatR.SignalR
 {
     public sealed class SendNewForecastToClientsHandler : IRequestHandler<SendNewForecastToClientsQuery, bool>
     {
-        private readonly IHubContext<MonitoringHub> _monitoringHub;
+        private readonly IHubContext<ForecastHub> _monitoringHub;
         private readonly IMapper _mapper;
 
-        public SendNewForecastToClientsHandler(IMapper mapper, IHubContext<MonitoringHub> monitoringHub)
+        public SendNewForecastToClientsHandler(IMapper mapper, IHubContext<ForecastHub> monitoringHub)
         {
             _mapper = mapper;
             _monitoringHub = monitoringHub;
@@ -21,7 +21,7 @@ namespace Application.MediatR.SignalR
         {
             try
             {
-                var monitoring = _mapper.Map<MonitoringWithEventsDto>(request.Forecast);
+                var monitoring = _mapper.Map<ForecastDto>(request.Forecast);
 
                 await _monitoringHub.Clients.All.SendAsync("GetMonitoringResponse", monitoring, cancellationToken: cancellationToken);
 

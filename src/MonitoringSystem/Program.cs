@@ -2,7 +2,7 @@
 using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.VisualBasic.FileIO;
-using Client = MonitoringSystem.Protos.ClimateMonitoring.ClimateMonitoringClient;
+using Client = MonitoringSystem.Protos.GrpcForecast.GrpcForecastClient;
 
 namespace MonitoringSystem
 {
@@ -22,7 +22,7 @@ namespace MonitoringSystem
 
             Console.WriteLine("!!!Sending requests has been started!!!");
 
-            using (AsyncDuplexStreamingCall<ClimateMonitoringRequest, ClimateMonitoringReply> call = client.SendDataToPredictStream())
+            using (AsyncDuplexStreamingCall<GrpcForecastRequest, GrpcForecastReply> call = client.SendDataToPredictStream())
             {
                 var getResponsesTask = GetResponsesFromStream(call);
 
@@ -47,7 +47,7 @@ namespace MonitoringSystem
             Console.ReadLine();
         }
 
-        private static async Task GetResponsesFromStream(AsyncDuplexStreamingCall<ClimateMonitoringRequest, ClimateMonitoringReply> call)
+        private static async Task GetResponsesFromStream(AsyncDuplexStreamingCall<GrpcForecastRequest, GrpcForecastReply> call)
         {
             await foreach (var response in call.ResponseStream.ReadAllAsync())
             {
@@ -55,7 +55,7 @@ namespace MonitoringSystem
             }
         }
 
-        private static async Task SendRequestsOverStream(AsyncDuplexStreamingCall<ClimateMonitoringRequest, ClimateMonitoringReply> call,
+        private static async Task SendRequestsOverStream(AsyncDuplexStreamingCall<GrpcForecastRequest, GrpcForecastReply> call,
             float[][] dataSet, CancellationToken token)
         {
             while (token.IsCancellationRequested is false)
@@ -69,7 +69,7 @@ namespace MonitoringSystem
             await call.RequestStream.CompleteAsync();
         }
 
-        private static ClimateMonitoringRequest GenerateRequest(float[][] dataSet)
+        private static GrpcForecastRequest GenerateRequest(float[][] dataSet)
         {
             var requestData = new float[12];
 
@@ -78,7 +78,7 @@ namespace MonitoringSystem
                 requestData[i] = dataSet[_rawIndex][i];
             }
 
-            var request = new ClimateMonitoringRequest()
+            var request = new GrpcForecastRequest()
             {
                 ClusterLoad = requestData[0],
                 CpuUsage = requestData[1],

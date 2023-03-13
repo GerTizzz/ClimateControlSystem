@@ -14,8 +14,8 @@ namespace WebClient.Services.MonitoringService
 
         Task<List<MonitoringWithAccuracyDto>> GetMonitoringsWithAccuraciesAsync(int start, int count);
 
-        Task<List<ForecastingDto>> GetForecastingsAsync(int start, int count);
+        Task<List<ForecastDto>> GetForecastingsAsync(int start, int count);
 
-        Task<List<MonitoringsEventsDto>> GetEventsAsync(int start, int count);
+        Task<List<WarningDto>> GetEventsAsync(int start, int count);
     }
 }

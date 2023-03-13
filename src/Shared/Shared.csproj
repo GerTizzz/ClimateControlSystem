@@ -13,10 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Climate Control\Core\Domain\Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 </Project>

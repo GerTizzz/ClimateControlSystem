@@ -1,11 +1,11 @@
-﻿using Grpc.Core;
-using MediatR;
+﻿using MediatR;
 using Application.MediatR.ForecastService;
 using Application.gRCP.Protos;
+using Grpc.Core;
 
 namespace Application.gRPC
 {
-    public sealed class ClimateDataReciever : ClimateMonitoring.ClimateMonitoringBase
+    public sealed class ClimateDataReciever : GrpcForecast.GrpcForecastBase
     {
         private readonly IMediator _mediatr;
 
@@ -14,30 +14,13 @@ namespace Application.gRPC
             _mediatr = mediatr;
         }
 
-        public override async Task<ClimateMonitoringReply> SendDataToPredict(ClimateMonitoringRequest grpcRequest, ServerCallContext context)
-        {
-            var reply = new ClimateMonitoringReply();
-
-            try
-            {
-                Label labelResult = await _mediatr.Send(new ProcessMicroclimateQuery(grpcRequest));
-                reply.Reply = $"[Status: Success][Time: {DateTime.Now:HH:mm:ss dd:MM:yyyy}][Data: {labelResult.Temperature}, {labelResult.Humidity}]";
-            }
-            catch
-            {
-                reply.Reply = $"[Status: Failed][Time: {DateTime.Now:HH:mm:ss dd:MM:yyyy}][Data: {grpcRequest}]";
-            }
-
-            return await Task.FromResult(reply);
-        }
-
-        public override async Task SendDataToPredictStream(IAsyncStreamReader<ClimateMonitoringRequest> requestStream, IServerStreamWriter<ClimateMonitoringReply> responseStream, ServerCallContext context)
+        public override async Task SendDataToPredictStream(IAsyncStreamReader<GrpcForecastRequest> requestStream, IServerStreamWriter<GrpcForecastReply> responseStream, ServerCallContext context)
         {
             try
             {
                 await foreach (var request in requestStream.ReadAllAsync())
                 {
-                    var reply = new ClimateMonitoringReply();
+                    var reply = new GrpcForecastReply();
 
                     try
                     {

@@ -1,14 +1,15 @@
 using Microsoft.AspNetCore.ResponseCompression;
-using WebApi.Hubs;
 using Application;
 using Infrastructure;
 using Application.gRPC;
+using Infrastructure.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string connectionString = builder.Configuration.GetConnectionString("MicroclimateMonitoringDbConnection");
+string connectionString = builder.Configuration.GetConnectionString("ForecastDbConnection");
 
-string modelLocation = string.Join("\\", Directory.GetCurrentDirectory()
+string modelLocation = string.Join("\\", 
+    Directory.GetCurrentDirectory()
     .Split('\\')
     .TakeWhile(str => str != "tests")) + "\\" + builder.Configuration["ModelLocationPath"];
 
@@ -37,8 +38,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
 app.UseRouting();
+
+app.MapControllers();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseResponseCompression();
@@ -47,8 +51,7 @@ app.UseStaticFiles();
 
 app.MapGrpcService<ClimateDataReciever>();
 
-app.MapControllers();
-app.MapHub<MonitoringHub>("/monitoringhub");
+app.MapHub<ForecastHub>("/forecasthub");
 app.MapFallbackToFile("index.html");
 
 app.Run();

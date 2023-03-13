@@ -18,6 +18,11 @@ namespace Application
             string modelLocation,
             string secretToken)
         {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
             var assembly = typeof(DependecyInjection).Assembly;
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -38,7 +43,7 @@ namespace Application
 
             services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(assembly));
 
-            services.AddScoped<IMonitoringService, MonitoringService>();
+            services.AddScoped<IForecastService, ForecastService>();
 
             services.AddScoped<IAuthenticateManager, AuthenticateManager>();
 

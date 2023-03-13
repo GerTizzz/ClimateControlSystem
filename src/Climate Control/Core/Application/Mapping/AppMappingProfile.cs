@@ -1,6 +1,8 @@
 ﻿using Application.gRCP.Protos;
+using Application.Helpers;
 using Application.Primitives;
 using AutoMapper;
+using Domain.Enumerations;
 using Shared.Dtos;
 
 namespace Application.Mapping
@@ -9,20 +11,11 @@ namespace Application.Mapping
     {
         public AppMappingProfile()
         {
-            #region gRPC-To-Domain
-
-            CreateMap<ClimateMonitoringRequest, Feature>();
-
-            #endregion
-
-
-            #region Domain-To-Domain
+            CreateMap<GrpcForecastRequest, Feature>();
 
             CreateMap<Fact, Feature>();
 
             CreateMap<Feature, Fact>();
-
-            #region PredictEngine
 
             CreateMap<Feature, TensorPredictionRequest>()
                 .ForMember(tensor => tensor.serving_default_input_1, opt => opt
@@ -48,65 +41,48 @@ namespace Application.Mapping
                 .ForMember(result => result.Humidity, tensor => tensor
                     .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[1]));
 
-            #endregion
-
-            #endregion
-
-
-            #region Domain-To-DTO
-
             CreateMap<Config, ConfigsDto>();
 
+            CreateMap<Label, LabelDto>();
 
-            CreateMap<Label, PredictionDto>();
-
-            CreateMap<Fact, ActualDataDto>();
+            CreateMap<Fact, FactDto>();
 
             CreateMap<Feature, FeaturesDto>();
 
+            CreateMap<Forecast, ForecastDto>();
 
-            CreateMap<Forecast, BaseMonitoringDto>();
-
-            CreateMap<Forecast, MonitoringWithEventsDto>();
-
-            CreateMap<Forecast, MonitoringWithAccuracyDto>();
-
-            #endregion
-
-            #region DTO-To-Domain
-
-            CreateMap<ConfigsDto, Config>();
-
-            #endregion
-
-
-            #region Repository-To-DTO
-
-            CreateMap<Forecast, MonitoringWithEventsDto>();
-
-            CreateMap<Forecast, MonitoringWithAccuracyDto>();
-
-            CreateMap<Forecast, BaseMonitoringDto>();
-
-            CreateMap<Forecast, MonitoringsEventsDto>()
+            CreateMap<Forecast, WarningDto>()
                 .ForMember(dto => dto.TemperatureValue, monEntity => monEntity
                     .MapFrom(entity => entity.Warning.Temperature))
                 .ForMember(dto => dto.HumidityValue, monEntity => monEntity
                     .MapFrom(entity => entity.Warning.Humidity));
 
-            CreateMap<Forecast, ForecastingDto>();
+            CreateMap<Warning, WarningDto>();
 
-            CreateMap<Warning, MicroclimatesEventsDto>();
-
-            CreateMap<Label, PredictionDto>();
-
-            CreateMap<Warning, MicroclimatesEventsDto>();
+            CreateMap<Label, LabelDto>();
 
             CreateMap<User, UserDto>()
-                .ForMember(dto => dto.Id, auth => auth
-                    .MapFrom(authSrc => authSrc.Id.ToString()));
+                .ForMember(userDto => userDto.Role, user => user
+                    .MapFrom(u => u.Role.ToString()));
 
-            #endregion
+            CreateMap<ConfigsDto, Config>();
+
+            CreateMap<UserDto, User?>()
+                .ConstructUsing(x => CreateUserEntityFromDto(x));
+        }
+
+        private User? CreateUserEntityFromDto(UserDto userDto)
+        {
+            bool isParsed = Enum.TryParse(userDto.Role, false, out UserType userType);
+
+            if (isParsed is false)
+            {
+                return null;
+            }
+
+            TokenHelper.CreatePasswordHash(userDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            return new User(userDto.Id, userDto.Name, userType, passwordHash, passwordSalt);
         }
     }
 }

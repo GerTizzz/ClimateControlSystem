@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option csharp_namespace = "Application.gRCP.Protos";
+
+package forecasting;
+
+service GrpcForecast {
+	rpc SendDataToPredictStream (stream GrpcForecastRequest) returns (stream GrpcForecastReply);
+}
+
+message GrpcForecastRequest {
+	float cluster_load = 1;
+	float cpu_usage = 2;
+	float cluster_temperature = 3;
+	float temperature = 4;
+	float humidity = 5;
+	float air_humidity_outside = 6;
+	float air_dry_temperature_outside = 7;
+	float air_wet_temperature_outside = 8;
+	float wind_speed = 9;
+	float wind_direction = 10;
+	float wind_enthalpy = 11;
+	float cooling_value = 12;
+}
+
+message GrpcForecastReply {
+	string reply = 1;
+}
