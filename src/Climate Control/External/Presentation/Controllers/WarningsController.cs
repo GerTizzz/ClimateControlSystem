@@ -10,27 +10,27 @@ namespace Presentation.Controllers
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
-    public class ForecastsController : ControllerBase
+    public sealed class WarningsController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public ForecastsController(IMediator mediator)
+        public WarningsController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        [HttpGet("count")]
-        public async Task<ActionResult<long>> GetForecastsCount()
+        [HttpGet("scount")]
+        public async Task<ActionResult<long>> GetWarningsCount()
         {
-            var recordsCount = await _mediator.Send(new GetForecastsCountQuery());
+            var recordsCount = await _mediator.Send(new GetWarningsCountQuery());
 
             return Ok(recordsCount);
         }
 
         [HttpGet("/{start:int}/{count:int:range(1, 25)}")]
-        public async Task<ActionResult<List<ForecastDto>>> GetForecasts(int start, int count)
+        public async Task<ActionResult<List<WarningDto>>> GetWarnings(int start, int count)
         {
-            var records = await _mediator.Send(new GetForecastsQuery(new DbRequest(start, count)));
+            var records = await _mediator.Send(new GetWarningsQuery(new DbRequest(start, count)));
 
             return Ok(records);
         }

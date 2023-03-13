@@ -1,9 +1,7 @@
 ﻿@page "/journalpage"
 @using System.Globalization
-@using global::Shared.Dtos
 @using WebClient.PaginationNavigation
-@using WebClient.Services.MonitoringService
-@inject IMonitoringService MonitoringService
+@inject IForecastService ForecastService
 
 <PageTitle>Journal Page</PageTitle>
 
@@ -151,14 +149,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _forecastingsRecordsCount = await MonitoringService.GetCountAsync();
+        _forecastingsRecordsCount = await ForecastService.GetForecastsCountAsync();
 
-        _forecastings = await MonitoringService.GetForecastingsAsync(StartRecordsRequestCount, RecordsPerPage);
+        _forecastings = await ForecastService.GetForecastsAsync(StartRecordsRequestCount, RecordsPerPage);
     }
 
     private async Task OnPageChanged(RecordsRequest request)
     {
-        _forecastings = await MonitoringService.GetForecastingsAsync(request.RecordsOffset, request.RecordsCount);
+        _forecastings = await ForecastService.GetForecastsAsync(request.RecordsOffset, request.RecordsCount);
     }
 
 }

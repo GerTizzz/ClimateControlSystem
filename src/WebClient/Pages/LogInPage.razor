@@ -1,7 +1,6 @@
 ﻿@page "/login"
 @using WebClient.Services.AuthenticationService
 @using Microsoft.AspNetCore.Components
-@using global::Shared.Dtos
 @inject IAuthenticationService AuthService
 @inject NavigationManager NavManager
 
@@ -61,9 +60,8 @@
         }
         else
         {
-            _authenticationErrorText = "Доступ запрещен.";
+            _authenticationErrorText = "Доступ запрещен!";
             _showAuthenticationError = true;
         }
     }
-
 }

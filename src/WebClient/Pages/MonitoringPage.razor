@@ -1,16 +1,14 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Text
-@using global::Shared.Dtos
 @using WebClient.Helpers
 @using WebClient.Resources
 @using WebClient.Services.ConfigService
-@using WebClient.Services.MonitoringService
 
 @implements IAsyncDisposable
 
 @inject NavigationManager NavigationManager
-@inject IMonitoringService MonitoringService
+@inject IForecastService ForecastService
 @inject IConfigService ConfigService
 @inject IJSRuntime JsRuntime
 
@@ -53,9 +51,9 @@
     private readonly List<GraphicData> _temperatureRenderableSeries = new();
     private readonly List<GraphicData> _humidityRenderableSeries = new();
 
-    private readonly List<BaseMonitoringDto> _monitorings = new();
+    private readonly List<ForecastDto> _forecasts = new();
 
-    private HubConnection? _monitoringConnection;
+    private HubConnection? _forecastConnection;
 
     [CascadingParameter]
     private Task<AuthenticationState> _authState { get; set; }
@@ -67,38 +65,35 @@
         if (authState.User.Identity is {IsAuthenticated: true })
         {
             _config = await ConfigService.GetConfigAsync();
-            _monitorings.AddRange(await MonitoringService.GetBaseMonitoringsAsync(RecordsRequestBeginningIndex, RecordsCount));
-            _monitorings.Capacity = RecordsCount;
+            _forecasts.AddRange(await ForecastService.GetForecastsAsync(RecordsRequestBeginningIndex, RecordsCount));
+            _forecasts.Capacity = RecordsCount;
 
             UpdateRenderableSeries();
             UpdateChartsConfigs();
 
-            await CreateMonitoringConnection();
+            await CreateForecastConnection();
         }
     }
 
-    private async Task CreateMonitoringConnection()
+    private async Task CreateForecastConnection()
     {
-        _monitoringConnection = new HubConnectionBuilder()
-            .WithUrl(NavigationManager.ToAbsoluteUri("/monitoringhub"))
+        _forecastConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/forecasthub"))
             .WithAutomaticReconnect()
             .Build();
 
-        _monitoringConnection.On<MonitoringWithEventsDto>("GetMonitoringResponse", MonitoringDataArrived);
+        _forecastConnection.On<ForecastDto>("GetNewForecast", ForecastArrived);
 
-        await _monitoringConnection.StartAsync();
+        await _forecastConnection.StartAsync();
     }
 
-    private async Task MonitoringDataArrived(MonitoringWithEventsDto arrivedMonitoring)
+    private async Task ForecastArrived(ForecastDto forecast)
     {
         try
         {
-            if (arrivedMonitoring is MonitoringWithEventsDto eventMonitroing)
-            {
-                _ = Task.Run(() => MicroclimateEventArrived(eventMonitroing));
-            }
+            _ = Task.Run(() => TryShowWarning(forecast));
 
-            AddNewMonitoring(arrivedMonitoring);
+            AddForecast(forecast);
 
             await UpdateCharts();
         }
@@ -108,54 +103,62 @@
         }
     }
 
-    private void AddNewMonitoring(BaseMonitoringDto monitoring)
+    private void AddForecast(ForecastDto newForecast)
     {
-        if (_monitorings is null)
+        if (_forecasts is null)
         {
             return;
         }
 
-        if (_monitorings.Any())
+        if (_forecasts.Any())
         {
-            var lastMonitoring = _monitorings.Last();
-            lastMonitoring.ActualData = monitoring.ActualData;
-            lastMonitoring.TracedTime = monitoring.TracedTime;
+            var lastForecast = _forecasts.Last();
+
+            var forecast = new ForecastDto()
+            {
+                Label = lastForecast.Label,
+                Fact = newForecast.Fact,
+                Time = newForecast.Time
+            };
+
+            _forecasts.Remove(lastForecast);
+            _forecasts.Add(forecast);
         }
         else
         {
-            _monitorings.Add(monitoring.CloneWithMeasuredAndTime());
+            _forecasts.Add(newForecast);
         }
 
-        _monitorings.Add(monitoring.CloneWithPrediction());
+        _forecasts.Add(newForecast);
 
-        RemoveExtraMonitroingElementsFromBeginning();
+        RemoveExtraForecasts();
     }
 
-    private async Task MicroclimateEventArrived(MonitoringWithEventsDto monitoring)
+    private async Task TryShowWarning(ForecastDto forecast)
     {
         try
         {
-            if (monitoring.MicroclimatesEvents is null)
+            if (forecast.Warning is null)
             {
                 return;
             }
 
             var messageBuilder = new StringBuilder();
 
-            if (monitoring.MicroclimatesEvents.TemperatureValue is not null)
+            if (forecast.Warning.Temperature is not null)
             {
                 messageBuilder.Append(
                     GetAlertMessage(
-                        monitoring.MicroclimatesEvents.TemperatureValue.Value,
-                        monitoring.TracedTime, "температуры"));
+                        forecast.Warning.Temperature.Value,
+                        forecast.Time, "температуры"));
             }
 
-            if (monitoring.MicroclimatesEvents.HumidityValue is not null)
+            if (forecast.Warning.Humidity is not null)
             {
                 messageBuilder.Append(
                     GetAlertMessage(
-                        monitoring.MicroclimatesEvents.HumidityValue.Value,
-                        monitoring.TracedTime, "влажности"));
+                        forecast.Warning.Humidity.Value,
+                        forecast.Time, "влажности"));
             }
 
             if (messageBuilder.Length > 0)
@@ -188,11 +191,11 @@
         return alertMessageBuilder.ToString();
     }
 
-    private void RemoveExtraMonitroingElementsFromBeginning()
+    private void RemoveExtraForecasts()
     {
-        while (_monitorings.Count >= _monitorings.Capacity)
+        while (_forecasts.Count >= _forecasts.Capacity)
         {
-            _monitorings.RemoveAt(0);
+            _forecasts.RemoveAt(0);
         }
     }
 
@@ -206,21 +209,21 @@
     private void UpdateRenderableSeries()
     {
         _temperatureRenderableSeries.Clear();
-        _temperatureRenderableSeries.AddRange(AntChartHelper.GetTemperatureData(_monitorings, _config));
+        _temperatureRenderableSeries.AddRange(AntDataHelper.GetTemperature(_forecasts, _config));
 
         _humidityRenderableSeries.Clear();
-        _humidityRenderableSeries.AddRange(AntChartHelper.GetHumidityData(_monitorings, _config));
+        _humidityRenderableSeries.AddRange(AntDataHelper.GetHumidity(_forecasts, _config));
     }
 
     private void UpdateChartsConfigs()
     {
         if (_temperatureRenderableSeries.Any())
         {
-            _temperatureDataLineConfig = AntChartHelper.GetTemperatureLineConfig(_temperatureRenderableSeries);
+            _temperatureDataLineConfig = AntConfigHelper.GetTemperatureLineConfig(_temperatureRenderableSeries);
         }
         if (_humidityRenderableSeries.Any())
         {
-            _humidityDataLineConfig = AntChartHelper.GetHumidityLineConfig(_humidityRenderableSeries);
+            _humidityDataLineConfig = AntConfigHelper.GetHumidityLineConfig(_humidityRenderableSeries);
         }
     }
 
@@ -232,14 +235,13 @@
 
     public async ValueTask DisposeAsync()
     {
-        if (_monitoringConnection is not null)
+        if (_forecastConnection is not null)
         {
-            await _monitoringConnection.DisposeAsync();
+            await _forecastConnection.DisposeAsync();
         }
 
-        _monitorings.Clear();
+        _forecasts.Clear();
         _temperatureRenderableSeries.Clear();
         _humidityRenderableSeries.Clear();
     }
-
 }

@@ -1,11 +1,9 @@
 ﻿@page "/graphicspage"
-@using global::Shared.Dtos
 @using WebClient.Helpers
 @using WebClient.PaginationNavigation
 @using WebClient.Resources
 @using WebClient.Services.ConfigService
-@using WebClient.Services.MonitoringService
-@inject IMonitoringService MonitoringService
+@inject IForecastService ForecastService
 @inject IConfigService ConfigService
 
 <PageTitle>Graphics Page</PageTitle>
@@ -14,7 +12,7 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_monitorings is null || _monitorings.Any() is false)
+        @if (_forecasts is null || _forecasts.Any() is false)
         {
             <p>
                 <em>Загрузка...</em>
@@ -28,7 +26,7 @@
 
             <br/>
 
-            <PaginationComponent RecordsCount=@_monitoringsRecordsCount
+            <PaginationComponent RecordsCount=@_forecastsCount
                                  RecordsPerPage=@RecordsPerPage
                                  PageChanged=@OnPageChanged/>
 
@@ -46,7 +44,7 @@
 
     private ConfigsDto _config;
 
-    private List<MonitoringWithAccuracyDto> _monitorings;
+    private List<ForecastDto> _forecasts;
 
     private Line _temperatureChart;
     private Line _humidityChart;
@@ -60,40 +58,40 @@
     private List<GraphicData> _humidityData;
     private List<GraphicData> _accuracyData;
 
-    private long _monitoringsRecordsCount;
+    private long _forecastsCount;
 
     protected override async Task OnInitializedAsync()
     {
         _config = await ConfigService.GetConfigAsync();
 
-        _monitoringsRecordsCount = await MonitoringService.GetCountAsync();
+        _forecastsCount = await ForecastService.GetForecastsCountAsync();
 
-        _monitorings = await MonitoringService.GetMonitoringsWithAccuraciesAsync(StartRecordsRequestCount, RecordsPerPage);
+        _forecasts = await ForecastService.GetForecastsAsync(StartRecordsRequestCount, RecordsPerPage);
 
         SetGraphicsConfigs();
     }
 
     private void CalculateGraphicsData()
     {
-        _temperatureData = AntChartHelper.GetTemperatureData(_monitorings, _config).ToList();
+        _temperatureData = AntDataHelper.GetTemperature(_forecasts, _config).ToList();
 
-        _humidityData = AntChartHelper.GetHumidityData(_monitorings, _config).ToList();
+        _humidityData = AntDataHelper.GetHumidity(_forecasts, _config).ToList();
 
-        _accuracyData = AntChartHelper.GetAccuracyData(_monitorings).ToList();
+        _accuracyData = AntDataHelper.GetError(_forecasts).ToList();
     }
 
     private void SetGraphicsConfigs()
     {
         CalculateGraphicsData();
 
-        _temperatureConfig = AntChartHelper.GetTemperatureLineConfig(_temperatureData);
-        _humidityConfig = AntChartHelper.GetHumidityLineConfig(_humidityData);
-        _accuracyConfig = AntChartHelper.GetAccuracyConfig(_accuracyData);
+        _temperatureConfig = AntConfigHelper.GetTemperatureLineConfig(_temperatureData);
+        _humidityConfig = AntConfigHelper.GetHumidityLineConfig(_humidityData);
+        _accuracyConfig = AntConfigHelper.GetAccuracyConfig(_accuracyData);
     }
 
     private async Task OnPageChanged(RecordsRequest request)
     {
-        _monitorings = await MonitoringService.GetMonitoringsWithAccuraciesAsync(request.RecordsOffset, request.RecordsCount);
+        _forecasts = await ForecastService.GetForecastsAsync(request.RecordsOffset, request.RecordsCount);
 
         await RerenderGraphics();
     }
@@ -102,9 +100,9 @@
     {
         CalculateGraphicsData();
 
-        AntChartHelper.UpdateConfigsMinMaxLimits(ref _temperatureConfig, _temperatureData);
-        AntChartHelper.UpdateConfigsMinMaxLimits(ref _humidityConfig, _humidityData);
-        AntChartHelper.UpdateConfigsMinMaxLimits(ref _accuracyConfig, _accuracyData);
+        AntConfigHelper.UpdateConfigsMinMaxLimits(ref _temperatureConfig, _temperatureData);
+        AntConfigHelper.UpdateConfigsMinMaxLimits(ref _humidityConfig, _humidityData);
+        AntConfigHelper.UpdateConfigsMinMaxLimits(ref _accuracyConfig, _accuracyData);
     }
 
     private async Task RerenderGraphics()

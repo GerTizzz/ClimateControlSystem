@@ -1,8 +1,6 @@
 ﻿@page "/eventspage"
 @using WebClient.PaginationNavigation
-@using WebClient.Services.MonitoringService
-@using global::Shared.Dtos
-@inject IMonitoringService MonitoringService
+@inject IForecastService ForecastService
 
 <PageTitle>Events Page</PageTitle>
 
@@ -10,7 +8,7 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_monitoringEvents is null || _monitoringEvents.Any() is false)
+        @if (_warnings is null || _warnings.Any() is false)
         {
             <p><em>Загрузка...</em></p>
         }
@@ -25,16 +23,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var tempEvent in _monitoringEvents.Select(monEv => monEv.TemperatureValue).ToList())
+                    @foreach (var temperatureWarning in _warnings.Select(warning => warning.Temperature).ToList())
                     {
-                        @if (tempEvent.HasValue is false)
+                        @if (temperatureWarning.HasValue is false)
                         {
                             continue;
                         }
 
                         <tr>
                             <td style="font-size:small"><span class="oi oi-warning ico" aria-hidden="true" style="color:red"></span></td>
-                            <td>Ожидается критическое значение температуры! На @tempEvent.ToString(), °C!</td>
+                            <td>Ожидается критическое значение температуры! На @temperatureWarning.ToString(), °C!</td>
                         </tr>
                     }
                 </tbody>
@@ -49,16 +47,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var humEvent in _monitoringEvents.Select(monEv => monEv.HumidityValue).ToList())
+                    @foreach (var humidityWarning in _warnings.Select(warning => warning.Humidity).ToList())
                     {
-                        @if (humEvent.HasValue is false)
+                        @if (humidityWarning.HasValue is false)
                         {
                             continue;
                         }
 
                         <tr>
                             <td style="font-size:small"><span class="oi oi-warning" aria-hidden="true" style="color:red"></span></td>
-                            <td>Ожидается критическое значение влажности! На @humEvent.ToString(), %!</td>
+                            <td>Ожидается критическое значение влажности! На @humidityWarning.ToString(), %!</td>
                         </tr>
                     }
                 </tbody>
@@ -66,7 +64,7 @@
             
             <br/>
 
-            <PaginationComponent RecordsCount=@_monitoringEventsCount
+            <PaginationComponent RecordsCount=@_warningsCount
                                  RecordsPerPage=@RecordsPerPage
                                  PageChanged=@OnPageChanged/>
 
@@ -82,20 +80,20 @@
     private const int RecordsPerPage = 15;
     private const int StartRecordsRequestCount = 0;
 
-    private long _monitoringEventsCount;
-    private List<WarningDto> _monitoringEvents;
+    private long _warningsCount;
+    private List<WarningDto> _warnings;
 
     protected override async Task OnInitializedAsync()
     {
-        _monitoringEventsCount = await MonitoringService.GetEventsCountAsync();
+        _warningsCount = await ForecastService.GetWarningsCountAsync();
 
-        _monitoringEvents = await MonitoringService.GetEventsAsync(StartRecordsRequestCount, RecordsPerPage);
+        _warnings = await ForecastService.GetWarningsAsync(StartRecordsRequestCount, RecordsPerPage);
     }
 
     private async Task OnPageChanged(RecordsRequest request)
     {
-        _monitoringEvents.Clear();
+        _warnings.Clear();
         
-        _monitoringEvents = await MonitoringService.GetEventsAsync(request.RecordsOffset, request.RecordsCount);
+        _warnings = await ForecastService.GetWarningsAsync(request.RecordsOffset, request.RecordsCount);
     }
 }

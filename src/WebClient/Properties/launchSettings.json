@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "ClimateControlSystem": {
+    "ClimateControl": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

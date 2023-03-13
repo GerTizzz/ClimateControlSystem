@@ -1,7 +1,6 @@
 ﻿@page "/configspage"
 @using WebClient.Services.ConfigService
 @using Microsoft.AspNetCore.Components
-@using global::Shared.Dtos
 @attribute [Authorize(Roles = "Admin")]
 @inject IConfigService ConfigService
 
@@ -52,5 +51,4 @@
             _config = await ConfigService.GetConfigAsync();
         }
     }
-
 }
