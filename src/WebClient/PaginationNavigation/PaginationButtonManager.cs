@@ -1,4 +1,4 @@
-﻿using ClimateControl.WebClient.NavigationPages;
+﻿using WebClient.NavigationPages;
 
 namespace WebClient.PaginationNavigation
 {

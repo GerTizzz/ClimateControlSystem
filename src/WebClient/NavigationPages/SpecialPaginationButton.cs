@@ -1,6 +1,6 @@
 ﻿using WebClient.PaginationNavigation;
 
-namespace ClimateControl.WebClient.NavigationPages
+namespace WebClient.NavigationPages
 {
     public sealed class SpecialPaginationButton : BasePaginationButton
     {

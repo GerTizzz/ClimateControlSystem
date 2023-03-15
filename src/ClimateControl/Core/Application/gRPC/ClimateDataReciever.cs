@@ -27,7 +27,7 @@ namespace Application.gRPC
                         var predictionResult = await _mediatr.Send(new ProcessMicroclimateQuery(request));
                         reply.Reply = $"[Status: Success][Time: {DateTime.Now:HH:mm:ss dd:MM:yyyy}][Data: {predictionResult.Temperature}, {predictionResult.Humidity}]";
                     }
-                    catch
+                    catch (Exception e)
                     {
                         reply.Reply = $"[Status: Failed][Time: {DateTime.Now:HH:mm:ss dd:MM:yyyy}][Data: {requestStream}]";
                     }

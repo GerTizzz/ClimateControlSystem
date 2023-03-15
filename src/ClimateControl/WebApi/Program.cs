@@ -1,23 +1,23 @@
-using Microsoft.AspNetCore.ResponseCompression;
 using Application;
-using Infrastructure;
 using Application.gRPC;
+using Infrastructure;
 using Infrastructure.SignalR;
+using Microsoft.AspNetCore.ResponseCompression;
+using Presentation;
 
 var builder = WebApplication.CreateBuilder(args);
-
-string connectionString = builder.Configuration.GetConnectionString("ForecastDbConnection");
 
 string modelLocation = string.Join("\\", 
     Directory.GetCurrentDirectory()
     .Split('\\')
-    .TakeWhile(str => str != "tests")) + "\\" + builder.Configuration["ModelLocationPath"];
+    .TakeWhile(str => str != "src")) + "\\" + builder.Configuration["ModelLocationPath"];
 
 string secretToken = builder.Configuration.GetSection("AppSettings:Token").Value;
 
 builder.Services
     .AddApplication(modelLocation, secretToken)
-    .AddInfrastructure(connectionString);
+    .AddInfrastructure()
+    .AddPresentation();
 
 builder.Services.AddRazorPages();
 

@@ -2,6 +2,7 @@
 using Domain.Enumerations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Context
 {
@@ -18,9 +19,22 @@ namespace Infrastructure.Context
         public DbSet<Fact> Facts { get; set; }
         public DbSet<Warning> Warnings { get; set; }
 
-        public ForecastDbContext(DbContextOptions options) : base(options)
+        public ForecastDbContext()
         {
             Database.Migrate();
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (optionsBuilder.IsConfigured is false)
+            {
+                IConfigurationRoot configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+                var connectionString = configuration.GetConnectionString("ForecastsDbConnection");
+                optionsBuilder.UseSqlServer(connectionString);
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

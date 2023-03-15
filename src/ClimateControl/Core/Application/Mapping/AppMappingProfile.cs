@@ -11,11 +11,8 @@ namespace Application.Mapping
     {
         public AppMappingProfile()
         {
-            CreateMap<GrpcForecastRequest, Feature>();
-
-            CreateMap<Fact, Feature>();
-
-            CreateMap<Feature, Fact>();
+            CreateMap<GrpcForecastRequest, Feature>()
+                .ConstructUsing(request => new Feature(Guid.NewGuid()));
 
             CreateMap<Feature, TensorPredictionRequest>()
                 .ForMember(tensor => tensor.serving_default_input_1, opt => opt
@@ -39,7 +36,8 @@ namespace Application.Mapping
                 .ForMember(result => result.Temperature, tensor => tensor
                     .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[0]))
                 .ForMember(result => result.Humidity, tensor => tensor
-                    .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[1]));
+                    .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[1]))
+                .ConstructUsing(result => new Label(Guid.NewGuid()));
 
             CreateMap<Config, ConfigsDto>();
 
@@ -52,9 +50,9 @@ namespace Application.Mapping
             CreateMap<Forecast, ForecastDto>();
 
             CreateMap<Forecast, WarningDto>()
-                .ForMember(dto => dto.TemperatureValue, monEntity => monEntity
+                .ForMember(dto => dto.Temperature, monEntity => monEntity
                     .MapFrom(entity => entity.Warning.Temperature))
-                .ForMember(dto => dto.HumidityValue, monEntity => monEntity
+                .ForMember(dto => dto.Humidity, monEntity => monEntity
                     .MapFrom(entity => entity.Warning.Humidity));
 
             CreateMap<Warning, WarningDto>();

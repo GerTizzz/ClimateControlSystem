@@ -22,7 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Climate Control\Core\Application\Application.csproj" />
+    <ProjectReference Include="..\..\src\ClimateControl\Core\Application\Application.csproj" />
+    <ProjectReference Include="..\..\src\ClimateControl\Core\Domain\Domain.csproj" />
   </ItemGroup>
 
 </Project>
