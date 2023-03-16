@@ -11,5 +11,14 @@ namespace Domain.Entities
         {
 
         }
+
+        public Label Clone()
+        {
+            return new Label(Id)
+            {
+                Temperature = Temperature,
+                Humidity = Humidity
+            };
+        }
     }
 }

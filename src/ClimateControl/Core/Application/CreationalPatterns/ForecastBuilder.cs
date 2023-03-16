@@ -6,7 +6,7 @@
 
         public ForecastBuilder()
         {
-            _forecast = new Forecast();
+            _forecast = new Forecast(Guid.NewGuid());
         }
 
         public ForecastBuilder AddTracedTime(DateTimeOffset? time)
@@ -30,7 +30,7 @@
             return this;
         }
 
-        public ForecastBuilder AddAccuracy(Accuracy? accuracy)
+        public ForecastBuilder AddAccuracy(Error? accuracy)
         {
             _forecast.Error = accuracy;
 

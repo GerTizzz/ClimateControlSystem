@@ -74,41 +74,113 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<bool> UpdateForecastAsync(Forecast forecast)
-        {
-            if (await _context.Forecasts.AnyAsync() is false)
-            {
-                return false;
-            }
+        //public async Task<bool> SaveForecastAsync(Forecast forecast)
+        //{
+        //    try
+        //    {
+        //        var forecastCopy = forecast;
 
-            var lastForecast = await _context.Forecasts
-                .OrderBy(forec => forec.Id)
-                .LastAsync();
+        //        await UpdateForecastAsync(forecastCopy);
 
-            lastForecast.Fact = forecast.Fact;
-            lastForecast.Time = forecast.Time;
-            lastForecast.Error = forecast.Error;
-            lastForecast.Warning = forecast.Warning;
+        //        forecastCopy.Fact = null;
+        //        forecastCopy.Error = null;
+        //        forecastCopy.Time = null;
+        //        forecastCopy.Warning = null;
 
-            await _context.SaveChangesAsync();
+        //        await _context.Forecasts.AddAsync(forecastCopy);
 
-            return true;
-        }
+        //        await _context.SaveChangesAsync();
+
+        //        return true;
+        //    }
+        //    catch
+        //    {
+        //        return false;
+        //    }
+        //}
+
+        //private async Task<bool> UpdateForecastAsync(Forecast forecast)
+        //{
+        //    if (await _context.Forecasts.AnyAsync() is false)
+        //    {
+        //        return false;
+        //    }
+
+        //    var lastForecast = await _context.Forecasts
+        //        .FirstOrDefaultAsync(forec => forec.Time == null);
+
+        //    if (lastForecast is null)
+        //    {
+        //        return false;
+        //    }
+
+        //    lastForecast.Fact = forecast.Fact;
+        //    lastForecast.Time = forecast.Time;
+        //    lastForecast.Error = forecast.Error;
+        //    lastForecast.Warning = forecast.Warning;
+
+        //    await _context.SaveChangesAsync();
+
+        //    return true;
+        //}
 
         public async Task<bool> SaveForecastAsync(Forecast forecast)
         {
-            try
-            {
-                await _context.Forecasts.AddAsync(forecast);
+
+                if (await _context.Forecasts.AnyAsync() is false)
+                {
+                    _context.Forecasts.Add(new Forecast(Guid.NewGuid())
+                    {
+                        Fact = forecast.Fact?.Clone(),
+                        Time = forecast.Time
+                    });
+
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var lastForecasting = await _context.Forecasts
+                        .FirstOrDefaultAsync(monit => monit.Time == null);
+                    
+                    if (lastForecasting is not null)
+                    {                        
+                        if (forecast.Error is not null)
+                        {
+                            await _context.Errors.AddAsync(forecast.Error);
+                            await _context.SaveChangesAsync();
+                        }
+
+                        if (forecast.Fact is not null)
+                        {
+                            await _context.Facts.AddAsync(forecast.Fact);
+                            await _context.SaveChangesAsync();
+                        }
+
+                        if (forecast.Warning is not null)
+                        {
+                            await _context.Warnings.AddAsync(forecast.Warning);
+                            await _context.SaveChangesAsync();
+                        }
+
+                        lastForecasting.Time = forecast.Time;
+                        lastForecasting.Error = forecast.Error;
+                        lastForecasting.Fact = forecast.Fact;
+                        lastForecasting.Warning = forecast.Warning;
+
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                await _context.Forecasts.AddAsync(new Forecast(forecast.Id)
+                {
+                    Label = forecast.Label?.Clone(),
+                    Feature = forecast.Feature?.Clone(),
+                });
 
                 await _context.SaveChangesAsync();
 
                 return true;
-            }
-            catch
-            {
-                return false;
-            }
+
         }
     }
 }

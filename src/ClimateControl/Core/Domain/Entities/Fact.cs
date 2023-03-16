@@ -7,9 +7,18 @@ namespace Domain.Entities
         public float Temperature { get; set; }
         public float Humidity { get; set; }
 
-        public Fact()
+        public Fact(Guid id) : base(id)
         {
-            Id = Guid.NewGuid();
+
+        }
+
+        public Fact Clone()
+        {
+            return new Fact(Id)
+            {
+                Temperature = Temperature,
+                Humidity = Humidity
+            };
         }
     }
 }

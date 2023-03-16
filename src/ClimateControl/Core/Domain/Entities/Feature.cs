@@ -21,5 +21,24 @@ namespace Domain.Entities
         {
             
         }
+
+        public Feature Clone()
+        {
+            return new Feature(Id)
+            {
+                ClusterLoad = ClusterLoad,
+                CpuUsage = CpuUsage,
+                ClusterTemperature = ClusterTemperature,
+                Temperature = Temperature,
+                Humidity = Humidity,
+                AirHumidityOutside = AirHumidityOutside,
+                AirDryTemperatureOutside = AirDryTemperatureOutside,
+                AirWetTemperatureOutside = AirWetTemperatureOutside,
+                WindSpeed = WindSpeed,
+                WindDirection = WindDirection,
+                WindEnthalpy = WindEnthalpy,
+                CoolingValue = CoolingValue
+            };
+        }
     }
 }

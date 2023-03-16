@@ -11,5 +11,14 @@ namespace Domain.Entities
         {
 
         }
+
+        public Warning Clone()
+        {
+            return new Warning(Id)
+            {
+                Temperature = Temperature,
+                Humidity = Humidity
+            };
+        }
     }
 }

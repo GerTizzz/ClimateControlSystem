@@ -7,7 +7,7 @@ namespace Domain.Entities
         public DateTimeOffset? Time { get; set; }
 
         public Guid? ErrorId { get; set; }
-        public Accuracy? Error { get; set; }
+        public Error? Error { get; set; }
 
         public Guid? FactId { get; set; }
         public Fact? Fact { get; set; }
@@ -21,9 +21,9 @@ namespace Domain.Entities
         public Guid? FeatureId { get; set; }
         public Feature? Feature { get; set; }
 
-        public Forecast()
+        public Forecast(Guid id)
         {
-            Id = Guid.NewGuid();
+            Id = id;
         }
     }
 }

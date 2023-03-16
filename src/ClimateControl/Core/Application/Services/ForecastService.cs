@@ -32,9 +32,9 @@ namespace Application.Services
         {
             var actualData = GetActualDataFromFeaturesData(feature);
 
-            var accuracy = await TryGetPredictionAccuracy(actualData);
+            var accuracy = await TryGetError(actualData);
 
-            var microclimatesEvent = await TryGetMicroclimatesEvents(label, config);
+            var microclimatesEvent = await TryGetWarning(label, config);
 
             var monitoring = new ForecastBuilder()
                 .AddActualData(actualData)
@@ -55,14 +55,14 @@ namespace Application.Services
         /// </summary>
         private static Fact GetActualDataFromFeaturesData(Feature features)
         {
-            return new Fact
+            return new Fact(Guid.NewGuid())
             {
                 Temperature = features.Temperature,
                 Humidity = features.Humidity
             };
         }
 
-        private async Task<Accuracy?> TryGetPredictionAccuracy(Fact? actualData)
+        private async Task<Error?> TryGetError(Fact? actualData)
         {
             var prediction = await TryGetLastPrediction();
 
@@ -74,12 +74,12 @@ namespace Application.Services
             var temperature = 100f - Math.Abs(prediction.Temperature - actualData.Temperature) * 100f / actualData.Temperature;
             var humidity = 100f - Math.Abs(prediction.Humidity - actualData.Humidity) * 100f / actualData.Humidity;
 
-            var accuracy = new Accuracy(Guid.NewGuid(), temperature, humidity);
+            var accuracy = new Error(Guid.NewGuid(), temperature, humidity);
 
             return accuracy;
         }
 
-        private static Task<Warning?> TryGetMicroclimatesEvents(Label label, Config config)
+        private static Task<Warning?> TryGetWarning(Label label, Config config)
         {
             var microclimateEventBuilder = new WarningBuilder();
 

@@ -1,7 +1,10 @@
 ﻿using Domain.Repositories;
 using Infrastructure.Context;
 using Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Infrastructure
 {
@@ -14,7 +17,19 @@ namespace Infrastructure
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddDbContext<ForecastDbContext>();
+            string connectionString = string.Empty;
+
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            connectionString = configuration.GetConnectionString("ForecastsDbConnection");
+
+            services.AddDbContext<ForecastDbContext>(options =>
+            {
+                options.UseSqlServer(connectionString, b => b.MigrationsAssembly("WebApi"));
+            });
 
             services.AddScoped<IForecastRepository, ForecastRepository>();
 
