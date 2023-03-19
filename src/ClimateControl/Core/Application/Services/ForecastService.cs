@@ -30,18 +30,19 @@ namespace Application.Services
 
         private async Task ProcessMonitoringData(Label label, Feature feature, Config config)
         {
-            var actualData = GetActualDataFromFeaturesData(feature);
+            var fact = GetActualDataFromFeaturesData(feature);
 
-            var accuracy = await TryGetError(actualData);
+            var error = await TryGetError(fact);
 
             var microclimatesEvent = await TryGetWarning(label, config);
 
             var monitoring = new ForecastBuilder()
-                .AddActualData(actualData)
-                .AddAccuracy(accuracy)
+                .AddActualData(fact)
+                .AddError(error)
                 .AddTracedTime(DateTimeOffset.Now)
-                .AddMicroclimatesEvent(microclimatesEvent)
+                .AddWarning(microclimatesEvent)
                 .AddPrediction(label)
+                .AddFeature(feature)
                 .Build();
 
             await SaveMonitoring(monitoring);
@@ -51,7 +52,7 @@ namespace Application.Services
 
         /// <summary>
         /// Актуальная дата должна приходить снаружи! Это временная заглушка, т.к. по данной методике прогнозирования используются
-        /// данные прогнозируемых величин. Из-за этого можно схитрить.
+        /// данные прогнозируемых величин.
         /// </summary>
         private static Fact GetActualDataFromFeaturesData(Feature features)
         {
@@ -71,8 +72,8 @@ namespace Application.Services
                 return null;
             }
 
-            var temperature = 100f - Math.Abs(prediction.Temperature - actualData.Temperature) * 100f / actualData.Temperature;
-            var humidity = 100f - Math.Abs(prediction.Humidity - actualData.Humidity) * 100f / actualData.Humidity;
+            var temperature = Math.Abs(100f - prediction.Temperature * 100f / actualData.Temperature);
+            var humidity = Math.Abs(100f - prediction.Humidity * 100f / actualData.Humidity);
 
             var accuracy = new Error(Guid.NewGuid(), temperature, humidity);
 

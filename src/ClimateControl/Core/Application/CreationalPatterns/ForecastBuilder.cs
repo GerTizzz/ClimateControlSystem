@@ -23,6 +23,13 @@
             return this;
         }
 
+        public ForecastBuilder AddFeature(Feature feature)
+        {
+            _forecast.Feature = feature;
+
+            return this;
+        }
+
         public ForecastBuilder AddActualData(Fact? actualData)
         {
             _forecast.Fact = actualData;
@@ -30,14 +37,14 @@
             return this;
         }
 
-        public ForecastBuilder AddAccuracy(Error? accuracy)
+        public ForecastBuilder AddError(Error? accuracy)
         {
             _forecast.Error = accuracy;
 
             return this;
         }
 
-        public ForecastBuilder AddMicroclimatesEvent(Warning? microclimatesEvents)
+        public ForecastBuilder AddWarning(Warning? microclimatesEvents)
         {
             _forecast.Warning = microclimatesEvents;
 

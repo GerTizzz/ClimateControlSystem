@@ -4,6 +4,7 @@ using Domain.Enumerations;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Shared.Dtos;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -22,9 +23,9 @@ namespace Application.Services.Implementations
             _configuration = configuration;
         }
 
-        public async Task<string?> TryGetToken(Guid userId, string password)
+        public async Task<string?> TryGetToken(UserDto user, string password)
         {
-            var verifiedUser = await _mediator.Send(new GetUserByIdQuery(userId));
+            var verifiedUser = await _mediator.Send(new GetUserByNameQuery(user.Name));
 
             if (verifiedUser is null || VerifyPasswordHash(password, verifiedUser.PasswordHash, verifiedUser.PasswordSalt) is false)
             {

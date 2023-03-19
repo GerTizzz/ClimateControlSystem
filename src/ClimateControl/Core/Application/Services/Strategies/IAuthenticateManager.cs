@@ -1,7 +1,9 @@
-﻿namespace Application.Services.Strategies
+﻿using Shared.Dtos;
+
+namespace Application.Services.Strategies
 {
     public interface IAuthenticateManager
     {
-        Task<string?> TryGetToken(Guid userId, string password);
+        Task<string?> TryGetToken(UserDto user, string password);
     }
 }

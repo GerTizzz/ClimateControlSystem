@@ -16,9 +16,9 @@ namespace Presentation.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(UserDto request)
+        public async Task<ActionResult<string>> Login(UserDto user)
         {
-            var token = await _authManager.TryGetToken(request.Id, request.Password);
+            var token = await _authManager.TryGetToken(user, user.Password);
 
             if (string.IsNullOrEmpty(token))
             {
