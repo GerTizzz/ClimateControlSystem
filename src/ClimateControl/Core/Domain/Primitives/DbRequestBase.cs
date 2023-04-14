@@ -1,8 +1,7 @@
-﻿namespace Domain.Primitives
+﻿namespace Domain.Primitives;
+
+public interface IDbRequest
 {
-    public interface IDbRequest
-    {
-        int Start { get; }
-        int Count { get; }
-    }
+    int Start { get; }
+    int Count { get; }
 }

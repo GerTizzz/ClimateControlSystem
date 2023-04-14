@@ -1,8 +1,7 @@
-﻿namespace Shared.Dtos
+﻿namespace Shared.Dtos;
+
+public sealed class FactDto
 {
-    public sealed class FactDto
-    {
-        public float Temperature { get; set; }
-        public float Humidity { get; set; }
-    }
+    public float Temperature { get; set; }
+    public float Humidity { get; set; }
 }

@@ -1,35 +1,28 @@
 ﻿using WebClient.PaginationNavigation;
 
-namespace WebClient.NavigationPages
+namespace WebClient.NavigationPages;
+
+public sealed class NumberPaginationButton : BasePaginationButton
 {
-    public sealed class NumberPaginationButton : BasePaginationButton
+    public override string Title => PageNumber.ToString();
+
+    public bool IsActivePage { get; private set; }
+
+    public NumberPaginationButton(int pageNumber)
     {
-        private bool _isActivePage;
+        PageNumber = pageNumber;
+        ButtonType = PaginationButtonType.Number;
+        IsEnabled = true;
+        IsActivePage = false;
+    }
 
-        public override string Title => PageNumber.ToString();
+    public void MakeActive()
+    {
+        IsActivePage = true;
+    }
 
-        public bool IsActivePage
-        {
-            get => _isActivePage;
-            set => _isActivePage = value;
-        }
-
-        public NumberPaginationButton(int pageNumber)
-        {
-            PageNumber = pageNumber;
-            ButtonType = PaginationButtonType.Number;
-            IsEnabled = true;
-            IsActivePage = false;
-        }
-
-        public void MakeActive()
-        {
-            IsActivePage = true;
-        }
-
-        public void Deactivate()
-        {
-            IsActivePage = false;
-        }
+    public void Deactivate()
+    {
+        IsActivePage = false;
     }
 }

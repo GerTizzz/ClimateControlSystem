@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace WebApi.Migrations
 {
-    [DbContext(typeof(ForecastDbContext))]
+    [DbContext(typeof(MonitoringDatabaseContext))]
     [Migration("20230317165408_InitializeDb")]
     partial class InitializeDb
     {

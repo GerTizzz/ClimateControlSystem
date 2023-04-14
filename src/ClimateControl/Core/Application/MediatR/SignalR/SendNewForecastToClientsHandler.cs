@@ -4,33 +4,32 @@ using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using Shared.Dtos;
 
-namespace Application.MediatR.SignalR
+namespace Application.MediatR.SignalR;
+
+public sealed class SendNewForecastToClientsHandler : IRequestHandler<SendNewForecastToClientsQuery, bool>
 {
-    public sealed class SendNewForecastToClientsHandler : IRequestHandler<SendNewForecastToClientsQuery, bool>
+    private readonly IHubContext<ForecastHub> _monitoringHub;
+    private readonly IMapper _mapper;
+
+    public SendNewForecastToClientsHandler(IMapper mapper, IHubContext<ForecastHub> monitoringHub)
     {
-        private readonly IHubContext<ForecastHub> _monitoringHub;
-        private readonly IMapper _mapper;
+        _mapper = mapper;
+        _monitoringHub = monitoringHub;
+    }
 
-        public SendNewForecastToClientsHandler(IMapper mapper, IHubContext<ForecastHub> monitoringHub)
+    public async Task<bool> Handle(SendNewForecastToClientsQuery request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _mapper = mapper;
-            _monitoringHub = monitoringHub;
+            var monitoring = _mapper.Map<ForecastDto>(request.Forecast);
+
+            await _monitoringHub.Clients.All.SendAsync("GetMonitoringResponse", monitoring, cancellationToken: cancellationToken);
+
+            return true;
         }
-
-        public async Task<bool> Handle(SendNewForecastToClientsQuery request, CancellationToken cancellationToken)
+        catch
         {
-            try
-            {
-                var monitoring = _mapper.Map<ForecastDto>(request.Forecast);
-
-                await _monitoringHub.Clients.All.SendAsync("GetMonitoringResponse", monitoring, cancellationToken: cancellationToken);
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            return false;
         }
     }
 }

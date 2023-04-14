@@ -45,9 +45,14 @@ else
 
     private string _btnText = string.Empty;
 
+    private bool _isInitialized;
+
     protected override Task OnInitializedAsync()
     {
         _btnText = Id == default(Guid) ? "Создать пользователя" : "Редактировать пользователя";
+
+        _isInitialized = true;
+
         return Task.CompletedTask;
     }
 

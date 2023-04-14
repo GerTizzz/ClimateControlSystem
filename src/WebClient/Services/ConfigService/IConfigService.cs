@@ -1,11 +1,10 @@
 ﻿using Shared.Dtos;
 
-namespace WebClient.Services.ConfigService
-{
-    public interface IConfigService
-    {
-        Task<ConfigsDto> GetConfigAsync();
+namespace WebClient.Services.ConfigService;
 
-        Task<bool> UpdateConfigAsync(ConfigsDto config);
-    }
+public interface IConfigService
+{
+    Task<ConfigsDto> GetConfigAsync();
+
+    Task<bool> UpdateConfigAsync(ConfigsDto config);
 }

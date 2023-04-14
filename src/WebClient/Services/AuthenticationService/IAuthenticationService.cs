@@ -1,10 +1,9 @@
 ﻿using Shared.Dtos;
 
-namespace WebClient.Services.AuthenticationService
+namespace WebClient.Services.AuthenticationService;
+
+public interface IAuthenticationService
 {
-    public interface IAuthenticationService
-    {
-        Task<bool> Login(UserDto userForAuthentication);
-        Task Logout();
-    }
+    Task<bool> Login(UserDto userForAuthentication);
+    Task Logout();
 }

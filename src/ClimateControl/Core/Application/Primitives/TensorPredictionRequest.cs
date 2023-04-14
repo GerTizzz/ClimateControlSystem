@@ -1,10 +1,9 @@
 ﻿using Microsoft.ML.Data;
 
-namespace Application.Primitives
+namespace Application.Primitives;
+
+public sealed class TensorPredictionRequest
 {
-    public sealed class TensorPredictionRequest
-    {
-        [VectorType(12)]
-        public float[] serving_default_input_1 { get; set; }
-    }
+    [VectorType(12)]
+    public float[] serving_default_input_1 { get; set; }
 }

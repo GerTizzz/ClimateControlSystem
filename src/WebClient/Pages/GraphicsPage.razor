@@ -12,11 +12,17 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_forecasts is null || _forecasts.Any() is false)
+        @if (_isInitialized is false)
         {
-            <p>
-                <em>Загрузка...</em>
-            </p>
+            <strong style="text-align:center; align-self:center">
+                Загрузка...
+            </strong>
+        }
+        else if (_forecasts is null || _forecasts.Any() is false)
+        {
+            <strong style="text-align:center; font-size:large">
+                Нет данных для отображения...
+            </strong>
         }
         else
         {
@@ -60,6 +66,8 @@
 
     private long _forecastsCount;
 
+    private bool _isInitialized;
+
     protected override async Task OnInitializedAsync()
     {
         _config = await ConfigService.GetConfigAsync();
@@ -67,8 +75,11 @@
         _forecastsCount = await ForecastService.GetForecastsCountAsync();
 
         _forecasts = await ForecastService.GetForecastsAsync(StartRecordsRequestCount, RecordsPerPage);
+        _forecasts.Reverse();
 
         SetGraphicsConfigs();
+
+        _isInitialized = true;
     }
 
     private void CalculateGraphicsData()
@@ -92,6 +103,7 @@
     private async Task OnPageChanged(RecordsRequest request)
     {
         _forecasts = await ForecastService.GetForecastsAsync(request.RecordsOffset, request.RecordsCount);
+        _forecasts.Reverse();
 
         await RerenderGraphics();
     }

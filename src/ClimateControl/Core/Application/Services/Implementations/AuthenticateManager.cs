@@ -1,4 +1,4 @@
-﻿using Application.MediatR.UserRepository.Read;
+﻿using Application.MediatR.UsersRepository;
 using Application.Services.Strategies;
 using Domain.Enumerations;
 using MediatR;
@@ -10,92 +10,91 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Application.Services.Implementations
+namespace Application.Services.Implementations;
+
+public class AuthenticateManager : IAuthenticateManager
 {
-    public class AuthenticateManager : IAuthenticateManager
+    private readonly IMediator _mediator;
+    private readonly IConfiguration _configuration;
+
+    public AuthenticateManager(IMediator mediator, IConfiguration configuration)
     {
-        private readonly IMediator _mediator;
-        private readonly IConfiguration _configuration;
+        _mediator = mediator;
+        _configuration = configuration;
+    }
 
-        public AuthenticateManager(IMediator mediator, IConfiguration configuration)
+    public async Task<string?> TryGetToken(UserDto user, string password)
+    {
+        var verifiedUser = await _mediator.Send(new GetUserByNameQuery(user.Name));
+
+        if (verifiedUser is null || VerifyPasswordHash(password, verifiedUser.PasswordHash, verifiedUser.PasswordSalt) is false)
         {
-            _mediator = mediator;
-            _configuration = configuration;
+            return null;
         }
 
-        public async Task<string?> TryGetToken(UserDto user, string password)
+        var token = string.Empty;
+
+        if (VerifyPasswordHash(password, verifiedUser.PasswordHash, verifiedUser.PasswordSalt))
         {
-            var verifiedUser = await _mediator.Send(new GetUserByNameQuery(user.Name));
-
-            if (verifiedUser is null || VerifyPasswordHash(password, verifiedUser.PasswordHash, verifiedUser.PasswordSalt) is false)
-            {
-                return null;
-            }
-
-            var token = string.Empty;
-
-            if (VerifyPasswordHash(password, verifiedUser.PasswordHash, verifiedUser.PasswordSalt))
-            {
-                token = CreateToken(verifiedUser, _configuration.GetSection("AppSettings:Token").Value);
-            }
-
-            return token;
+            token = CreateToken(verifiedUser, _configuration.GetSection("AppSettings:Token").Value);
         }
 
-        private static bool VerifyPasswordHash(string password, byte[] passwsordHash, byte[] passwordSalt)
+        return token;
+    }
+
+    private static bool VerifyPasswordHash(string password, IEnumerable<byte> passwsordHash, byte[] passwordSalt)
+    {
+        using var hmac = new HMACSHA512(passwordSalt);
+        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+        return computedHash.SequenceEqual(passwsordHash);
+    }
+
+    private static string CreateToken(User user, string securityKey)
+    {
+        var claim = GetIdentity(user);
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
+
+        var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+        var timeNow = DateTime.UtcNow;
+
+        var token = new JwtSecurityToken(
+            claims: claim.Claims,
+            expires: timeNow.Add(TimeSpan.FromHours(5)),
+            signingCredentials: cred);
+
+        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+        return jwt;
+    }
+
+    private static ClaimsIdentity GetIdentity(User user)
+    {
+        var role = string.Empty;
+
+        if (user.Role == UserType.Admin)
         {
-            using var hmac = new HMACSHA512(passwordSalt);
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return computedHash.SequenceEqual(passwsordHash);
+            role = "Admin";
+        }
+        else if (user.Role != UserType.Operator)
+        {
+            role = "Operator";
         }
 
-        private static string CreateToken(User user, string securityKey)
+        var claims = new List<Claim>
         {
-            var claim = GetIdentity(user);
+            new Claim(ClaimsIdentity.DefaultNameClaimType, user.Name),
+            new Claim(ClaimsIdentity.DefaultRoleClaimType, role)
+        };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
+        var claimsIdentity =
+            new ClaimsIdentity(
+                claims,
+                "Token",
+                ClaimsIdentity.DefaultNameClaimType,
+                ClaimsIdentity.DefaultRoleClaimType);
 
-            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-            var timeNow = DateTime.UtcNow;
-
-            var token = new JwtSecurityToken(
-                claims: claim.Claims,
-                expires: timeNow.Add(TimeSpan.FromHours(5)),
-                signingCredentials: cred);
-
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return jwt;
-        }
-
-        private static ClaimsIdentity GetIdentity(User user)
-        {
-            var role = string.Empty;
-
-            if (user.Role == UserType.Admin)
-            {
-                role = "Admin";
-            }
-            else if (user.Role != UserType.Operator)
-            {
-                role = "Operator";
-            }
-
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Name),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, role)
-            };
-
-            var claimsIdentity =
-                new ClaimsIdentity(
-                    claims,
-                    "Token",
-                    ClaimsIdentity.DefaultNameClaimType,
-                    ClaimsIdentity.DefaultRoleClaimType);
-
-            return claimsIdentity;
-        }
+        return claimsIdentity;
     }
 }

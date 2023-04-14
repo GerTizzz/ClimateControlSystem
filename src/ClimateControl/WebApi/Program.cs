@@ -7,12 +7,12 @@ using Presentation;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string modelLocation = string.Join("\\", 
+var modelLocation = string.Join("\\", 
     Directory.GetCurrentDirectory()
     .Split('\\')
     .TakeWhile(str => str != "src")) + "\\" + builder.Configuration["ModelLocationPath"];
 
-string secretToken = builder.Configuration.GetSection("AppSettings:Token").Value;
+var secretToken = builder.Configuration.GetSection("AppSettings:Token").Value;
 
 builder.Services
     .AddApplication(modelLocation, secretToken)

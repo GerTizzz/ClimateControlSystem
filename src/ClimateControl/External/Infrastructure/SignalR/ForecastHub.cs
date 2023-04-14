@@ -1,16 +1,15 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Shared.Dtos;
 
-namespace Infrastructure.SignalR
+namespace Infrastructure.SignalR;
+
+public class ForecastHub : Hub
 {
-    public class ForecastHub : Hub
+    public async Task SendMonitoringToWebClients(ForecastDto dataToSend)
     {
-        public async Task SendMonitoringToWebClients(ForecastDto dataToSend)
+        if (Clients is not null)
         {
-            if (Clients is not null)
-            {
-                await Clients.All.SendAsync("GetNewForecast", dataToSend);
-            }
+            await Clients.All.SendAsync("GetNewForecast", dataToSend);
         }
     }
 }

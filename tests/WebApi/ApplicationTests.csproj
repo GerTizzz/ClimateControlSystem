@@ -18,12 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="PredictionEngine\" />
+    <Folder Include="PredictionEngineTests\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ClimateControl\Core\Application\Application.csproj" />
-    <ProjectReference Include="..\..\src\ClimateControl\Core\Domain\Domain.csproj" />
   </ItemGroup>
 
 </Project>

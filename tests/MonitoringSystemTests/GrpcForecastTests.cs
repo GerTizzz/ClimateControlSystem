@@ -8,6 +8,7 @@ namespace MonitoringSystemTests
         [SetUp]
         public void Setup()
         {
+
         }
 
         [Test]

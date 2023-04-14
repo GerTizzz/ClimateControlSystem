@@ -1,10 +1,9 @@
-﻿namespace WebClient.Resources
+﻿namespace WebClient.Resources;
+
+public sealed record GraphicData(string time, float value, string type)
 {
-    public record GraphicData(string time, float value, string type)
+    public override string ToString()
     {
-        public override string ToString()
-        {
-            return $"X: {time} Y: {value} Type: {type}";
-        }
+        return $"X: {time} Y: {value} Type: {type}";
     }
 }

@@ -1,48 +1,47 @@
 ﻿using WebClient.PaginationNavigation;
 
-namespace WebClient.NavigationPages
+namespace WebClient.NavigationPages;
+
+public abstract class BasePaginationButton
 {
-    public abstract class BasePaginationButton
+    private int _pageNumber;
+    private bool _isEnabled;
+    private PaginationButtonType _buttonType;
+
+    public event Action<BasePaginationButton> ButtonPressedEvent;
+
+    public PaginationButtonType ButtonType
     {
-        private int _pageNumber;
-        private bool _isEnabled;
-        private PaginationButtonType _buttonType;
+        get => _buttonType;
+        protected set => _buttonType = value;
+    }
 
-        public event Action<BasePaginationButton> ButtonPressedEvent;
+    public bool IsEnabled
+    {
+        get => _isEnabled;
+        set => _isEnabled = value;
+    }
 
-        public PaginationButtonType ButtonType
-        {
-            get => _buttonType;
-            protected set => _buttonType = value;
-        }
+    public int PageNumber
+    {
+        get => _pageNumber;
+        set => _pageNumber = value;
+    }
 
-        public bool IsEnabled
-        {
-            get => _isEnabled;
-            set => _isEnabled = value;
-        }
+    public abstract string Title { get; }
 
-        public int PageNumber
-        {
-            get => _pageNumber;
-            set => _pageNumber = value;
-        }
+    public void Enable()
+    {
+        IsEnabled = true;
+    }
 
-        public abstract string Title { get; }
+    public void Disable()
+    {
+        IsEnabled = false;
+    }
 
-        public void Enable()
-        {
-            IsEnabled = true;
-        }
-
-        public void Disable()
-        {
-            IsEnabled = false;
-        }
-
-        public void ChangePage()
-        {
-            ButtonPressedEvent?.Invoke(this);
-        }
+    public void ChangePage()
+    {
+        ButtonPressedEvent?.Invoke(this);
     }
 }

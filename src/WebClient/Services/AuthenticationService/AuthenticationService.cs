@@ -5,47 +5,46 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Shared.Dtos;
 using WebClient.Authentication;
 
-namespace WebClient.Services.AuthenticationService
+namespace WebClient.Services.AuthenticationService;
+
+public class AuthenticationService : IAuthenticationService
 {
-    public class AuthenticationService : IAuthenticationService
+    private readonly HttpClient _client;
+    private readonly AuthenticationStateProvider _authStateProvider;
+    private readonly ILocalStorageService _localStorage;
+
+    public AuthenticationService(HttpClient client,
+        AuthenticationStateProvider authStateProvider,
+        ILocalStorageService localStorage)
     {
-        private readonly HttpClient _client;
-        private readonly AuthenticationStateProvider _authStateProvider;
-        private readonly ILocalStorageService _localStorage;
+        _client = client;
+        _authStateProvider = authStateProvider;
+        _localStorage = localStorage;
+    }
 
-        public AuthenticationService(HttpClient client,
-            AuthenticationStateProvider authStateProvider,
-            ILocalStorageService localStorage)
+    public async Task<bool> Login(UserDto userForAuthentication)
+    {
+        var authResult = await _client.PostAsJsonAsync("api/auth/login", userForAuthentication);
+        var token = await authResult.Content.ReadAsStringAsync();
+
+        if (authResult.IsSuccessStatusCode is false)
         {
-            _client = client;
-            _authStateProvider = authStateProvider;
-            _localStorage = localStorage;
+            return false;
         }
 
-        public async Task<bool> Login(UserDto userForAuthentication)
-        {
-            var authResult = await _client.PostAsJsonAsync("api/auth/login", userForAuthentication);
-            var token = await authResult.Content.ReadAsStringAsync();
+        await _localStorage.SetItemAsync("authToken", token);
 
-            if (authResult.IsSuccessStatusCode is false)
-            {
-                return false;
-            }
+        ((AuthStateProvider)_authStateProvider).NotifyUserAuthentication(token);
 
-            await _localStorage.SetItemAsync("authToken", token);
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            ((AuthStateProvider)_authStateProvider).NotifyUserAuthentication(token);
+        return true;
+    }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            return true;
-        }
-
-        public async Task Logout()
-        {
-            await _localStorage.RemoveItemAsync("authToken");
-            ((AuthStateProvider)_authStateProvider).NotifyUserLogout();
-            _client.DefaultRequestHeaders.Authorization = null;
-        }
+    public async Task Logout()
+    {
+        await _localStorage.RemoveItemAsync("authToken");
+        ((AuthStateProvider)_authStateProvider).NotifyUserLogout();
+        _client.DefaultRequestHeaders.Authorization = null;
     }
 }

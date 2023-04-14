@@ -66,6 +66,7 @@
         {
             _config = await ConfigService.GetConfigAsync();
             _forecasts.AddRange(await ForecastService.GetForecastsAsync(RecordsRequestBeginningIndex, RecordsCount));
+            _forecasts.Reverse();
             _forecasts.Capacity = RecordsCount;
 
             UpdateRenderableSeries();

@@ -1,17 +1,16 @@
 ﻿using Domain.Primitives;
 
-namespace Application.Primitives
+namespace Application.Primitives;
+
+public sealed class DbRequest : IDbRequest
 {
-    public sealed class DbRequest : IDbRequest
+    public int Start { get; }
+
+    public int Count { get; }
+
+    public DbRequest(int start, int count)
     {
-        public int Start { get; private set; }
-
-        public int Count { get; private set; }
-
-        public DbRequest(int start, int count)
-        {
-            Start = start;
-            Count = count;
-        }
+        Start = start;
+        Count = count;
     }
 }

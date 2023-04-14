@@ -1,4 +1,4 @@
-﻿using Application.MediatR.ForecastRepository;
+﻿using Application.MediatR.WarningsRepository;
 using Application.Primitives;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +19,7 @@ namespace Presentation.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("scount")]
+        [HttpGet("count")]
         public async Task<ActionResult<long>> GetWarningsCount()
         {
             var recordsCount = await _mediator.Send(new GetWarningsCountQuery());
@@ -27,7 +27,7 @@ namespace Presentation.Controllers
             return Ok(recordsCount);
         }
 
-        [HttpGet("/{start:int}/{count:int:range(1, 25)}")]
+        [HttpGet("interval/{start:int}/{count:int:range(1, 25)}")]
         public async Task<ActionResult<List<WarningDto>>> GetWarnings(int start, int count)
         {
             var records = await _mediator.Send(new GetWarningsQuery(new DbRequest(start, count)));

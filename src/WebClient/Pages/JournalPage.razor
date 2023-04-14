@@ -9,11 +9,17 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_forecastings is null || _forecastings.Any() is false)
+        @if (_isInitialized is false)
         {
-            <p>
-                <em>Загрузка...</em>
-            </p>
+            <strong style="text-align:center; align-self:center">
+                Загрузка...
+            </strong>
+        }
+        else if (_forecastings is null || _forecastings.Any() is false)
+        {
+            <strong style="text-align:center; font-size:large">
+                Нет данных для отображения...
+            </strong>
         }
         else
         {
@@ -143,6 +149,7 @@
     private const int RecordsPerPage = 15;
     private const int StartRecordsRequestCount = 0;
     private const string NoValueString = "-";
+    private bool _isInitialized;
 
     private List<ForecastDto> _forecastings;
     private long _forecastingsRecordsCount;
@@ -152,11 +159,12 @@
         _forecastingsRecordsCount = await ForecastService.GetForecastsCountAsync();
 
         _forecastings = await ForecastService.GetForecastsAsync(StartRecordsRequestCount, RecordsPerPage);
+
+        _isInitialized = true;
     }
 
     private async Task OnPageChanged(RecordsRequest request)
     {
         _forecastings = await ForecastService.GetForecastsAsync(request.RecordsOffset, request.RecordsCount);
     }
-
 }

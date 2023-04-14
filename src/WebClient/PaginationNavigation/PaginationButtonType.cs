@@ -1,11 +1,10 @@
-﻿namespace WebClient.PaginationNavigation
+﻿namespace WebClient.PaginationNavigation;
+
+public enum PaginationButtonType
 {
-    public enum PaginationButtonType
-    {
-        StartPage,
-        PreviousPage,
-        NextPage,
-        LastPage,
-        Number
-    }
+    StartPage,
+    PreviousPage,
+    NextPage,
+    LastPage,
+    Number
 }

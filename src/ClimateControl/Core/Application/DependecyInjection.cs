@@ -10,53 +10,52 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace Application
+namespace Application;
+
+public static class DependecyInjection
 {
-    public static class DependecyInjection
+    public static IServiceCollection AddApplication(this IServiceCollection services,
+        string modelLocation,
+        string secretToken)
     {
-        public static IServiceCollection AddApplication(this IServiceCollection services,
-            string modelLocation,
-            string secretToken)
+        if (services == null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            var assembly = typeof(DependecyInjection).Assembly;
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(secretToken)),
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateLifetime = true
-                    };
-                });
-
-            services.AddAutoMapper(typeof(AppMappingProfile));
-
-            services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(assembly));
-
-            services.AddScoped<IForecastService, ForecastService>();
-
-            services.AddScoped<IAuthenticateManager, AuthenticateManager>();
-
-            services.AddScoped<IConfigManager, ConfigManager>();
-
-            services.AddSingleton<IConfigSingleton, ConfigSingleton>();
-
-            services.AddSingleton<IPredictionEngineService>(_ =>
-                new PredictionEngineService(modelLocation));
-
-            services.AddGrpc();
-
-            return services;
+            throw new ArgumentNullException(nameof(services));
         }
+
+        var assembly = typeof(DependecyInjection).Assembly;
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(secretToken)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true
+                };
+            });
+
+        services.AddAutoMapper(typeof(AppMappingProfile));
+
+        services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(assembly));
+
+        services.AddScoped<IForecastsService, ForecastsService>();
+
+        services.AddScoped<IAuthenticateManager, AuthenticateManager>();
+
+        services.AddScoped<IConfigsManager, ConfigsManager>();
+
+        services.AddSingleton<IConfigSingleton, ConfigSingleton>();
+
+        services.AddSingleton<IPredictionEngine>(_ =>
+            new PredictionEngine(modelLocation));
+
+        services.AddGrpc();
+
+        return services;
     }
 }

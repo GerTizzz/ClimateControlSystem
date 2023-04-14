@@ -6,10 +6,6 @@ namespace WebClient.Services.ForecastService
     {
         Task<long> GetForecastsCountAsync();
 
-        Task<long> GetWarningsCountAsync();
-
         Task<List<ForecastDto>> GetForecastsAsync(int start, int count);
-
-        Task<List<WarningDto>> GetWarningsAsync(int start, int count);
     }
 }

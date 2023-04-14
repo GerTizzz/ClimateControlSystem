@@ -1,7 +1,6 @@
-﻿namespace Application.Primitives
+﻿namespace Application.Primitives;
+
+public sealed class TensorPredictionResult
 {
-    public sealed class TensorPredictionResult
-    {
-        public float[] StatefulPartitionedCall { get; set; }
-    }
+    public float[] StatefulPartitionedCall { get; set; }
 }

@@ -2,72 +2,71 @@
 using Shared.Dtos;
 using WebClient.Services.AuthenticationService;
 
-namespace WebClient.Services.ConfigService
+namespace WebClient.Services.ConfigService;
+
+public class ConfigService : IConfigService
 {
-    public class ConfigService : IConfigService
+    private readonly HttpClient _httpClient;
+    private readonly IAuthenticationService _authService;
+
+    public ConfigService(HttpClient httpClient, IAuthenticationService authService)
     {
-        private readonly HttpClient _httpClient;
-        private readonly IAuthenticationService _authService;
+        _httpClient = httpClient;
+        _authService = authService;
+    }
 
-        public ConfigService(HttpClient httpClient, IAuthenticationService authService)
+    public async Task<ConfigsDto> GetConfigAsync()
+    {
+        try
         {
-            _httpClient = httpClient;
-            _authService = authService;
+            var result = await _httpClient.GetFromJsonAsync<ConfigsDto>($"api/configs/");
+
+            return result ?? throw new AggregateException("Config has not been recieved!");
         }
-
-        public async Task<ConfigsDto> GetConfigAsync()
+        catch (HttpRequestException e)
         {
-            try
+            if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
             {
-                var result = await _httpClient.GetFromJsonAsync<ConfigsDto>($"api/config/");
-
-                return result ?? throw new AggregateException("Config has not been recieved!");
+                await _authService.Logout();
             }
-            catch (HttpRequestException e)
-            {
-                if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
-                {
-                    await _authService.Logout();
-                }
-            }
-
-            return GetDefaultConfig();
         }
 
-        public async Task<bool> UpdateConfigAsync(ConfigsDto config)
+        return GetDefaultConfig();
+    }
+
+    public async Task<bool> UpdateConfigAsync(ConfigsDto config)
+    {
+        try
         {
-            try
-            {
-                var result = await _httpClient.PutAsJsonAsync($"api/config/", config);
+            var result = await _httpClient.PutAsJsonAsync($"api/configs/", config);
 
-                return await UpdateConfigResponse(result);
-            }
-            catch (HttpRequestException e)
-            {
-                if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
-                {
-                    await _authService.Logout();
-                }
-            }
-
-            return false;
+            return await UpdateConfigResponse(result);
         }
-
-        private static async Task<bool> UpdateConfigResponse(HttpResponseMessage result)
+        catch (HttpRequestException e)
         {
-            return await result.Content.ReadFromJsonAsync<bool>();
+            if (e.StatusCode is System.Net.HttpStatusCode.Unauthorized)
+            {
+                await _authService.Logout();
+            }
         }
 
-        private static ConfigsDto GetDefaultConfig()
+        return false;
+    }
+
+    private static async Task<bool> UpdateConfigResponse(HttpResponseMessage result)
+    {
+        return await result.Content.ReadFromJsonAsync<bool>();
+    }
+
+    private static ConfigsDto GetDefaultConfig()
+    {
+        return new ConfigsDto
         {
-            return new ConfigsDto()
-            {
-                UpperTemperatureWarningLimit = 24f,
-                LowerTemperatureWarningLimit = 16f,
-                UpperHumidityWarningLimit = 21f,
-                LowerHumidityWarningLimit = 10f,
-                PredictionTimeIntervalSeconds = 5
-            };
-        }
+            UpperTemperatureWarningLimit = 24f,
+            LowerTemperatureWarningLimit = 16f,
+            UpperHumidityWarningLimit = 21f,
+            LowerHumidityWarningLimit = 10f,
+            PredictionTimeIntervalSeconds = 5
+        };
     }
 }

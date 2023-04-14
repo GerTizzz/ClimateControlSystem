@@ -8,11 +8,17 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_users.Count == 0)
+        @if (_isInitialized is false)
         {
-            <p>
-                <em>Загрузка...</em>
-            </p>
+            <strong style="text-align:center; align-self:center">
+                Загрузка...
+            </strong>
+        }
+        else if (_users.Count == 0)
+        {
+            <strong style="text-align:center; font-size:large">
+                Нет данных для отображения...
+            </strong>
         }
         else
         {
@@ -49,10 +55,13 @@
 
 @code {
     private readonly List<UserDto> _users = new();
+    private bool _isInitialized;
 
     protected override async Task OnInitializedAsync()
     {
         _users.AddRange(await UsersService.GetUsers());
+
+        _isInitialized = true;
     }
 
     void ShowUser(Guid id)
