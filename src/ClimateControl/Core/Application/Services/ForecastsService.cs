@@ -75,9 +75,13 @@ public class ForecastsService : IForecastsService
         var temperature = Math.Abs(100f - prediction.Temperature * 100f / actualData.Temperature);
         var humidity = Math.Abs(100f - prediction.Humidity * 100f / actualData.Humidity);
 
-        var accuracy = new Error(Guid.NewGuid(), temperature, humidity);
+        var error = new Error(Guid.NewGuid())
+        {
+            Temperature = temperature,
+            Humidity = humidity
+        };
 
-        return accuracy;
+        return error;
     }
 
     private static Task<Warning?> TryGetWarning(Label label, Config config)

@@ -77,16 +77,27 @@
         _forecasts = await ForecastService.GetForecastsAsync(StartRecordsRequestCount, RecordsPerPage);
         _forecasts.Reverse();
 
-        SetGraphicsConfigs();
+        if (_forecasts.Any())
+        {
+            SetGraphicsConfigs();
+        }
 
         _isInitialized = true;
     }
 
     private void CalculateGraphicsData()
     {
-        _temperatureData = AntDataHelper.GetTemperature(_forecasts, _config).ToList();
+        if (_forecasts is null || _forecasts.Any() is false)
+        {
+            return;
+        }
 
-        _humidityData = AntDataHelper.GetHumidity(_forecasts, _config).ToList();
+        if (_config is not null)
+        {
+            _temperatureData = AntDataHelper.GetTemperature(_forecasts, _config).ToList();
+
+            _humidityData = AntDataHelper.GetHumidity(_forecasts, _config).ToList();
+        }
 
         _accuracyData = AntDataHelper.GetError(_forecasts).ToList();
     }

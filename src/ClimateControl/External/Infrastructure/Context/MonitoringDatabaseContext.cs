@@ -21,7 +21,14 @@ public sealed class MonitoringDatabaseContext : DbContext
 
     public MonitoringDatabaseContext(DbContextOptions options) : base(options)
     {
-        Database.Migrate();
+        try
+        {
+            Database.Migrate();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -4,12 +4,11 @@ namespace Domain.Entities;
 
 public sealed class Error : Entity
 {
-    public float Temperature { get; }
-    public float Humidity { get; }
+    public float Temperature { get; set; }
+    public float Humidity { get; set; }
 
-    public Error(Guid id, float temperature, float humidity) : base(id)
+    public Error(Guid id) : base(id)
     {
-        Temperature = temperature;
-        Humidity = humidity;
+
     }
 }
