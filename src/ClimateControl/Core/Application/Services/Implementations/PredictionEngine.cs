@@ -37,7 +37,6 @@ public sealed class PredictionEngine : IPredictionEngine
 
     private static IDataView CreateEmptyDataView(MLContext mlContext)
     {
-        IEnumerable<TensorPredictionRequest> enumerableData = new List<TensorPredictionRequest>();
-        return mlContext.Data.LoadFromEnumerable(enumerableData);
+        return mlContext.Data.LoadFromEnumerable(Enumerable.Empty<TensorPredictionRequest>());
     }
 }

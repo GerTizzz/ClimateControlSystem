@@ -158,24 +158,28 @@ namespace ApplicationTests.PredictionEngineTests
         {
             var modelDirectory = string.Join("\\", Directory.GetCurrentDirectory()
                 .Split('\\')
-                .TakeWhile(str => str != "tests")) + "\\mlModel";
+                .TakeWhile(str => str != "tests")) + "\\mlModel\\lstm";
 
             var modelPath = modelDirectory + @"\saved_model.pb";
 
             var predictionEngine = new PredictionEngine(modelDirectory);
 
-            var features = new float[144][];
+            List<float> features = new List<float>();
 
-            for (var i = 0; i < features.Length; i++)
+            for (var i = 0; i < _lstmTestData.Length; i++)
             {
-                features[i] = _lstmTestData[i].Split(";").Select(float.Parse).ToArray();
+                var parsedValue = _lstmTestData[i].Split(";").ToArray();
+                for (int j = 0; j < parsedValue.Length; j++)
+                {
+                    features.Add(float.Parse(parsedValue[j].Replace('.', ',')));
+                }
             }
 
             //var features = FeaturesData.Replace('.', ',').Split(';').Select(float.Parse).ToArray();
 
             var request = new TensorPredictionRequest()
             {
-                serving_default_lstm_input = features
+                serving_default_lstm_input = features.ToArray()
             };
 
             var prediction = await predictionEngine.Predict(request);
