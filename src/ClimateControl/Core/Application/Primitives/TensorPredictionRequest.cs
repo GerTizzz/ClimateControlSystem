@@ -4,6 +4,6 @@ namespace Application.Primitives;
 
 public sealed class TensorPredictionRequest
 {
-    [VectorType(12)]
-    public float[] serving_default_input_1 { get; set; }
+    [VectorType(144, 3)]
+    public float[][] serving_default_lstm_input { get; set; }
 }

@@ -28,7 +28,7 @@ public sealed class PredictionEngine : IPredictionEngine
 
         var pipeline = model.ScoreTensorFlowModel(
             new[] { "StatefulPartitionedCall" },
-            new[] { "serving_default_input_1" });
+            new[] { "serving_default_lstm_input" });
 
         var transformer = pipeline.Fit(CreateEmptyDataView(mlContext));
 

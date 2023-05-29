@@ -14,7 +14,7 @@ public class AppMappingProfile : Profile
         CreateMap<GrpcForecastRequest, Feature>()
             .ConstructUsing(request => new Feature(Guid.NewGuid()));
 
-        CreateMap<Feature, TensorPredictionRequest>()
+        /*CreateMap<Feature, TensorPredictionRequest>()
             .ForMember(tensor => tensor.serving_default_input_1, opt => opt
                 .MapFrom(property => new[]
                 {
@@ -30,7 +30,7 @@ public class AppMappingProfile : Profile
                     property.WindDirection,
                     property.WindEnthalpy,
                     property.CoolingValue
-                }));
+                }));*/
 
         CreateMap<TensorPredictionResult, Label>()
             .ForMember(result => result.Temperature, tensor => tensor
