@@ -10,11 +10,13 @@ namespace ApplicationTests.PredictionEngineTests
         [Test]
         public async Task CheckPrediction()
         {
-            var modelLocation = string.Join("\\", Directory.GetCurrentDirectory()
+            var modelDirectory = string.Join("\\", Directory.GetCurrentDirectory()
                 .Split('\\')
                 .TakeWhile(str => str != "tests")) + "\\mlModel";
 
-            var predictionEngine = new PredictionEngine(modelLocation);
+            var modelPath = modelDirectory + @"\saved_model.pb";
+
+            var predictionEngine = new PredictionEngine(modelDirectory);
 
             var features = FeaturesData.Replace('.', ',').Split(';').Select(float.Parse).ToArray();
 
