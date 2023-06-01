@@ -14,38 +14,27 @@ public class AppMappingProfile : Profile
         CreateMap<GrpcForecastRequest, Feature>()
             .ConstructUsing(request => new Feature(Guid.NewGuid()));
 
-        /*CreateMap<Feature, TensorPredictionRequest>()
-            .ForMember(tensor => tensor.serving_default_input_1, opt => opt
+        CreateMap<Feature, TensorPredictionRequest>()
+            .ForMember(tensor => tensor.serving_default_lstm_input, opt => opt
                 .MapFrom(property => new[]
                 {
-                    property.ClusterLoad,
-                    property.CpuUsage,
-                    property.ClusterTemperature,
-                    property.Temperature,
-                    property.Humidity,
-                    property.AirHumidityOutside,
-                    property.AirDryTemperatureOutside,
-                    property.AirWetTemperatureOutside,
-                    property.WindSpeed,
-                    property.WindDirection,
-                    property.WindEnthalpy,
-                    property.CoolingValue
-                }));*/
+                    property.TemperatureInside,
+                    property.TemperatureOutside,
+                    property.CoolingPower
+                }));
 
-        CreateMap<TensorPredictionResult, Label>()
+        CreateMap<TensorPredictionResult, PredictedValue>()
             .ForMember(result => result.Temperature, tensor => tensor
                 .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[0]))
-            .ForMember(result => result.Humidity, tensor => tensor
-                .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[1]))
-            .ConstructUsing(result => new Label(Guid.NewGuid()));
+            .ConstructUsing(result => new PredictedValue(Guid.NewGuid()));
 
         CreateMap<Forecast, ForecastDto>();
 
         CreateMap<Error, ErrorDto>();
 
-        CreateMap<Fact, FactDto>();
+        CreateMap<ActualValue, FactDto>();
 
-        CreateMap<Label, LabelDto>();
+        CreateMap<PredictedValue, LabelDto>();
 
         CreateMap<Warning, WarningDto>();
 
@@ -62,8 +51,6 @@ public class AppMappingProfile : Profile
                 .MapFrom(entity => entity.Warning.Temperature))
             .ForMember(dto => dto.Humidity, monEntity => monEntity
                 .MapFrom(entity => entity.Warning.Humidity));
-
-
 
         CreateMap<ConfigsDto, Config>();
 

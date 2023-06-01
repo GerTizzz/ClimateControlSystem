@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.MediatR.PredictionEngine;
 
-public sealed class GetPredictionHandler : IRequestHandler<GetPredictionQuery, Label>
+public sealed class GetPredictionHandler : IRequestHandler<GetPredictionQuery, PredictedValue>
 {
     private readonly IPredictionEngine _predictionEngine;
     private readonly IMapper _mapper;
@@ -16,13 +16,13 @@ public sealed class GetPredictionHandler : IRequestHandler<GetPredictionQuery, L
         _mapper = mapper;
     }
 
-    public async Task<Label> Handle(GetPredictionQuery request, CancellationToken cancellationToken)
+    public async Task<PredictedValue> Handle(GetPredictionQuery request, CancellationToken cancellationToken)
     {
         var tensorPredictionRequest = _mapper.Map<TensorPredictionRequest>(request.Feature);
 
         var tensorPredictionResult = await _predictionEngine.Predict(tensorPredictionRequest);
 
-        var prediction = _mapper.Map<Label>(tensorPredictionResult);
+        var prediction = _mapper.Map<PredictedValue>(tensorPredictionResult);
 
         return prediction;
     }

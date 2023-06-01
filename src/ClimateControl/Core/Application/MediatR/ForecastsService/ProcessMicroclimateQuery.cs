@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.MediatR.ForecastsService;
 
-public sealed class ProcessMicroclimateQuery : IRequest<Label>
+public sealed class ProcessMicroclimateQuery : IRequest<PredictedValue>
 {
     public GrpcForecastRequest ForecastRequest { get; }
 

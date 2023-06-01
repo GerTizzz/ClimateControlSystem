@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.MediatR.ForecastsService;
 
-public class ProcessMicroclimateHandler : IRequestHandler<ProcessMicroclimateQuery, Label>
+public class ProcessMicroclimateHandler : IRequestHandler<ProcessMicroclimateQuery, PredictedValue>
 {
     private readonly IForecastsService _predictionService;
     private readonly IMapper _mapper;
@@ -15,7 +15,7 @@ public class ProcessMicroclimateHandler : IRequestHandler<ProcessMicroclimateQue
         _mapper = mapper;
     }
 
-    public async Task<Label> Handle(ProcessMicroclimateQuery request, CancellationToken cancellationToken)
+    public async Task<PredictedValue> Handle(ProcessMicroclimateQuery request, CancellationToken cancellationToken)
     {
         var featuresData = _mapper.Map<Feature>(request.ForecastRequest);
 

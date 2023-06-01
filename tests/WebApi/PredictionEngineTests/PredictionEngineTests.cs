@@ -184,11 +184,9 @@ namespace ApplicationTests.PredictionEngineTests
 
             var prediction = await predictionEngine.Predict(request);
 
-            var print = "Температура воздуха внутри ЦОД: " +
-                        prediction.StatefulPartitionedCall[0] +
-                        Environment.NewLine +
-                        "Влажность воздуха внутри ЦОД: " +
-                        prediction.StatefulPartitionedCall[1];
+            var print = "Температура воздуха внутри ЦОД составит: " +
+                        (request.serving_default_lstm_input[request.serving_default_lstm_input.Length - 3] +
+                        prediction.StatefulPartitionedCall[0]);
 
             Console.WriteLine(print);
 

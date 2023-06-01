@@ -43,7 +43,7 @@ public class ForecastsRepository : IForecastsRepository
         return await _context.Forecasts.LongCountAsync();
     }
 
-    public async Task<Label?> TryGetLastPredictionAsync()
+    public async Task<PredictedValue?> TryGetLastPredictionAsync()
     {
         try
         {
@@ -58,7 +58,7 @@ public class ForecastsRepository : IForecastsRepository
                 return null;
             }
 
-            return await _context.Labels.FirstOrDefaultAsync(prediction => prediction.Id == lastPredictionId);
+            return await _context.PredictedValues.FirstOrDefaultAsync(prediction => prediction.Id == lastPredictionId);
         }
         catch
         {
@@ -94,7 +94,7 @@ public class ForecastsRepository : IForecastsRepository
 
                 if (forecast.Fact is not null)
                 {
-                    await _context.Facts.AddAsync(forecast.Fact);
+                    await _context.ActualValues.AddAsync(forecast.Fact);
                     await _context.SaveChangesAsync();
                 }
 

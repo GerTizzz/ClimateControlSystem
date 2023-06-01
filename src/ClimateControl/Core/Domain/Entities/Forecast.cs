@@ -10,10 +10,10 @@ public sealed class Forecast : Entity
     public Error? Error { get; set; }
 
     public Guid? FactId { get; set; }
-    public Fact? Fact { get; set; }
+    public ActualValue? Fact { get; set; }
 
     public Guid? LabelId { get; set; }
-    public Label? Label { get; set; }
+    public PredictedValue? Label { get; set; }
 
     public Guid? WarningId { get; set; }
     public Warning? Warning { get; set; }

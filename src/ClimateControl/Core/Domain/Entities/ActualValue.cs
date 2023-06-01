@@ -2,12 +2,11 @@
 
 namespace Domain.Entities;
 
-public sealed class Fact : Entity
+public sealed class ActualValue : Entity
 {
     public float Temperature { get; set; }
-    public float Humidity { get; set; }
 
-    public Fact(Guid id) : base(id)
+    public ActualValue(Guid id) : base(id)
     {
 
     }

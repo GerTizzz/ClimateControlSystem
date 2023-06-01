@@ -15,8 +15,8 @@ public sealed class MonitoringDatabaseContext : DbContext
     
     public DbSet<Feature> Features { get; set; }
     public DbSet<Error> Errors { get; set; }
-    public DbSet<Label> Labels { get; set; }
-    public DbSet<Fact> Facts { get; set; }
+    public DbSet<PredictedValue> PredictedValues { get; set; }
+    public DbSet<ActualValue> ActualValues { get; set; }
     public DbSet<Warning> Warnings { get; set; }
 
     public MonitoringDatabaseContext(DbContextOptions options) : base(options)
@@ -38,10 +38,8 @@ public sealed class MonitoringDatabaseContext : DbContext
             new byte[] { 29, 90, 245, 35, 83, 27, 162, 74, 226, 234, 171, 134, 93, 187, 246, 80, 193, 193, 90, 50, 37, 118, 116, 254, 107, 30, 200, 72, 10, 31, 43, 139, 58, 135, 118, 189, 5, 99, 211, 203, 0, 84, 81, 146, 28, 164, 132, 63, 61, 143, 124, 25, 66, 231, 99, 189, 203, 55, 91, 105, 23, 169, 254, 10, 20, 179, 147, 58, 198, 70, 204, 60, 221, 77, 160, 128, 50, 190, 189, 205, 83, 48, 107, 183, 51, 48, 173, 248, 28, 230, 153, 194, 13, 108, 51, 123, 87, 228, 62, 31, 167, 11, 30, 180, 130, 172, 254, 241, 22, 7, 150, 212, 195, 48, 144, 92, 52, 199, 221, 202, 91, 200, 83, 109, 66, 70, 223, 200 });
 
         var config = new Config(Guid.NewGuid(),
-            24f,
-            16f,
-            22f,
-            14f,
+            27f,
+            18f,
             5);
 
         modelBuilder.Entity<Config>()

@@ -2,7 +2,7 @@
 
 namespace Application.MediatR.PredictionEngine;
 
-public sealed class GetPredictionQuery : IRequest<Label>
+public sealed class GetPredictionQuery : IRequest<PredictedValue>
 {
     public Feature Feature { get; }
 

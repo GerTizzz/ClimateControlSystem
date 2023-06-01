@@ -2,12 +2,12 @@
 
 namespace Domain.Entities;
 
-public sealed class Label : Entity
+public sealed class PredictedValue : Entity
 {
     public float Temperature { get; set; }
     public float Humidity { get; set; }
 
-    public Label(Guid id) : base(id)
+    public PredictedValue(Guid id) : base(id)
     {
 
     }

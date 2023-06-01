@@ -16,9 +16,9 @@ public sealed class ForecastsBuilder
         return this;
     }
 
-    public ForecastsBuilder AddPrediction(Label label)
+    public ForecastsBuilder AddPrediction(PredictedValue predictedValue)
     {
-        _forecast.Label = label;
+        _forecast.Label = predictedValue;
 
         return this;
     }
@@ -30,7 +30,7 @@ public sealed class ForecastsBuilder
         return this;
     }
 
-    public ForecastsBuilder AddActualData(Fact? actualData)
+    public ForecastsBuilder AddActualData(ActualValue? actualData)
     {
         _forecast.Fact = actualData;
 

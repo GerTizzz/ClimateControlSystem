@@ -8,9 +8,6 @@ public interface IConfigsManager
     float UpperTemperatureWarningLimit { get; }
     float LowerTemperatureWarningLimit { get; }
 
-    float UpperHumidityWarningLimit { get; }
-    float LowerHumidityWarningLimit { get; }
-
     int PredictionTimeIntervalSeconds { get; }
 
     Task<bool> UpdateConfig(Config config);

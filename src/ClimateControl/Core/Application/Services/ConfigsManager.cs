@@ -15,9 +15,6 @@ public sealed class ConfigsManager : IConfigsManager
     public float UpperTemperatureWarningLimit => Config.UpperTemperatureWarningLimit;
     public float LowerTemperatureWarningLimit => Config.LowerTemperatureWarningLimit;
 
-    public float UpperHumidityWarningLimit => Config.UpperHumidityWarningLimit;
-    public float LowerHumidityWarningLimit => Config.LowerHumidityWarningLimit;
-
     public int PredictionTimeIntervalSeconds => Config.PredictionTimeIntervalSeconds;
 
     public ConfigsManager(IConfigSingleton configSingleton, IMediator mediator)

@@ -28,9 +28,6 @@ public class ConfigsRepository : IConfigsRepository
             existingConfig.UpperTemperatureWarningLimit = configToUpdate.UpperTemperatureWarningLimit;
             existingConfig.LowerTemperatureWarningLimit = configToUpdate.LowerTemperatureWarningLimit;
 
-            existingConfig.UpperHumidityWarningLimit = configToUpdate.UpperHumidityWarningLimit;
-            existingConfig.LowerHumidityWarningLimit = configToUpdate.LowerHumidityWarningLimit;
-
             existingConfig.PredictionTimeIntervalSeconds = configToUpdate.PredictionTimeIntervalSeconds;
 
             await _context.SaveChangesAsync();

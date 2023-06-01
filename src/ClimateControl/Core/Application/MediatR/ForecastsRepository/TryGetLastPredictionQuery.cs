@@ -2,6 +2,6 @@
 
 namespace Application.MediatR.ForecastsRepository;
 
-public sealed class TryGetLastPredictionQuery : IRequest<Label?>
+public sealed class TryGetLastPredictionQuery : IRequest<PredictedValue?>
 {
 }

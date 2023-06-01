@@ -9,7 +9,7 @@ public interface IForecastsRepository
 
     Task<long> GetForecastsCountAsync();
 
-    Task<Label?> TryGetLastPredictionAsync();
+    Task<PredictedValue?> TryGetLastPredictionAsync();
 
     Task<IEnumerable<Forecast>> GetForecastsAsync(IDbRequest requestLimits);
 }
