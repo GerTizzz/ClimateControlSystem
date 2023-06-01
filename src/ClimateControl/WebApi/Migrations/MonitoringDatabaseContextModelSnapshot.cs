@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(MonitoringDatabaseContext))]
-    partial class ForecastDbContextModelSnapshot : ModelSnapshot
+    partial class MonitoringDatabaseContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -28,16 +28,7 @@ namespace WebApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<float>("LowerHumidityWarningLimit")
-                        .HasColumnType("real");
-
                     b.Property<float>("LowerTemperatureWarningLimit")
-                        .HasColumnType("real");
-
-                    b.Property<int>("PredictionTimeIntervalSeconds")
-                        .HasColumnType("int");
-
-                    b.Property<float>("UpperHumidityWarningLimit")
                         .HasColumnType("real");
 
                     b.Property<float>("UpperTemperatureWarningLimit")
@@ -50,47 +41,10 @@ namespace WebApi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("161674cd-fc41-4d5a-af7e-e75aa8c8ac2a"),
-                            LowerHumidityWarningLimit = 14f,
-                            LowerTemperatureWarningLimit = 16f,
-                            PredictionTimeIntervalSeconds = 5,
-                            UpperHumidityWarningLimit = 22f,
-                            UpperTemperatureWarningLimit = 24f
+                            Id = new Guid("783d72ca-ea40-4454-9903-3f5c23174384"),
+                            LowerTemperatureWarningLimit = 18f,
+                            UpperTemperatureWarningLimit = 27f
                         });
-                });
-
-            modelBuilder.Entity("Domain.Entities.Error", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<float>("Humidity")
-                        .HasColumnType("real");
-
-                    b.Property<float>("Temperature")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Errors");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Fact", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<float>("Humidity")
-                        .HasColumnType("real");
-
-                    b.Property<float>("Temperature")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Facts");
                 });
 
             modelBuilder.Entity("Domain.Entities.Feature", b =>
@@ -99,40 +53,13 @@ namespace WebApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<float>("AirDryTemperatureOutside")
+                    b.Property<float>("CoolingPower")
                         .HasColumnType("real");
 
-                    b.Property<float>("AirHumidityOutside")
+                    b.Property<float>("TemperatureInside")
                         .HasColumnType("real");
 
-                    b.Property<float>("AirWetTemperatureOutside")
-                        .HasColumnType("real");
-
-                    b.Property<float>("ClusterLoad")
-                        .HasColumnType("real");
-
-                    b.Property<float>("ClusterTemperature")
-                        .HasColumnType("real");
-
-                    b.Property<float>("CoolingValue")
-                        .HasColumnType("real");
-
-                    b.Property<float>("CpuUsage")
-                        .HasColumnType("real");
-
-                    b.Property<float>("Humidity")
-                        .HasColumnType("real");
-
-                    b.Property<float>("Temperature")
-                        .HasColumnType("real");
-
-                    b.Property<float>("WindDirection")
-                        .HasColumnType("real");
-
-                    b.Property<float>("WindEnthalpy")
-                        .HasColumnType("real");
-
-                    b.Property<float>("WindSpeed")
+                    b.Property<float>("TemperatureOutside")
                         .HasColumnType("real");
 
                     b.HasKey("Id");
@@ -146,54 +73,41 @@ namespace WebApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ErrorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("FactId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("FeatureId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("LabelId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset?>("Time")
                         .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FeatureId");
+
+                    b.ToTable("Forecasts");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PredictedValue", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ForecastId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<float>("Value")
+                        .HasColumnType("real");
 
                     b.Property<Guid?>("WarningId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ErrorId");
-
-                    b.HasIndex("FactId");
-
-                    b.HasIndex("FeatureId");
-
-                    b.HasIndex("LabelId");
+                    b.HasIndex("ForecastId");
 
                     b.HasIndex("WarningId");
 
-                    b.ToTable("Forecasts");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Label", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<float>("Humidity")
-                        .HasColumnType("real");
-
-                    b.Property<float>("Temperature")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Labels");
+                    b.ToTable("Predictions");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -225,7 +139,7 @@ namespace WebApi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a02de6a0-5be2-4e11-8777-9e7b40d6d0fd"),
+                            Id = new Guid("bfaed161-592d-46e5-bbc9-8eb9c510a737"),
                             Name = "admin",
                             PasswordHash = new byte[] { 234, 67, 146, 201, 134, 164, 86, 202, 125, 217, 174, 99, 230, 69, 196, 32, 223, 130, 86, 2, 110, 245, 35, 7, 159, 20, 84, 62, 49, 84, 81, 28, 175, 203, 198, 202, 128, 63, 128, 15, 96, 135, 210, 4, 252, 15, 252, 17, 150, 160, 104, 243, 99, 40, 181, 210, 193, 226, 14, 26, 229, 165, 150, 197 },
                             PasswordSalt = new byte[] { 29, 90, 245, 35, 83, 27, 162, 74, 226, 234, 171, 134, 93, 187, 246, 80, 193, 193, 90, 50, 37, 118, 116, 254, 107, 30, 200, 72, 10, 31, 43, 139, 58, 135, 118, 189, 5, 99, 211, 203, 0, 84, 81, 146, 28, 164, 132, 63, 61, 143, 124, 25, 66, 231, 99, 189, 203, 55, 91, 105, 23, 169, 254, 10, 20, 179, 147, 58, 198, 70, 204, 60, 221, 77, 160, 128, 50, 190, 189, 205, 83, 48, 107, 183, 51, 48, 173, 248, 28, 230, 153, 194, 13, 108, 51, 123, 87, 228, 62, 31, 167, 11, 30, 180, 130, 172, 254, 241, 22, 7, 150, 212, 195, 48, 144, 92, 52, 199, 221, 202, 91, 200, 83, 109, 66, 70, 223, 200 },
@@ -239,48 +153,62 @@ namespace WebApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<float?>("Humidity")
-                        .HasColumnType("real");
-
-                    b.Property<float?>("Temperature")
-                        .HasColumnType("real");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Warnings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("4b704453-f39f-4d5d-a72d-9b93b762a06a"),
+                            Type = "CriticalUpper"
+                        },
+                        new
+                        {
+                            Id = new Guid("a5e28e99-bd2e-4880-98a9-feb73baa1828"),
+                            Type = "CriticalLower"
+                        },
+                        new
+                        {
+                            Id = new Guid("1359e186-f681-4e09-9131-8c2130cf4a5b"),
+                            Type = "Upper"
+                        },
+                        new
+                        {
+                            Id = new Guid("d472fec5-68cd-426e-93e0-0dc9138e403e"),
+                            Type = "Lower"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Forecast", b =>
                 {
-                    b.HasOne("Domain.Entities.Error", "Error")
-                        .WithMany()
-                        .HasForeignKey("ErrorId");
-
-                    b.HasOne("Domain.Entities.Fact", "Fact")
-                        .WithMany()
-                        .HasForeignKey("FactId");
-
                     b.HasOne("Domain.Entities.Feature", "Feature")
                         .WithMany()
                         .HasForeignKey("FeatureId");
 
-                    b.HasOne("Domain.Entities.Label", "Label")
-                        .WithMany()
-                        .HasForeignKey("LabelId");
+                    b.Navigation("Feature");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PredictedValue", b =>
+                {
+                    b.HasOne("Domain.Entities.Forecast", null)
+                        .WithMany("Predictions")
+                        .HasForeignKey("ForecastId");
 
                     b.HasOne("Domain.Entities.Warning", "Warning")
                         .WithMany()
                         .HasForeignKey("WarningId");
 
-                    b.Navigation("Error");
-
-                    b.Navigation("Fact");
-
-                    b.Navigation("Feature");
-
-                    b.Navigation("Label");
-
                     b.Navigation("Warning");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Forecast", b =>
+                {
+                    b.Navigation("Predictions");
                 });
 #pragma warning restore 612, 618
         }

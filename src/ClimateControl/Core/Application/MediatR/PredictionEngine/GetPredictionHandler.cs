@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.MediatR.PredictionEngine;
 
-public sealed class GetPredictionHandler : IRequestHandler<GetPredictionQuery, PredictedValue>
+public sealed class GetPredictionHandler : IRequestHandler<GetPredictionQuery, List<PredictedValue>>
 {
     private readonly IPredictionEngine _predictionEngine;
     private readonly IMapper _mapper;
@@ -16,13 +16,25 @@ public sealed class GetPredictionHandler : IRequestHandler<GetPredictionQuery, P
         _mapper = mapper;
     }
 
-    public async Task<PredictedValue> Handle(GetPredictionQuery request, CancellationToken cancellationToken)
+    public async Task<List<PredictedValue>> Handle(GetPredictionQuery request, CancellationToken cancellationToken)
     {
-        var tensorPredictionRequest = _mapper.Map<TensorPredictionRequest>(request.Feature);
+        var featuresData = new List<float>();
+
+        foreach (var feature in request.Features)
+        {
+            featuresData.Add(feature.TemperatureOutside);
+            featuresData.Add(feature.TemperatureInside);
+            featuresData.Add(feature.CoolingPower);
+        }
+
+        var tensorPredictionRequest = new TensorPredictionRequest()
+        {
+            serving_default_lstm_input = featuresData.ToArray()
+        };
 
         var tensorPredictionResult = await _predictionEngine.Predict(tensorPredictionRequest);
 
-        var prediction = _mapper.Map<PredictedValue>(tensorPredictionResult);
+        var prediction = _mapper.Map<List<PredictedValue>>(tensorPredictionResult);
 
         return prediction;
     }

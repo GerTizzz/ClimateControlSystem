@@ -12,7 +12,7 @@ internal static class Program
 
     private static async Task Main()
     {
-        var dataSetLocation = $"{Directory.GetCurrentDirectory()}\\Dataset with headers.csv";
+        var dataSetLocation = $"{Directory.GetCurrentDirectory()}\\LSTMTemperaturePrediction.csv";
 
         var dataSet = GetDataSet(dataSetLocation);
 
@@ -71,7 +71,7 @@ internal static class Program
 
     private static GrpcForecastRequest GenerateRequest(float[][] dataSet)
     {
-        var requestData = new float[12];
+        var requestData = new float[3];
 
         for (int i = 0; i < requestData.Length; i++)
         {
@@ -80,18 +80,9 @@ internal static class Program
 
         var request = new GrpcForecastRequest
         {
-            ClusterLoad = requestData[0],
-            CpuUsage = requestData[1],
-            ClusterTemperature = requestData[2],
-            Temperature = requestData[3],
-            Humidity = requestData[4],
-            AirHumidityOutside = requestData[5],
-            AirDryTemperatureOutside = requestData[6],
-            AirWetTemperatureOutside = requestData[7],
-            WindSpeed = requestData[8],
-            WindDirection = requestData[9],
-            WindEnthalpy = requestData[10],
-            CoolingValue = requestData[11]
+            TemperatureOutside = requestData[0],
+            TemperatureInside = requestData[1],
+            CoolingPower = requestData[2]
         };
 
         _rawIndex++;

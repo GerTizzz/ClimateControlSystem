@@ -47,6 +47,8 @@ public static class DependecyInjection
 
         services.AddScoped<IWarningsService, WarningsService>();
 
+        services.AddScoped<IFeaturesCollector, FeaturesCollector>();
+
         services.AddScoped<IAuthenticateManager, AuthenticateManager>();
         
         services.AddSingleton<IConfigSingleton, ConfigSingleton>();

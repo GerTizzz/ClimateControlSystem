@@ -1,5 +1,6 @@
 ﻿using Application.gRCP.Protos;
 using Application.Helpers;
+using Application.Mapping.Converters;
 using Application.Primitives;
 using AutoMapper;
 using Domain.Enumerations;
@@ -23,16 +24,12 @@ public class AppMappingProfile : Profile
                     property.CoolingPower
                 }));
 
-        CreateMap<TensorPredictionResult, PredictedValue>()
-            .ForMember(result => result.Values, tensor => tensor
-                .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[0]))
-            .ConstructUsing(result => new PredictedValue(Guid.NewGuid()));
+        CreateMap<TensorPredictionResult, IEnumerable<PredictedValue>>()
+            .ConvertUsing<TensorResultToPredictionConverter>();
 
         CreateMap<Forecast, ForecastDto>();
         
-        CreateMap<ActualValue, FactDto>();
-
-        CreateMap<PredictedValue, LabelDto>();
+        CreateMap<PredictedValue, PredictionDto>();
 
         CreateMap<Warning, WarningDto>();
 
@@ -44,9 +41,9 @@ public class AppMappingProfile : Profile
             .ForMember(userDto => userDto.Role, user => user
                 .MapFrom(u => u.Role.ToString()));
 
-        /*CreateMap<Forecast, WarningDto>()
-            .ForMember(dto => dto.Value, monEntity => monEntity
-                .MapFrom(entity => entity.Warning.Value));*/
+        CreateMap<PredictedValue, WarningDto>()
+            .ForMember(dto => dto.Message, monEntity => monEntity
+                .MapFrom(entity => entity.Warning.Message));
 
         CreateMap<ConfigsDto, Config>();
 

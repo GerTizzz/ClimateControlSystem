@@ -22,8 +22,8 @@
     </None>
   </ItemGroup>
 
-	<ItemGroup>
+  <ItemGroup>
 		<Protobuf Include="Protos\forecasting.proto" GrpcServices="Client" />
-	</ItemGroup>
+  </ItemGroup>
 
 </Project>

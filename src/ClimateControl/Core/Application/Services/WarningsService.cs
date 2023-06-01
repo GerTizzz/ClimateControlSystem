@@ -35,20 +35,20 @@ public sealed class WarningsService : IWarningsService
 
     private WarningType CheckPrediction(PredictedValue predictedValue)
     {
-        if (predictedValue.Values[0] > _config.UpperTemperatureLimit)
+        if (predictedValue.Value > _config.UpperTemperatureLimit)
         {
             return WarningType.CriticalUpper;
         }
-        if (predictedValue.Values[0] < _config.LowerTemperatureLimit)
+        if (predictedValue.Value < _config.LowerTemperatureLimit)
         {
             return WarningType.CriticalLower;
         }
 
-        if (predictedValue.Values[0] > _config.UpLimitOk)
+        if (predictedValue.Value > _config.UpLimitOk)
         {
             return WarningType.Upper;
         }
-        if (predictedValue.Values[0] < _config.LowLimitOk)
+        if (predictedValue.Value < _config.LowLimitOk)
         {
             return WarningType.Lower;
         }

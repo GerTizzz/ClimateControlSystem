@@ -24,10 +24,10 @@ public sealed class ClimateDataReciever : GrpcForecast.GrpcForecastBase
 
                 try
                 {
-                    var predictionResult = await _mediatr.Send(new ProcessMicroclimateQuery(request));
+                    var forecast = await _mediatr.Send(new ProcessMicroclimateQuery(request));
                     reply.Reply = $"[Status: Success]" +
                                   $"[Time: {DateTime.Now:HH:mm:ss dd:MM:yyyy}]" +
-                                  $"[Prediction: {(predictionResult is null ? string.Empty : string.Join(" ", predictionResult.Values))}]";
+                                  $"[Prediction: {(forecast is null ? string.Empty : string.Join(" ", forecast.Predictions.Select(prediction => prediction.Value)))}]";
                 }
                 catch (Exception)
                 {

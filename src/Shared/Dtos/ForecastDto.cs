@@ -3,8 +3,6 @@
 public record ForecastDto
 {
     public DateTimeOffset? Time { get; init; }
-    public FactDto? Fact { get; init; }
-    public LabelDto? Label { get; init; }
-    public WarningDto? Warning { get; init; }
+    public List<PredictionDto> Predictions { get; init; }
     public FeaturesDto? Feature { get; init; }
 }

@@ -4,8 +4,8 @@ namespace Application.Primitives;
 
 public sealed class TensorPredictionRequest
 {
-    private const int NumberOfDataSets = 144;
-    private const int MeasurementsPerDataSet = 3;
+    public const int NumberOfDataSets = 144;
+    public const int MeasurementsPerDataSet = 3;
 
     public static int InputSize => NumberOfDataSets * MeasurementsPerDataSet;
     

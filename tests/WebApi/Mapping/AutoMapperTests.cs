@@ -19,17 +19,7 @@ namespace ApplicationTests.Mapping
         [Test]
         public void PredictionsEntityToPredictionDto()
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<PredictedValue, LabelDto>());
-
-            configuration.AssertConfigurationIsValid();
-
-            Assert.Pass();
-        }
-
-        [Test]
-        public void ActualDataEntityToActualDataDto()
-        {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<ActualValue, FactDto>());
+            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<PredictedValue, PredictionDto>());
 
             configuration.AssertConfigurationIsValid();
 

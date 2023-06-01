@@ -24,27 +24,6 @@ public static class AntDataHelper
         return temperatureData;
     }
 
-    public static IEnumerable<GraphicData> GetHumidity(List<ForecastDto> forecasts, ConfigsDto config)
-    {
-        try
-        {
-            var humidityData = new List<GraphicData>();
-
-            foreach (var graphicsData in forecasts.Select(forecast => GetHumidityGraphicData(forecast, config)))
-            {
-                humidityData.AddRange(graphicsData);
-            }
-
-            return humidityData;
-        }
-        catch (Exception exc)
-        {
-            Console.Write(exc.Message);
-
-            return new List<GraphicData>();
-        }
-    }
-
     private static IEnumerable<GraphicData> GetTemperatureGraphicData(ForecastDto monitoring, ConfigsDto config)
     {
         var graphicsData = new List<GraphicData>();
@@ -56,54 +35,17 @@ public static class AntDataHelper
             return Enumerable.Empty<GraphicData>();
         }
 
-        if (monitoring.Label is not null)
+        foreach (var prediction in monitoring.Predictions)
         {
             graphicsData.Add(new GraphicData(time,
-                monitoring.Label.Temperature, "Спрогнозированная"));
-        }
+                prediction.Value, "Спрогнозированная"));
 
-        graphicsData.Add(new GraphicData(time,
-            config.UpperTemperatureWarningLimit, "Верхний лимит"));
-        graphicsData.Add(new GraphicData(time,
-            config.LowerTemperatureWarningLimit, "Нижний лимит"));
-
-        if (monitoring.Fact is not null)
-        {
             graphicsData.Add(new GraphicData(time,
-                monitoring.Fact.Temperature, "Действительная"));
+                config.UpperTemperatureWarningLimit, "Верхний лимит"));
+            graphicsData.Add(new GraphicData(time,
+                config.LowerTemperatureWarningLimit, "Нижний лимит"));
         }
 
         return graphicsData;
     }
-
-    private static IEnumerable<GraphicData> GetHumidityGraphicData(ForecastDto monitoring, ConfigsDto config)
-    {
-        var graphicsData = new List<GraphicData>();
-
-        var time = monitoring.GetXAxisDateTimeLabel();
-
-        if (string.IsNullOrEmpty(time))
-        {
-            return Enumerable.Empty<GraphicData>();
-        }
-
-        if (monitoring.Label is not null)
-        {
-            graphicsData.Add(new GraphicData(time,
-                monitoring.Label.Humidity, "Спрогнозированная"));
-        }
-
-        graphicsData.Add(new GraphicData(time,
-            config.UpperHumidityWarningLimit, "Верхний лимит"));
-        graphicsData.Add(new GraphicData(time,
-            config.LowerHumidityWarningLimit, "Нижний лимит"));
-
-        if (monitoring.Fact is not null)
-        {
-            graphicsData.Add(new GraphicData(time,
-                monitoring.Fact.Humidity, "Действительная"));
-        }
-
-        return graphicsData;
-    }        
 }

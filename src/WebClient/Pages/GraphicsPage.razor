@@ -27,7 +27,6 @@
         else
         {
             <Line @ref="_temperatureChart" Data="_temperatureData" Config="_temperatureConfig"/>
-            <Line @ref="_humidityChart" Data="_humidityData" Config="_humidityConfig"/>
 
             <br/>
 
@@ -52,15 +51,10 @@
     private List<ForecastDto> _forecasts;
 
     private Line _temperatureChart;
-    private Line _humidityChart;
-    private Line _accuracyChart;
 
     private LineConfig _temperatureConfig;
-    private LineConfig _humidityConfig;
-    private LineConfig _accuracyConfig;
 
     private List<GraphicData> _temperatureData;
-    private List<GraphicData> _humidityData;
 
     private long _forecastsCount;
 
@@ -93,8 +87,6 @@
         if (_config is not null)
         {
             _temperatureData = AntDataHelper.GetTemperature(_forecasts, _config).ToList();
-
-            _humidityData = AntDataHelper.GetHumidity(_forecasts, _config).ToList();
         }
     }
 
@@ -103,12 +95,12 @@
         CalculateGraphicsData();
 
         _temperatureConfig = AntConfigHelper.GetTemperatureLineConfig(_temperatureData);
-        _humidityConfig = AntConfigHelper.GetHumidityLineConfig(_humidityData);
     }
 
     private async Task OnPageChanged(RecordsRequest request)
     {
         _forecasts = await ForecastService.GetForecastsAsync(request.RecordsOffset, request.RecordsCount);
+        
         _forecasts.Reverse();
 
         await RerenderGraphics();
@@ -119,7 +111,6 @@
         CalculateGraphicsData();
 
         AntConfigHelper.UpdateConfigsMinMaxLimits(ref _temperatureConfig, _temperatureData);
-        AntConfigHelper.UpdateConfigsMinMaxLimits(ref _humidityConfig, _humidityData);
     }
 
     private async Task RerenderGraphics()
@@ -127,6 +118,5 @@
         UpdateGraphicsConfigs();
 
         await _temperatureChart.ChangeData(_temperatureData);
-        await _humidityChart.ChangeData(_humidityData);
     }
 }

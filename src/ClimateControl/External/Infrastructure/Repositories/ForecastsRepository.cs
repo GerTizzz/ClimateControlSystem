@@ -20,9 +20,8 @@ public class ForecastsRepository : IForecastsRepository
         try
         {
             var forecasts = await _context.Forecasts
-                .Include(forecast => forecast.Label)
-                .Include(forecast => forecast.Fact)
-                .Include(forecast => forecast.Warning)
+                .Include(forecast => forecast.Predictions)
+                    .ThenInclude(prediction => prediction.Warning)
                 .Include(forecast => forecast.Feature)
                 .OrderByDescending(forecast => forecast.Time)
                 .Skip(rangeRequestLimits.Start)
@@ -42,54 +41,33 @@ public class ForecastsRepository : IForecastsRepository
         return await _context.Forecasts.LongCountAsync();
     }
 
+    public async Task<IEnumerable<Feature>> GetLastFeatures(int count)
+    {
+        try
+        {
+            var forecasts = await _context.Forecasts
+                .Include(forecast => forecast.Feature)
+                .OrderByDescending(forecast => forecast.Time)
+                .Take(count)
+                .Select(forecast => new Feature(forecast.Feature.Id)
+                {
+                    TemperatureInside = forecast.Feature.TemperatureInside,
+                    TemperatureOutside = forecast.Feature.TemperatureOutside,
+                    CoolingPower = forecast.Feature.CoolingPower
+                })
+                .ToListAsync();
+
+            return forecasts;
+        }
+        catch
+        {
+            return Enumerable.Empty<Feature>();
+        }
+    }
+
     public async Task<bool> SaveForecastAsync(Forecast forecast)
     {
-        if (await _context.Forecasts.AnyAsync() is false)
-        {
-            _context.Forecasts.Add(new Forecast(Guid.NewGuid())
-            {
-                Fact = forecast.Fact,
-                Time = forecast.Time
-            });
-
-            await _context.SaveChangesAsync();
-        }
-        else
-        {
-            var lastForecasting = await _context.Forecasts
-                .OrderByDescending(record => record.Time)
-                .FirstOrDefaultAsync();
-                    
-            if (lastForecasting is not null)
-            {
-                if (forecast.Fact is not null)
-                {
-                    await _context.ActualValues.AddAsync(forecast.Fact);
-                    await _context.SaveChangesAsync();
-                }
-
-                if (forecast.Warning is not null)
-                {
-                    await _context.Warnings.AddAsync(forecast.Warning);
-                    await _context.SaveChangesAsync();
-                }
-
-                lastForecasting.Time = forecast.Time;
-                lastForecasting.Fact = forecast.Fact;
-                lastForecasting.Warning = forecast.Warning;
-
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        var dateTime = forecast.Time?.AddSeconds(1) ?? DateTimeOffset.Now;
-
-        await _context.Forecasts.AddAsync(new Forecast(forecast.Id)
-        {
-            Label = forecast.Label,
-            Feature = forecast.Feature,
-            Time = dateTime,
-        });
+        _context.Forecasts.Add(forecast);
 
         await _context.SaveChangesAsync();
 

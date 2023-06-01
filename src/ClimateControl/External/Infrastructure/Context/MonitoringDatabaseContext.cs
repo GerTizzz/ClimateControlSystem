@@ -14,8 +14,7 @@ public sealed class MonitoringDatabaseContext : DbContext
     public DbSet<Forecast> Forecasts { get; set; }
     
     public DbSet<Feature> Features { get; set; }
-    public DbSet<PredictedValue> PredictedValues { get; set; }
-    public DbSet<ActualValue> ActualValues { get; set; }
+    public DbSet<PredictedValue> Predictions { get; set; }
     public DbSet<Warning> Warnings { get; set; }
 
     public MonitoringDatabaseContext(DbContextOptions options) : base(options)
@@ -52,8 +51,19 @@ public sealed class MonitoringDatabaseContext : DbContext
             .HasConversion(new EnumToStringConverter<WarningType>());
         
         modelBuilder.Entity<Warning>()
-            .HasData(new Warning(Guid.NewGuid(), "Ожидается температура выше нормы! Необходимо принять меры: увеличеть мощность охлаждения!", WarningType.CriticalUpper),
-                new Warning(Guid.NewGuid(), "Ожидается температура ниже нормы! Необходимо принять меры: уменьшить мощность охлаждения!", WarningType.CriticalLower));
+            .HasData(
+            new Warning(Guid.NewGuid(),
+            "Ожидается критическое повышение температуры! Необходимо принять меры: увеличеть мощность охлаждения!",
+            WarningType.CriticalUpper),
+            new Warning(Guid.NewGuid(),
+            "Ожидается критическое снижение температуры! Необходимо принять меры: уменьшить мощность охлаждения!",
+            WarningType.CriticalLower),
+            new Warning(Guid.NewGuid(),
+            "Ожидается повышение температуры выше оптимальной! Для более эффективной работы необходимо уменьшить мощность охлаждения!",
+            WarningType.Upper),
+            new Warning(Guid.NewGuid(),
+            "Ожидается понижение температуры ниже оптимальной! Для более эффективной работы необходимо увеличить мощность охлаждения!",
+            WarningType.Lower));
 
         modelBuilder.Entity<User>()
             .HasData(admin);

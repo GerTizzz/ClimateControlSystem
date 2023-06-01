@@ -18,8 +18,7 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_temperatureRenderableSeries.Any() is false ||
-             _humidityRenderableSeries.Any() is false)
+        @if (_temperatureRenderableSeries.Any() is false)
         {
             <p>
                 <em>Загрузка...</em>
@@ -28,7 +27,6 @@
         else
         {
             <Line @ref="_temperatureChart" Data="_temperatureRenderableSeries" Config="_temperatureDataLineConfig"/>
-            <Line @ref="_humidityChart" Data="_humidityRenderableSeries" Config="_humidityDataLineConfig"/>
         }
     </Authorized>
     <NotAuthorized>
@@ -43,13 +41,10 @@
     private ConfigsDto _config;
 
     private Line _temperatureChart;
-    private Line _humidityChart;
 
     private LineConfig _temperatureDataLineConfig;
-    private LineConfig _humidityDataLineConfig;
 
     private readonly List<GraphicData> _temperatureRenderableSeries = new();
-    private readonly List<GraphicData> _humidityRenderableSeries = new();
 
     private readonly List<ForecastDto> _forecasts = new();
 
@@ -117,8 +112,7 @@
 
             var forecast = new ForecastDto()
             {
-                Label = lastForecast.Label,
-                Fact = newForecast.Fact,
+                Predictions = lastForecast.Predictions,
                 Time = newForecast.Time
             };
 
@@ -139,12 +133,12 @@
     {
         try
         {
-            if (forecast.Warning is null)
+            /*if (forecast.Warning is null)
             {
                 return;
             }
             
-            await JsRuntime.InvokeVoidAsync("Alert", forecast.Warning.Message);
+            await JsRuntime.InvokeVoidAsync("Alert", forecast.Warning.Message);*/
         }
         catch (Exception e)
         {
@@ -171,9 +165,6 @@
     {
         _temperatureRenderableSeries.Clear();
         _temperatureRenderableSeries.AddRange(AntDataHelper.GetTemperature(_forecasts, _config));
-
-        _humidityRenderableSeries.Clear();
-        _humidityRenderableSeries.AddRange(AntDataHelper.GetHumidity(_forecasts, _config));
     }
 
     private void UpdateChartsConfigs()
@@ -182,16 +173,11 @@
         {
             _temperatureDataLineConfig = AntConfigHelper.GetTemperatureLineConfig(_temperatureRenderableSeries);
         }
-        if (_humidityRenderableSeries.Any())
-        {
-            _humidityDataLineConfig = AntConfigHelper.GetHumidityLineConfig(_humidityRenderableSeries);
-        }
     }
 
     private async Task RerenderCharts()
     {
         await _temperatureChart.ChangeData(_temperatureRenderableSeries);
-        await _humidityChart.ChangeData(_humidityRenderableSeries);
     }
 
     public async ValueTask DisposeAsync()
@@ -203,6 +189,5 @@
 
         _forecasts.Clear();
         _temperatureRenderableSeries.Clear();
-        _humidityRenderableSeries.Clear();
     }
 }

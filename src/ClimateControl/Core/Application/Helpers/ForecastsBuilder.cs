@@ -16,9 +16,9 @@ public sealed class ForecastsBuilder
         return this;
     }
 
-    public ForecastsBuilder AddPrediction(PredictedValue? predictedValue)
+    public ForecastsBuilder AddPrediction(List<PredictedValue> predictedValue)
     {
-        _forecast.Label = predictedValue;
+        _forecast.Predictions = predictedValue;
 
         return this;
     }
@@ -26,20 +26,6 @@ public sealed class ForecastsBuilder
     public ForecastsBuilder AddFeature(Feature feature)
     {
         _forecast.Feature = feature;
-
-        return this;
-    }
-
-    public ForecastsBuilder AddActualData(ActualValue? actualData)
-    {
-        _forecast.Fact = actualData;
-
-        return this;
-    }
-
-    public ForecastsBuilder AddWarning(Warning? warning)
-    {
-        _forecast.Warning = warning;
 
         return this;
     }

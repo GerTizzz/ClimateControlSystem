@@ -27,28 +27,10 @@
                 <thead>
                 <tr>
                     <th style="word-wrap:break-word; font-size:small; text-align:center">Время измерения</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Загрузка кластера</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Использование ЦПУ</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Температура кластера</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Влажность снаружи</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Сухая температура снаружи</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Влажная температура снаружи</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Скорость ветра снаружи</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Направления ветра снаружи</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Энтальпия воздуха снаружи</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Температура охлаждения</th>
-
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Предыдущая температура воздуха</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Предыдущая влажность воздуха</th>
-
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Температура воздуха</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Влажность воздуха</th>
-
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Спрогнозированная температура</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Спрогнозированная влажность</th>
-
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Точность прогноза температуры</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Точность прогноза влажности</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Температура внутри</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Температура снаружи</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Мощность системы охлаждения</th>
+                    <th style="word-wrap:break-word; font-size:small; text-align:center">Прогноз</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -68,55 +50,13 @@
                             }
                         </td>
                         <td style="font-size:small; text-align:center">
-                            @(record.Feature is null ? NoValueString : record.Feature.ClusterLoad.ToString(CultureInfo.InvariantCulture))
+                            @(record.Feature is null ? NoValueString : record.Feature.TemperatureInside.ToString(CultureInfo.InvariantCulture))
                         </td>
                         <td style="font-size:small; text-align:center">
-                            @(record.Feature is null ? NoValueString : record.Feature.CpuUsage.ToString(CultureInfo.InvariantCulture))
+                            @(record.Feature is null ? NoValueString : record.Feature.TemperatureOutside.ToString(CultureInfo.InvariantCulture))
                         </td>
                         <td style="font-size:small; text-align:center">
-                            @(record.Feature is null ? NoValueString : record.Feature.ClusterTemperature.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Feature is null ? NoValueString : record.Feature.AirHumidityOutside.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Feature is null ? NoValueString : record.Feature.AirDryTemperatureOutside.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Feature is null ? NoValueString : record.Feature.AirWetTemperatureOutside.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Feature is null ? NoValueString : record.Feature.WindSpeed.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Feature is null ? NoValueString : record.Feature.WindDirection.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Feature is null ? NoValueString : record.Feature.WindEnthalpy.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Feature is null ? NoValueString : record.Feature.CoolingValue.ToString(CultureInfo.InvariantCulture))
-                        </td>
-
-                        <td style="font-size:small; text-align:center">
-                            @(record.Feature is null ? NoValueString : record.Feature.Temperature.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Feature is null ? NoValueString : record.Feature.Humidity.ToString(CultureInfo.InvariantCulture))
-                        </td>
-
-                        <td style="font-size:small; text-align:center">
-                            @(record.Fact is null ? NoValueString : record.Fact.Temperature.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Fact is null ? NoValueString : record.Fact.Humidity.ToString(CultureInfo.InvariantCulture))
-                        </td>
-
-                        <td style="font-size:small; text-align:center">
-                            @(record.Label is null ? NoValueString : record.Label.Temperature.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Label is null ? NoValueString : record.Label.Humidity.ToString(CultureInfo.InvariantCulture))
+                            @(record.Feature is null ? NoValueString : record.Feature.CoolingPower.ToString(CultureInfo.InvariantCulture))
                         </td>
                     </tr>
                 }
