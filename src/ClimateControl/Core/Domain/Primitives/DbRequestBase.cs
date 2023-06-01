@@ -1,6 +1,6 @@
 ﻿namespace Domain.Primitives;
 
-public interface IDbRequest
+public interface IDbRangeRequest
 {
     int Start { get; }
     int Count { get; }

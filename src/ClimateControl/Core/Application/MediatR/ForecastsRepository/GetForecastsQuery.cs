@@ -6,10 +6,10 @@ namespace Application.MediatR.ForecastsRepository;
 
 public sealed class GetForecastsQuery : IRequest<List<ForecastDto>>
 {
-    public DbRequest RequestLimits { get; }
+    public DbRangeRequest RangeRequestLimits { get; }
 
-    public GetForecastsQuery(DbRequest requestLimits)
+    public GetForecastsQuery(DbRangeRequest rangeRequestLimits)
     {
-        RequestLimits = requestLimits;
+        RangeRequestLimits = rangeRequestLimits;
     }
 }

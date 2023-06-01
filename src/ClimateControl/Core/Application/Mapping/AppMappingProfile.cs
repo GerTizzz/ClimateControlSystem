@@ -24,14 +24,12 @@ public class AppMappingProfile : Profile
                 }));
 
         CreateMap<TensorPredictionResult, PredictedValue>()
-            .ForMember(result => result.Temperature, tensor => tensor
+            .ForMember(result => result.Values, tensor => tensor
                 .MapFrom(tensorSrc => tensorSrc.StatefulPartitionedCall[0]))
             .ConstructUsing(result => new PredictedValue(Guid.NewGuid()));
 
         CreateMap<Forecast, ForecastDto>();
-
-        CreateMap<Error, ErrorDto>();
-
+        
         CreateMap<ActualValue, FactDto>();
 
         CreateMap<PredictedValue, LabelDto>();
@@ -46,11 +44,9 @@ public class AppMappingProfile : Profile
             .ForMember(userDto => userDto.Role, user => user
                 .MapFrom(u => u.Role.ToString()));
 
-        CreateMap<Forecast, WarningDto>()
-            .ForMember(dto => dto.Temperature, monEntity => monEntity
-                .MapFrom(entity => entity.Warning.Temperature))
-            .ForMember(dto => dto.Humidity, monEntity => monEntity
-                .MapFrom(entity => entity.Warning.Humidity));
+        /*CreateMap<Forecast, WarningDto>()
+            .ForMember(dto => dto.Value, monEntity => monEntity
+                .MapFrom(entity => entity.Warning.Value));*/
 
         CreateMap<ConfigsDto, Config>();
 

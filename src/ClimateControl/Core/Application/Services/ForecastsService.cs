@@ -11,27 +11,47 @@ namespace Application.Services;
 public class ForecastsService : IForecastsService
 {
     private readonly IMediator _mediator;
-    private readonly IConfigsManager _configManager;
+    private readonly IWarningsService _warningsService;
     private readonly IList<float> _featuresBuffer;
 
-    public ForecastsService(IMediator mediator,
-        IConfigsManager configManager)
+    public ForecastsService(IMediator mediator, IWarningsService warningsService)
     {
         _mediator = mediator;
-        _configManager = configManager;
+        _warningsService = warningsService;
         _featuresBuffer = new List<float>();
     }
 
-    public async Task<PredictedValue> Predict(Feature feature)
+    public async Task<PredictedValue?> Predict(Feature feature)
     {
         var predictedValue = await GetPrediction(feature);
+ 
+        AddNewFeaturesToBuffer(feature);
 
-        await ProcessMonitoringData(predictedValue, feature, _configManager.Config);
+        var forecast = await GetForecast(feature, predictedValue);
+
+        await ProcessMonitoringData(forecast);
 
         return predictedValue;
     }
 
-    private async Task ProcessMonitoringData(PredictedValue predictedValue, Feature feature, Config config)
+    private async Task<Forecast> GetForecast(Feature feature, PredictedValue? predictedValue)
+    {
+        var actualValue = GetActualDataFromFeaturesData(feature);
+        
+        var warning = await _warningsService.GetWarning(predictedValue);
+
+        var forecast = new ForecastsBuilder()
+            .AddActualData(actualValue)
+            .AddTracedTime(DateTimeOffset.Now)
+            .AddWarning(warning)
+            .AddPrediction(predictedValue)
+            .AddFeature(feature)
+            .Build();
+
+        return forecast;
+    }
+
+    private void AddNewFeaturesToBuffer(Feature feature)
     {
         _featuresBuffer.Add(feature.TemperatureInside);
         _featuresBuffer.Add(feature.TemperatureOutside);
@@ -41,25 +61,13 @@ public class ForecastsService : IForecastsService
         {
             _featuresBuffer.RemoveAt(0);
         }
-        
-        var actualValue = GetActualDataFromFeaturesData(feature);
+    }
 
-        var error = await TryGetError(actualValue);
+    private async Task ProcessMonitoringData(Forecast forecast)
+    {
+        await SaveMonitoring(forecast);
 
-        var microclimatesEvent = await TryGetWarning(predictedValue, config);
-
-        var monitoring = new ForecastsBuilder()
-            .AddActualData(actualValue)
-            .AddError(error)
-            .AddTracedTime(DateTimeOffset.Now)
-            .AddWarning(microclimatesEvent)
-            .AddPrediction(predictedValue)
-            .AddFeature(feature)
-            .Build();
-
-        await SaveMonitoring(monitoring);
-
-        await SendMonitoringToClients(monitoring);
+        await SendMonitoringToClients(forecast);
     }
 
     /// <summary>
@@ -74,49 +82,9 @@ public class ForecastsService : IForecastsService
         };
     }
 
-    private async Task<Error?> TryGetError(ActualValue? actualData)
-    {
-        var prediction = await TryGetLastPrediction();
-
-        if (actualData is null || prediction is null)
-        {
-            return null;
-        }
-
-        var temperature = Math.Abs(100f - prediction.Temperature * 100f / actualData.Temperature);
-
-        var error = new Error(Guid.NewGuid())
-        {
-            Temperature = temperature
-        };
-
-        return error;
-    }
-
-    private static Task<Warning?> TryGetWarning(PredictedValue predictedValue, Config config)
-    {
-        var microclimateEventBuilder = new WarningsBuilder();
-
-        if (predictedValue.Temperature >= config.UpperTemperatureWarningLimit)
-        {
-            microclimateEventBuilder.AddTemperatureEvent(predictedValue.Temperature - config.UpperTemperatureWarningLimit);
-        }
-        else if (predictedValue.Temperature <= config.LowerTemperatureWarningLimit)
-        {
-            microclimateEventBuilder.AddTemperatureEvent(predictedValue.Temperature - config.LowerTemperatureWarningLimit);
-        }
-
-        return Task.FromResult(microclimateEventBuilder.Build());
-    }
-
-    private async Task<PredictedValue> GetPrediction(Feature feature)
+    private async Task<PredictedValue?> GetPrediction(Feature feature)
     {
         return await _mediator.Send(new GetPredictionQuery(feature));
-    }
-
-    private async Task<PredictedValue?> TryGetLastPrediction()
-    {
-        return await _mediator.Send(new TryGetLastPredictionQuery());
     }
 
     private async Task SendMonitoringToClients(Forecast forecast)

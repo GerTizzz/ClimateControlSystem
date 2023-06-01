@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enumerations;
 using Domain.Primitives;
 using Domain.Repositories;
 using Infrastructure.Context;
@@ -15,6 +16,11 @@ public sealed class WarningsRepository : IWarningsRepository
         _context = context;
     }
 
+    public async Task<Warning> GetWarningByType(WarningType type)
+    {
+        return await _context.Warnings.FirstAsync(warning => warning.Type == type);
+    }
+
     public async Task<long> GetWarningsCountAsync()
     {
         return await _context.Forecasts
@@ -23,7 +29,7 @@ public sealed class WarningsRepository : IWarningsRepository
             .LongCountAsync();
     }
 
-    public async Task<IEnumerable<Forecast>> GetWarningsAsync(IDbRequest requestLimits)
+    public async Task<IEnumerable<Forecast>> GetWarningsAsync(IDbRangeRequest rangeRequestLimits)
     {
         try
         {
@@ -31,8 +37,8 @@ public sealed class WarningsRepository : IWarningsRepository
                 .Include(forecast => forecast.Warning)
                 .OrderByDescending(forecast => forecast.Time)
                 .Where(forecast => forecast.Warning != null)
-                .Skip(requestLimits.Start)
-                .Take(requestLimits.Count)
+                .Skip(rangeRequestLimits.Start)
+                .Take(rangeRequestLimits.Count)
                 .ToListAsync();
 
             return warnings;

@@ -2,13 +2,13 @@
 
 namespace Application.Primitives;
 
-public sealed class DbRequest : IDbRequest
+public sealed class DbRangeRequest : IDbRangeRequest
 {
     public int Start { get; }
 
     public int Count { get; }
 
-    public DbRequest(int start, int count)
+    public DbRangeRequest(int start, int count)
     {
         Start = start;
         Count = count;

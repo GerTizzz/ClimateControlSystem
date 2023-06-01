@@ -1,17 +1,17 @@
 ﻿using AutoMapper;
-using Domain.Services;
+using Domain.Singletons;
 using MediatR;
 
-namespace Application.MediatR.ConfigsManager;
+namespace Application.MediatR.ConfigsSingleton;
 
 public sealed class UpdateConfigHandler : IRequestHandler<UpdateConfigCommand, bool>
 {
-    private readonly IConfigsManager _configManager;
+    private readonly IConfigSingleton _config;
     private readonly IMapper _mapper;
 
-    public UpdateConfigHandler(IConfigsManager configManager, IMapper mapper)
+    public UpdateConfigHandler(IConfigSingleton config, IMapper mapper)
     {
-        _configManager = configManager;
+        _config = config;
         _mapper = mapper;
     }
 
@@ -19,7 +19,7 @@ public sealed class UpdateConfigHandler : IRequestHandler<UpdateConfigCommand, b
     {
         var config = _mapper.Map<Config>(request.ConfigsDto);
 
-        var result = await _configManager.UpdateConfig(config);
+        var result = await _config.UpdateConfig(config);
 
         return result;
     }

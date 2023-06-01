@@ -45,10 +45,10 @@ public static class DependecyInjection
 
         services.AddScoped<IForecastsService, ForecastsService>();
 
+        services.AddScoped<IWarningsService, WarningsService>();
+
         services.AddScoped<IAuthenticateManager, AuthenticateManager>();
-
-        services.AddScoped<IConfigsManager, ConfigsManager>();
-
+        
         services.AddSingleton<IConfigSingleton, ConfigSingleton>();
 
         services.AddSingleton<IPredictionEngine>(_ =>

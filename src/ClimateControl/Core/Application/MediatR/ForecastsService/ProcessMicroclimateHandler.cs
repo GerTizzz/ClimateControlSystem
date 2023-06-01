@@ -15,7 +15,7 @@ public class ProcessMicroclimateHandler : IRequestHandler<ProcessMicroclimateQue
         _mapper = mapper;
     }
 
-    public async Task<PredictedValue> Handle(ProcessMicroclimateQuery request, CancellationToken cancellationToken)
+    public async Task<PredictedValue?> Handle(ProcessMicroclimateQuery request, CancellationToken cancellationToken)
     {
         var featuresData = _mapper.Map<Feature>(request.ForecastRequest);
 

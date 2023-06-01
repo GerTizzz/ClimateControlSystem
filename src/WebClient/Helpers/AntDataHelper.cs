@@ -12,22 +12,6 @@ public static class AntDataHelper
         return monitoring.Time.HasValue is false ? string.Empty : monitoring.Time.Value.ToString("HH:mm:ss");
     }
 
-    public static IEnumerable<GraphicData> GetError(List<ForecastDto> monitorings)
-    {
-        foreach (var monitoring in monitorings)
-        {
-            var time = monitoring.GetXAxisDateTimeLabel();
-
-            if (monitoring.Error is not null)
-            {
-                yield return new GraphicData(time, monitoring.Error.Humidity, "Влажность");
-                yield return new GraphicData(time, monitoring.Error.Temperature, "Температура");
-            }
-
-            yield return new GraphicData(time, AccuracyUpperLimit, "Лимит");
-        }
-    }
-
     public static IEnumerable<GraphicData> GetTemperature(IEnumerable<ForecastDto> forecasts, ConfigsDto config)
     {
         var temperatureData = new List<GraphicData>();

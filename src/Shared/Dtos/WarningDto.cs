@@ -2,7 +2,12 @@
 
 public sealed record WarningDto
 {
-    public DateTimeOffset? Time { get; set; }
-    public float? Temperature { get; init; }
-    public float? Humidity { get; init; }
+    public float Value { get; }
+    public string Message { get; }
+
+    public WarningDto(string message, float value)
+    {
+        Message = message;
+        Value = value;
+    }
 }

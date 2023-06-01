@@ -25,11 +25,15 @@ public sealed class ClimateDataReciever : GrpcForecast.GrpcForecastBase
                 try
                 {
                     var predictionResult = await _mediatr.Send(new ProcessMicroclimateQuery(request));
-                    reply.Reply = $"[Status: Success][Time: {DateTime.Now:HH:mm:ss dd:MM:yyyy}][Data: {predictionResult.Temperature}]";
+                    reply.Reply = $"[Status: Success]" +
+                                  $"[Time: {DateTime.Now:HH:mm:ss dd:MM:yyyy}]" +
+                                  $"[Prediction: {(predictionResult is null ? string.Empty : string.Join(" ", predictionResult.Values))}]";
                 }
                 catch (Exception)
                 {
-                    reply.Reply = $"[Status: Failed][Time: {DateTime.Now:HH:mm:ss dd:MM:yyyy}][Data: {requestStream}]";
+                    reply.Reply = $"[Status: Failed]" +
+                                  $"[Time: {DateTime.Now:HH:mm:ss dd:MM:yyyy}]" +
+                                  $"[Data: {requestStream}]";
                 }
 
                 await responseStream.WriteAsync(reply);

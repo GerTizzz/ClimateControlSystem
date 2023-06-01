@@ -5,7 +5,6 @@ namespace Domain.Entities;
 public sealed class Error : Entity
 {
     public float Temperature { get; set; }
-    public float Humidity { get; set; }
 
     public Error(Guid id) : base(id)
     {

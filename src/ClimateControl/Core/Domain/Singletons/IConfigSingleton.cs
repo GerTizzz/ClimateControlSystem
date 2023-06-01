@@ -4,7 +4,14 @@ namespace Domain.Singletons;
 
 public interface IConfigSingleton
 {
+    public float UpperTemperatureLimit { get; }
+    public float LowerTemperatureLimit { get; }
+    
+    public float UpLimitOk { get; }
+    
+    public float LowLimitOk { get; }
+    
     public Config Config { get; }
-
-    void UpdateConfig(Config config);
+    
+    Task<bool> UpdateConfig(Config config);
 }

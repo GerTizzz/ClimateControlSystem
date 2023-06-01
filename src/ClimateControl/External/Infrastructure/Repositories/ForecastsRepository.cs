@@ -15,7 +15,7 @@ public class ForecastsRepository : IForecastsRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Forecast>> GetForecastsAsync(IDbRequest requestLimits)
+    public async Task<IEnumerable<Forecast>> GetForecastsAsync(IDbRangeRequest rangeRequestLimits)
     {
         try
         {
@@ -23,11 +23,10 @@ public class ForecastsRepository : IForecastsRepository
                 .Include(forecast => forecast.Label)
                 .Include(forecast => forecast.Fact)
                 .Include(forecast => forecast.Warning)
-                .Include(forecast => forecast.Error)
                 .Include(forecast => forecast.Feature)
                 .OrderByDescending(forecast => forecast.Time)
-                .Skip(requestLimits.Start)
-                .Take(requestLimits.Count)
+                .Skip(rangeRequestLimits.Start)
+                .Take(rangeRequestLimits.Count)
                 .ToListAsync();
 
             return forecasts;
@@ -41,29 +40,6 @@ public class ForecastsRepository : IForecastsRepository
     public async Task<long> GetForecastsCountAsync()
     {
         return await _context.Forecasts.LongCountAsync();
-    }
-
-    public async Task<PredictedValue?> TryGetLastPredictionAsync()
-    {
-        try
-        {
-            var lastMonitoring = await _context.Forecasts
-                .OrderByDescending(record => record.Time)
-                .FirstOrDefaultAsync();
-
-            var lastPredictionId = lastMonitoring?.LabelId;
-
-            if (lastPredictionId is null)
-            {
-                return null;
-            }
-
-            return await _context.PredictedValues.FirstOrDefaultAsync(prediction => prediction.Id == lastPredictionId);
-        }
-        catch
-        {
-            return null;
-        }
     }
 
     public async Task<bool> SaveForecastAsync(Forecast forecast)
@@ -85,13 +61,7 @@ public class ForecastsRepository : IForecastsRepository
                 .FirstOrDefaultAsync();
                     
             if (lastForecasting is not null)
-            {                        
-                if (forecast.Error is not null)
-                {
-                    await _context.Errors.AddAsync(forecast.Error);
-                    await _context.SaveChangesAsync();
-                }
-
+            {
                 if (forecast.Fact is not null)
                 {
                     await _context.ActualValues.AddAsync(forecast.Fact);
@@ -105,7 +75,6 @@ public class ForecastsRepository : IForecastsRepository
                 }
 
                 lastForecasting.Time = forecast.Time;
-                lastForecasting.Error = forecast.Error;
                 lastForecasting.Fact = forecast.Fact;
                 lastForecasting.Warning = forecast.Warning;
 

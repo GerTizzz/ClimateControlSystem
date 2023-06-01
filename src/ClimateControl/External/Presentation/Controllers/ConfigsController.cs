@@ -1,4 +1,4 @@
-﻿using Application.MediatR.ConfigsManager;
+﻿using Application.MediatR.ConfigsSingleton;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -118,13 +118,6 @@
                         <td style="font-size:small; text-align:center">
                             @(record.Label is null ? NoValueString : record.Label.Humidity.ToString(CultureInfo.InvariantCulture))
                         </td>
-
-                        <td style="font-size:small; text-align:center">
-                            @(record.Error is null ? NoValueString : record.Error.Temperature.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Error is null ? NoValueString : record.Error.Humidity.ToString(CultureInfo.InvariantCulture))
-                        </td>
                     </tr>
                 }
                 </tbody>

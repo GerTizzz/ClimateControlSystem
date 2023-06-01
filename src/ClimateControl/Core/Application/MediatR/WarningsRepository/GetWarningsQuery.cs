@@ -6,10 +6,10 @@ namespace Application.MediatR.WarningsRepository;
 
 public sealed class GetWarningsQuery : IRequest<List<WarningDto>>
 {
-    public DbRequest RequestLimits { get; }
+    public DbRangeRequest RangeRequestLimits { get; }
 
-    public GetWarningsQuery(DbRequest requestLimits)
+    public GetWarningsQuery(DbRangeRequest rangeRequestLimits)
     {
-        RequestLimits = requestLimits;
+        RangeRequestLimits = rangeRequestLimits;
     }
 }

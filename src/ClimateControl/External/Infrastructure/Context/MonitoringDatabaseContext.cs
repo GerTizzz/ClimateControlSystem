@@ -14,7 +14,6 @@ public sealed class MonitoringDatabaseContext : DbContext
     public DbSet<Forecast> Forecasts { get; set; }
     
     public DbSet<Feature> Features { get; set; }
-    public DbSet<Error> Errors { get; set; }
     public DbSet<PredictedValue> PredictedValues { get; set; }
     public DbSet<ActualValue> ActualValues { get; set; }
     public DbSet<Warning> Warnings { get; set; }
@@ -39,8 +38,7 @@ public sealed class MonitoringDatabaseContext : DbContext
 
         var config = new Config(Guid.NewGuid(),
             27f,
-            18f,
-            5);
+            18f);
 
         modelBuilder.Entity<Config>()
             .HasData(config);
@@ -48,6 +46,14 @@ public sealed class MonitoringDatabaseContext : DbContext
         modelBuilder.Entity<User>()
             .Property(user => user.Role)
             .HasConversion(new EnumToStringConverter<UserType>());
+        
+        modelBuilder.Entity<Warning>()
+            .Property(warning => warning.Type)
+            .HasConversion(new EnumToStringConverter<WarningType>());
+        
+        modelBuilder.Entity<Warning>()
+            .HasData(new Warning(Guid.NewGuid(), "Ожидается температура выше нормы! Необходимо принять меры: увеличеть мощность охлаждения!", WarningType.CriticalUpper),
+                new Warning(Guid.NewGuid(), "Ожидается температура ниже нормы! Необходимо принять меры: уменьшить мощность охлаждения!", WarningType.CriticalLower));
 
         modelBuilder.Entity<User>()
             .HasData(admin);

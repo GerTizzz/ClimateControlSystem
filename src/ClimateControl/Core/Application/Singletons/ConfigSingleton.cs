@@ -7,20 +7,16 @@ namespace Application.Singletons;
 
 public sealed class ConfigSingleton : IConfigSingleton
 {
-    private Config _config;
-
     private readonly object _lock;
 
-    public Config Config
-    {
-        get
-        {
-            lock (_lock)
-            {
-                return _config;
-            }
-        }
-    }
+    public float UpperTemperatureLimit => Config.UpperTemperatureWarningLimit;
+    
+    public float LowerTemperatureLimit => Config.LowerTemperatureWarningLimit;
+    
+    public float UpLimitOk { get; private set; }
+    
+    public float LowLimitOk { get; private set; }
+    public Config Config { get; private set; }
 
     public ConfigSingleton(IServiceScopeFactory scopeFactory)
     {
@@ -30,14 +26,39 @@ public sealed class ConfigSingleton : IConfigSingleton
         
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-        _config = mediator.Send(new GetConfigQuery()).Result;
+        Config = mediator.Send(new GetConfigQuery()).Result;
+
+        RecalculateOkRange();
+    }
+    
+    public Task<bool> UpdateConfig(Config config)
+    {
+        var updateResult = false;
+
+        try
+        {
+            lock (_lock)
+            {
+                Config = config;
+
+                RecalculateOkRange();
+            }
+
+            updateResult = true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
+        return Task.FromResult(updateResult);
     }
 
-    public void UpdateConfig(Config config)
+    private void RecalculateOkRange()
     {
-        lock (_lock)
-        {
-            _config = config;
-        }
+        var median = (UpperTemperatureLimit - LowerTemperatureLimit) / 2 + LowerTemperatureLimit;
+
+        UpLimitOk = median + 0.5f;
+        LowLimitOk = median - 0.5f;
     }
 }

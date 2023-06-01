@@ -16,7 +16,7 @@ public sealed class ForecastsBuilder
         return this;
     }
 
-    public ForecastsBuilder AddPrediction(PredictedValue predictedValue)
+    public ForecastsBuilder AddPrediction(PredictedValue? predictedValue)
     {
         _forecast.Label = predictedValue;
 
@@ -37,16 +37,9 @@ public sealed class ForecastsBuilder
         return this;
     }
 
-    public ForecastsBuilder AddError(Error? accuracy)
+    public ForecastsBuilder AddWarning(Warning? warning)
     {
-        _forecast.Error = accuracy;
-
-        return this;
-    }
-
-    public ForecastsBuilder AddWarning(Warning? microclimatesEvents)
-    {
-        _forecast.Warning = microclimatesEvents;
+        _forecast.Warning = warning;
 
         return this;
     }

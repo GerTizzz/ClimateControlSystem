@@ -20,7 +20,7 @@ public sealed class GetWarningsHandler : IRequestHandler<GetWarningsQuery, List<
     {
         try
         {
-            var warnings = await _warningsRepository.GetWarningsAsync(request.RequestLimits);
+            var warnings = await _warningsRepository.GetWarningsAsync(request.RangeRequestLimits);
 
             var warningsDtos = warnings.Select(entity => _mapper.Map<WarningDto>(entity.Warning)).ToList();
 

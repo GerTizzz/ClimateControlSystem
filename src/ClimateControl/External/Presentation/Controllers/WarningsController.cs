@@ -30,7 +30,7 @@ namespace Presentation.Controllers
         [HttpGet("interval/{start:int}/{count:int:range(1, 25)}")]
         public async Task<ActionResult<List<WarningDto>>> GetWarnings(int start, int count)
         {
-            var records = await _mediator.Send(new GetWarningsQuery(new DbRequest(start, count)));
+            var records = await _mediator.Send(new GetWarningsQuery(new DbRangeRequest(start, count)));
 
             return Ok(records);
         }

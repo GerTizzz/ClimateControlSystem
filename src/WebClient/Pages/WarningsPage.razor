@@ -23,7 +23,7 @@
         }
         else
         {
-            <p>События температуры</p>
+            <p>Предупреждения</p>
             <table class="table">
                 <thead>
                     <tr>
@@ -32,45 +32,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var temperatureWarning in _warnings.Select(warning => warning.Temperature).ToList())
+                    @foreach (var temperatureWarning in _warnings.Select(warning => warning.Value).ToList())
                     {
-                        @if (temperatureWarning.HasValue is false)
-                        {
-                            continue;
-                        }
-
                         <tr>
                             <td style="font-size:small"><span class="oi oi-warning ico" aria-hidden="true" style="color:red"></span></td>
                             <td>Ожидается критическое значение температуры! На @temperatureWarning.ToString(), °C!</td>
                         </tr>
                     }
                 </tbody>
-            </table>       
-            
-            <p>События влажности</p>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th style="word-wrap:break-word; font-size:small">Статус</th>
-                        <th style="word-wrap:break-word; font-size:small">Сообщение</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var humidityWarning in _warnings.Select(warning => warning.Humidity).ToList())
-                    {
-                        @if (humidityWarning.HasValue is false)
-                        {
-                            continue;
-                        }
-
-                        <tr>
-                            <td style="font-size:small"><span class="oi oi-warning" aria-hidden="true" style="color:red"></span></td>
-                            <td>Ожидается критическое значение влажности! На @humidityWarning.ToString(), %!</td>
-                        </tr>
-                    }
-                </tbody>
             </table>
-            
+
             <br/>
 
             <PaginationComponent RecordsCount=@_warningsCount

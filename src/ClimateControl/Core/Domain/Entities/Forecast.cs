@@ -6,9 +6,6 @@ public sealed class Forecast : Entity
 {
     public DateTimeOffset? Time { get; set; }
 
-    public Guid? ErrorId { get; set; }
-    public Error? Error { get; set; }
-
     public Guid? FactId { get; set; }
     public ActualValue? Fact { get; set; }
 

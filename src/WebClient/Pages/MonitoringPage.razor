@@ -92,7 +92,7 @@
     {
         try
         {
-            _ = Task.Run(() => TryShowWarning(forecast));
+            _ = Task.Run(() => ShowWarning(forecast));
 
             AddForecast(forecast);
 
@@ -135,7 +135,7 @@
         RemoveExtraForecasts();
     }
 
-    private async Task TryShowWarning(ForecastDto forecast)
+    private async Task ShowWarning(ForecastDto forecast)
     {
         try
         {
@@ -143,53 +143,13 @@
             {
                 return;
             }
-
-            var messageBuilder = new StringBuilder();
-
-            if (forecast.Warning.Temperature is not null)
-            {
-                messageBuilder.Append(
-                    GetAlertMessage(
-                        forecast.Warning.Temperature.Value,
-                        forecast.Time, "температуры"));
-            }
-
-            if (forecast.Warning.Humidity is not null)
-            {
-                messageBuilder.Append(
-                    GetAlertMessage(
-                        forecast.Warning.Humidity.Value,
-                        forecast.Time, "влажности"));
-            }
-
-            if (messageBuilder.Length > 0)
-            {
-                await JsRuntime.InvokeVoidAsync("Alert", messageBuilder.ToString());
-            }
+            
+            await JsRuntime.InvokeVoidAsync("Alert", forecast.Warning.Message);
         }
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
         }
-    }
-
-    private static string GetAlertMessage(float value, DateTimeOffset? eventTime, string format)
-    {
-        var alertMessageBuilder = new StringBuilder();
-
-        var time = eventTime ?? DateTimeOffset.Now;
-
-        switch (value)
-        {
-            case > 0:
-                alertMessageBuilder.Append($"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается превышение {format} выше допустимого предела!");
-                break;
-            case < 0:
-                alertMessageBuilder.AppendLine($"{time.ToString("HH:mm:ss dd.MM.yyyy")}: Ожидается понижение температуры ниже допустимого предела!");
-                break;
-        }
-
-        return alertMessageBuilder.ToString();
     }
 
     private void RemoveExtraForecasts()

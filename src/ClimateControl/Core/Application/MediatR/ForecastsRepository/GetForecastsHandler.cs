@@ -20,7 +20,7 @@ public sealed class GetForecastsHandler : IRequestHandler<GetForecastsQuery, Lis
     {
         try
         {
-            var forecasts = await _microclimateRepository.GetForecastsAsync(request.RequestLimits);
+            var forecasts = await _microclimateRepository.GetForecastsAsync(request.RangeRequestLimits);
 
             var forecastsDtos = forecasts.Select(entity => _mapper.Map<ForecastDto>(entity)).ToList();
 

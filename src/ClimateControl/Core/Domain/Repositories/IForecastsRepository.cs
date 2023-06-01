@@ -8,8 +8,6 @@ public interface IForecastsRepository
     Task<bool> SaveForecastAsync(Forecast forecast);
 
     Task<long> GetForecastsCountAsync();
-
-    Task<PredictedValue?> TryGetLastPredictionAsync();
-
-    Task<IEnumerable<Forecast>> GetForecastsAsync(IDbRequest requestLimits);
+    
+    Task<IEnumerable<Forecast>> GetForecastsAsync(IDbRangeRequest rangeRequestLimits);
 }

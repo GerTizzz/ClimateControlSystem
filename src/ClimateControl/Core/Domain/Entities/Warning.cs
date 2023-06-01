@@ -1,14 +1,16 @@
-﻿using Domain.Primitives;
+﻿using Domain.Enumerations;
+using Domain.Primitives;
 
 namespace Domain.Entities;
 
 public sealed class Warning : Entity
 {
-    public float? Temperature { get; set; }
-    public float? Humidity { get; set; }
-
-    public Warning(Guid id) : base(id)
+    public WarningType Type { get; }
+    public string Message { get; }
+    
+    public Warning(Guid id, string message, WarningType type) : base(id)
     {
-
+        Message = message;
+        Type = type;
     }
 }
