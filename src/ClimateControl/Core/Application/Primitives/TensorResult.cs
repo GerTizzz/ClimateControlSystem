@@ -1,6 +1,6 @@
 ﻿namespace Application.Primitives;
 
-public sealed class TensorPredictionResult
+public sealed class TensorResult
 {
     public float[] StatefulPartitionedCall { get; set; }
 }

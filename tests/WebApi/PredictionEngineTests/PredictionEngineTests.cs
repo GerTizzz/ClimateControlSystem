@@ -173,7 +173,7 @@ namespace ApplicationTests.PredictionEngineTests
 
             //var features = FeaturesData.Replace('.', ',').Split(';').Select(float.Parse).ToArray();
 
-            var request = new TensorPredictionRequest()
+            var request = new TensorRequest()
             {
                 serving_default_lstm_input = features.ToArray()
             };

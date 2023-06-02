@@ -15,7 +15,7 @@ public class AppMappingProfile : Profile
         CreateMap<GrpcForecastRequest, Feature>()
             .ConstructUsing(request => new Feature(Guid.NewGuid(), request.TemperatureOutside, request.TemperatureInside, request.CoolingPower));
 
-        CreateMap<Feature, TensorPredictionRequest>()
+        CreateMap<Feature, TensorRequest>()
             .ForMember(tensor => tensor.serving_default_lstm_input, opt => opt
                 .MapFrom(property => new[]
                 {
@@ -24,7 +24,7 @@ public class AppMappingProfile : Profile
                     property.CoolingPower
                 }));
 
-        CreateMap<TensorPredictionResult, IEnumerable<PredictedValue>>()
+        CreateMap<TensorResult, IEnumerable<PredictedValue>>()
             .ConvertUsing<TensorResultToPredictionConverter>();
 
         CreateMap<Forecast, ForecastDto>();
@@ -45,7 +45,10 @@ public class AppMappingProfile : Profile
             .ForMember(dto => dto.Message, monEntity => monEntity
                 .MapFrom(entity => entity.Warning.Message));
 
-        CreateMap<ConfigsDto, Config>();
+        CreateMap<ConfigsDto, Config>()
+            .ConstructUsing(dto => new Config(Guid.NewGuid(),
+            dto.UpperTemperatureWarningLimit,
+            dto.LowerTemperatureWarningLimit));
 
         CreateMap<UserDto, User?>()
             .ConstructUsing(x => CreateUserEntityFromDto(x));

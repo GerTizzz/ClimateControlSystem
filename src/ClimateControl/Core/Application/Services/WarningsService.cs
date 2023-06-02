@@ -25,7 +25,9 @@ public sealed class WarningsService : IWarningsService
         
         var warningType = CheckPrediction(predictedValue);
 
-        if (warningType == WarningType.Normal)
+        if (warningType == WarningType.Normal
+            || warningType == WarningType.Upper
+            || warningType == WarningType.Lower)
         {
             return null;
         }

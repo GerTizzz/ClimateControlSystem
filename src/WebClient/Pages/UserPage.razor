@@ -1,12 +1,13 @@
 ﻿@page "/user"
-@page "/user/{id:int}"
+@page "/user/{Id}"
+@using Shared.NewFolder;
 @using WebClient.Services.UsersService
 @using Microsoft.AspNetCore.Components
 @attribute [Authorize(Roles = "Admin")]
 @inject IUsersService UsersService
 @inject IJSRuntime JsRuntime
 
-@if (Id == default(Guid))
+@if (_id == default(Guid))
 {
     <PageTitle>Создание нового пользователя</PageTitle>
     <h3>Создайте нового пользователя</h3>
@@ -44,7 +45,9 @@ else
 
 @code {
     [Parameter]
-    public Guid Id { get; set; }
+    public string Id { get; set; }
+
+    private Guid _id;
 
     private UserDto _user;
 
@@ -55,9 +58,9 @@ else
 
     protected override Task OnInitializedAsync()
     {
-        _btnText = Id == default(Guid) ? "Создать пользователя" : "Редактировать пользователя";
+        _id = GuidBase64.Decode(Id);
 
-        _user = new UserDto();
+        _btnText = _id == default(Guid) ? "Создать пользователя" : "Редактировать пользователя";
 
         _isInitialized = true;
 
@@ -66,7 +69,14 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        var arrivedUser = await UsersService.GetUser(Id);
+        if (_id == default(Guid))
+        {
+            _user = new UserDto();
+
+            return;
+        }
+
+        var arrivedUser = await UsersService.GetUser(_id);
 
         if (arrivedUser is null)
         {
@@ -96,7 +106,7 @@ else
             return;
         }
 
-        if (Id == default(Guid))
+        if (_id == default(Guid))
         {
             await UsersService.CreateUser(_user);
         }
@@ -108,6 +118,11 @@ else
 
     async Task DeleteUser()
     {
+        if (_user is null || _user.Id == default(Guid))
+        {
+            return;    
+        }
+
         await UsersService.DeleteUser(_user.Id);
     }
 }

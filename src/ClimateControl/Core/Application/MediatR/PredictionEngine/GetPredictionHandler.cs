@@ -23,12 +23,12 @@ public sealed class GetPredictionHandler : IRequestHandler<GetPredictionQuery, L
     {
         var featuresData = await GetFeatures(request.Feature);
 
-        if (featuresData.Count < TensorPredictionRequest.InputSize)
+        if (featuresData.Count < TensorSettings.InputSize)
         {
             return Enumerable.Empty<PredictedValue>().ToList();
         }
 
-        var tensorPredictionRequest = new TensorPredictionRequest()
+        var tensorPredictionRequest = new TensorRequest()
         {
             serving_default_lstm_input = featuresData.ToArray()
         };
@@ -60,6 +60,6 @@ public sealed class GetPredictionHandler : IRequestHandler<GetPredictionQuery, L
 
     private async Task<IEnumerable<Feature>> GetLastFeatures()
     {
-        return await _forecastsRepository.GetLastFeatures(new DbRangeRequest(0, TensorPredictionRequest.NumberOfDataSets - 1));
+        return await _forecastsRepository.GetLastFeatures(new DbRangeRequest(0, TensorSettings.NumberOfDataSets - 1));
     }
 }

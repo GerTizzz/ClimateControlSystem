@@ -6,21 +6,21 @@ namespace Application.Services.Implementations;
 
 public sealed class PredictionEngine : IPredictionEngine
 {
-    private readonly PredictionEngine<TensorPredictionRequest, TensorPredictionResult> _predictionEgine;
+    private readonly PredictionEngine<TensorRequest, TensorResult> _predictionEgine;
 
     public PredictionEngine(string modelLocation)
     {
         _predictionEgine = CreatePredictionEgine(modelLocation);
     }
 
-    public Task<TensorPredictionResult> Predict(TensorPredictionRequest features)
+    public Task<TensorResult> Predict(TensorRequest features)
     {
         var labels = _predictionEgine.Predict(features);
 
         return Task.FromResult(labels);
     }
 
-    private PredictionEngine<TensorPredictionRequest, TensorPredictionResult> CreatePredictionEgine(string modelLocation)
+    private PredictionEngine<TensorRequest, TensorResult> CreatePredictionEgine(string modelLocation)
     {
         var mlContext = new MLContext();
 
@@ -32,11 +32,11 @@ public sealed class PredictionEngine : IPredictionEngine
 
         var transformer = pipeline.Fit(CreateEmptyDataView(mlContext));
 
-        return mlContext.Model.CreatePredictionEngine<TensorPredictionRequest, TensorPredictionResult>(transformer);
+        return mlContext.Model.CreatePredictionEngine<TensorRequest, TensorResult>(transformer);
     }
 
     private static IDataView CreateEmptyDataView(MLContext mlContext)
     {
-        return mlContext.Data.LoadFromEnumerable(Enumerable.Empty<TensorPredictionRequest>());
+        return mlContext.Data.LoadFromEnumerable(Enumerable.Empty<TensorRequest>());
     }
 }

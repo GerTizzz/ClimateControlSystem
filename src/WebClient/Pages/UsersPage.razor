@@ -1,4 +1,5 @@
 ﻿@page "/userspage"
+@using Shared.NewFolder;
 @using WebClient.Services.UsersService
 @inject NavigationManager NavigationManager
 @inject IUsersService UsersService
@@ -66,7 +67,8 @@
 
     void ShowUser(Guid id)
     {
-        NavigationManager.NavigateTo($"/user/{id}");
+        var userId = GuidBase64.Encode(id);
+        NavigationManager.NavigateTo($"/user/{userId}");
     }
 
     void CreateUser()
