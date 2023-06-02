@@ -5,8 +5,6 @@ namespace ApplicationTests.PredictionEngineTests
 {
     public sealed class PredictionEngineTests
     {
-        private const string FeaturesData = "11.3;1322.552;31.1;15.5;13.64;83;-14;-14.83;2.67;60;-16.84;22.47;15.71;13.83";
-
         private readonly string[] _lstmTestData = {
             "17.91;-13.7;20",
             "17.61;-8.4;18",
@@ -160,18 +158,16 @@ namespace ApplicationTests.PredictionEngineTests
                 .Split('\\')
                 .TakeWhile(str => str != "tests")) + "\\mlModel\\lstm";
 
-            var modelPath = modelDirectory + @"\saved_model.pb";
-
             var predictionEngine = new PredictionEngine(modelDirectory);
 
-            List<float> features = new List<float>();
+            var features = new List<float>();
 
             for (var i = 0; i < _lstmTestData.Length; i++)
             {
-                var parsedValue = _lstmTestData[i].Split(";").ToArray();
-                for (int j = 0; j < parsedValue.Length; j++)
+                var parsedFeatures = _lstmTestData[i].Split(";").ToArray();
+                foreach (var feature in parsedFeatures)
                 {
-                    features.Add(float.Parse(parsedValue[j].Replace('.', ',')));
+                    features.Add(float.Parse(feature.Replace('.', ',')));
                 }
             }
 
@@ -185,7 +181,7 @@ namespace ApplicationTests.PredictionEngineTests
             var prediction = await predictionEngine.Predict(request);
 
             var print = "Температура воздуха внутри ЦОД составит: " +
-                        (request.serving_default_lstm_input[request.serving_default_lstm_input.Length - 3] +
+                        (request.serving_default_lstm_input[^3] +
                         prediction.StatefulPartitionedCall[0]);
 
             Console.WriteLine(print);

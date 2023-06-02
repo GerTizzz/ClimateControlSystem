@@ -4,10 +4,10 @@ namespace Application.MediatR.PredictionEngine;
 
 public sealed class GetPredictionQuery : IRequest<List<PredictedValue>>
 {
-    public IEnumerable<Feature> Features { get; }
+    public Feature Feature { get; }
 
-    public GetPredictionQuery(IEnumerable<Feature> features)
+    public GetPredictionQuery(Feature feature)
     {
-        Features = features;
+        Feature = feature;
     }
 }

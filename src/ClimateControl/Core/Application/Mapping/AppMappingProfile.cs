@@ -13,14 +13,14 @@ public class AppMappingProfile : Profile
     public AppMappingProfile()
     {
         CreateMap<GrpcForecastRequest, Feature>()
-            .ConstructUsing(request => new Feature(Guid.NewGuid()));
+            .ConstructUsing(request => new Feature(Guid.NewGuid(), request.TemperatureOutside, request.TemperatureInside, request.CoolingPower));
 
         CreateMap<Feature, TensorPredictionRequest>()
             .ForMember(tensor => tensor.serving_default_lstm_input, opt => opt
                 .MapFrom(property => new[]
                 {
-                    property.TemperatureInside,
                     property.TemperatureOutside,
+                    property.TemperatureInside,
                     property.CoolingPower
                 }));
 

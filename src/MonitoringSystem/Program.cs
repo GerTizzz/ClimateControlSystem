@@ -12,7 +12,10 @@ internal static class Program
 
     private static async Task Main()
     {
-        var dataSetLocation = $"{Directory.GetCurrentDirectory()}\\LSTMTemperaturePrediction.csv";
+        var dataSetLocation = string.Join("\\",
+            Directory.GetCurrentDirectory()
+            .Split('\\')
+            .TakeWhile(str => str != "MonitoringSystem")) + "\\MonitoringSystem\\LSTMTemperaturePrediction.csv";
 
         var dataSet = GetDataSet(dataSetLocation);
 

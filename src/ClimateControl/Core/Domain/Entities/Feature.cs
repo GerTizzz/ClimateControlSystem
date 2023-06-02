@@ -8,8 +8,10 @@ public sealed class Feature : Entity
     public float TemperatureOutside { get; set; }
     public float CoolingPower { get; set; }
 
-    public Feature(Guid id) : base(id)
+    public Feature(Guid id, float temperatureOutside, float temperatureInside, float coolingPower) : base(id)
     {
-            
+        TemperatureOutside = temperatureOutside;
+        TemperatureInside = temperatureInside;
+        CoolingPower = coolingPower;
     }
 }

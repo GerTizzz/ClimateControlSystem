@@ -20,6 +20,7 @@ public class ForecastsRepository : IForecastsRepository
         try
         {
             var forecasts = await _context.Forecasts
+                .Where(forecast => forecast.Predictions != null && forecast.Predictions.Any())
                 .Include(forecast => forecast.Predictions)
                     .ThenInclude(prediction => prediction.Warning)
                 .Include(forecast => forecast.Feature)
@@ -38,26 +39,24 @@ public class ForecastsRepository : IForecastsRepository
 
     public async Task<long> GetForecastsCountAsync()
     {
-        return await _context.Forecasts.LongCountAsync();
+        return await _context.Forecasts
+            .LongCountAsync(forecast => forecast.Predictions != null && forecast.Predictions.Any());
     }
 
-    public async Task<IEnumerable<Feature>> GetLastFeatures(int count)
+    public async Task<IEnumerable<Feature>> GetLastFeatures(IDbRangeRequest rangeRequestLimits)
     {
         try
         {
-            var forecasts = await _context.Forecasts
+            var features = await _context.Forecasts
                 .Include(forecast => forecast.Feature)
                 .OrderByDescending(forecast => forecast.Time)
-                .Take(count)
-                .Select(forecast => new Feature(forecast.Feature.Id)
-                {
-                    TemperatureInside = forecast.Feature.TemperatureInside,
-                    TemperatureOutside = forecast.Feature.TemperatureOutside,
-                    CoolingPower = forecast.Feature.CoolingPower
-                })
+                .Skip(rangeRequestLimits.Start)
+                .Take(rangeRequestLimits.Count)
+                .Where(forecast => forecast.Feature != null)
+                .Select(forecast => forecast.Feature)
                 .ToListAsync();
 
-            return forecasts;
+            return features;
         }
         catch
         {

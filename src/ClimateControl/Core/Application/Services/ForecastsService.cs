@@ -2,7 +2,6 @@
 using Application.MediatR.ForecastsRepository;
 using Application.MediatR.PredictionEngine;
 using Application.MediatR.SignalR;
-using Application.Services.Strategies;
 using Domain.Services;
 using MediatR;
 
@@ -12,31 +11,27 @@ public class ForecastsService : IForecastsService
 {
     private readonly IMediator _mediator;
     private readonly IWarningsService _warningsService;
-    private readonly IFeaturesCollector _featuresCollector;
 
-    public ForecastsService(IMediator mediator, IWarningsService warningsService, IFeaturesCollector featuresCollector)
+    public ForecastsService(IMediator mediator, IWarningsService warningsService)
     {
         _mediator = mediator;
         _warningsService = warningsService;
-        _featuresCollector = featuresCollector;
     }
 
     public async Task<Forecast?> Predict(Feature feature)
     {
-        _featuresCollector.AddNewData(feature);
+        var predictedValue = await GetPredictions(feature);
 
-        if (_featuresCollector.IsEnoughData)
+        if (predictedValue is null)
         {
-            var predictedValue = await GetPredictions(_featuresCollector.Features);
-
-            var forecast = await GetForecast(feature, predictedValue);
-
-            await ProcessMonitoringData(forecast);
-
-            return forecast;
+            return null;
         }
 
-        return null;
+        var forecast = await GetForecast(feature, predictedValue);
+
+        await ProcessMonitoringData(forecast);
+
+        return forecast;
     }
 
     private async Task<Forecast> GetForecast(Feature feature, List<PredictedValue> predictedValue)
@@ -62,9 +57,9 @@ public class ForecastsService : IForecastsService
         await SendMonitoringToClients(forecast);
     }
 
-    private async Task<List<PredictedValue>> GetPredictions(IEnumerable<Feature> features)
+    private async Task<List<PredictedValue>> GetPredictions(Feature feature)
     {
-        return await _mediator.Send(new GetPredictionQuery(features));
+        return await _mediator.Send(new GetPredictionQuery(feature));
     }
 
     private async Task SendMonitoringToClients(Forecast forecast)

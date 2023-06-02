@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Components
 @attribute [Authorize(Roles = "Admin")]
 @inject IConfigService ConfigService
+@inject IJSRuntime JsRuntime
 
 <PageTitle>Configs Page</PageTitle>
 
@@ -16,19 +17,6 @@
     <div>
         <label for="lowTempWarn">Нижний тревожный предел температуры, C</label>
         <InputNumber id="lowTempWarn" @bind-Value="_config.LowerTemperatureWarningLimit"/>
-    </div>
-
-    <div>
-        <label for="uppHumWarn">Верхний тревожный предел абсолютной влажности, г/м^3</label>
-        <InputNumber id="uppHumWarn" @bind-Value="_config.UpperHumidityWarningLimit"/>
-    </div>
-    <div>
-        <label for="lowHumWarn">Нижний тревожный предел абсолютной влажности, г/м^3</label>
-        <InputNumber id="lowHumWarn" @bind-Value="_config.LowerHumidityWarningLimit"/>
-    </div>
-    <div>
-        <label for="predictionTimeInterval">Интервал прогнозирования, с</label>
-        <InputNumber id="predictionTimeInterval" @bind-Value="_config.PredictionTimeIntervalSeconds"/>
     </div>
     <br/>
     <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -44,6 +32,15 @@
 
     async Task HandleSubmit()
     {
+        if (_config.UpperTemperatureWarningLimit < 0)
+        {
+            await JsRuntime.InvokeVoidAsync("Alert", "Некорректное значение верхнего предела!");
+        }
+        if (_config.LowerTemperatureWarningLimit < 0)
+        {
+            await JsRuntime.InvokeVoidAsync("Alert", "Некорректное значение нижнего предела!");
+        }
+
         var isUpdated = await ConfigService.UpdateConfigAsync(_config);
 
         if (isUpdated is false)

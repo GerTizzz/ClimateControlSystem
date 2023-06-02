@@ -27,10 +27,26 @@ namespace Presentation.Controllers
             return Ok(recordsCount);
         }
 
-        [HttpGet("interval/{start:int}/{count:int:range(1, 25)}")]
+        [HttpGet("interval/{start:int:min(0)}/{count:int:range(1, 25)}")]
         public async Task<ActionResult<List<ForecastDto>>> GetForecasts(int start, int count)
         {
             var records = await _mediator.Send(new GetForecastsQuery(new DbRangeRequest(start, count)));
+
+            return Ok(records);
+        }
+
+        [HttpGet("features/{start:int:min(0)}/{count:int:min(1)}")]
+        public async Task<ActionResult<List<FeaturesDto>>> GetFeatures(int start, int count)
+        {
+            var records = await _mediator.Send(new GetFeaturesQuery(new DbRangeRequest(start, count)));
+
+            return Ok(records);
+        }
+
+        [HttpGet("{number:int:min(0)}")]
+        public async Task<ActionResult<List<ForecastDto>>> GetForecast(int number)
+        {
+            var records = await _mediator.Send(new GetForecastQuery(number));
 
             return Ok(records);
         }

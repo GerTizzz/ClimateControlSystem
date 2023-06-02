@@ -1,6 +1,7 @@
 ﻿using Application.Primitives;
 using Application.Services.Strategies;
 using AutoMapper;
+using Domain.Repositories;
 using MediatR;
 
 namespace Application.MediatR.PredictionEngine;
@@ -9,22 +10,22 @@ public sealed class GetPredictionHandler : IRequestHandler<GetPredictionQuery, L
 {
     private readonly IPredictionEngine _predictionEngine;
     private readonly IMapper _mapper;
+    private readonly IForecastsRepository _forecastsRepository;
 
-    public GetPredictionHandler(IPredictionEngine predictionEngine, IMapper mapper)
+    public GetPredictionHandler(IPredictionEngine predictionEngine, IMapper mapper, IForecastsRepository forecastsRepository)
     {
         _predictionEngine = predictionEngine;
         _mapper = mapper;
+        _forecastsRepository = forecastsRepository;
     }
 
     public async Task<List<PredictedValue>> Handle(GetPredictionQuery request, CancellationToken cancellationToken)
     {
-        var featuresData = new List<float>();
+        var featuresData = await GetFeatures(request.Feature);
 
-        foreach (var feature in request.Features)
+        if (featuresData.Count < TensorPredictionRequest.InputSize)
         {
-            featuresData.Add(feature.TemperatureOutside);
-            featuresData.Add(feature.TemperatureInside);
-            featuresData.Add(feature.CoolingPower);
+            return Enumerable.Empty<PredictedValue>().ToList();
         }
 
         var tensorPredictionRequest = new TensorPredictionRequest()
@@ -34,8 +35,31 @@ public sealed class GetPredictionHandler : IRequestHandler<GetPredictionQuery, L
 
         var tensorPredictionResult = await _predictionEngine.Predict(tensorPredictionRequest);
 
-        var prediction = _mapper.Map<List<PredictedValue>>(tensorPredictionResult);
+        var prediction = _mapper.Map<IEnumerable<PredictedValue>>(tensorPredictionResult).ToList();
 
         return prediction;
+    }
+
+    private async Task<List<float>> GetFeatures(Feature newFeature)
+    {
+        var features = new List<float>();
+
+        foreach (var feature in await GetLastFeatures())
+        {
+            features.Add(feature.TemperatureOutside);
+            features.Add(feature.TemperatureInside);
+            features.Add(feature.CoolingPower);
+        }
+
+        features.Add(newFeature.TemperatureOutside);
+        features.Add(newFeature.TemperatureInside);
+        features.Add(newFeature.CoolingPower);
+
+        return features;
+    }
+
+    private async Task<IEnumerable<Feature>> GetLastFeatures()
+    {
+        return await _forecastsRepository.GetLastFeatures(new DbRangeRequest(0, TensorPredictionRequest.NumberOfDataSets - 1));
     }
 }

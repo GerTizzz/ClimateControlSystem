@@ -86,7 +86,7 @@
 
         if (_config is not null)
         {
-            _temperatureData = AntDataHelper.GetTemperature(_forecasts, _config).ToList();
+            //_temperatureData = AntDataHelper.GetHistoryTemperature(_forecasts, _config).ToList();
         }
     }
 
@@ -94,7 +94,7 @@
     {
         CalculateGraphicsData();
 
-        _temperatureConfig = AntConfigHelper.GetTemperatureLineConfig(_temperatureData);
+        _temperatureConfig = AntConfigHelper.GetLineConfig(_temperatureData);
     }
 
     private async Task OnPageChanged(RecordsRequest request)

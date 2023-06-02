@@ -5,7 +5,7 @@
 
 <PageTitle>Journal Page</PageTitle>
 
-<h3>Журнал прогнозов</h3>
+<h3>Архив</h3>
 
 <AuthorizeView>
     <Authorized>
@@ -15,54 +15,38 @@
                 Загрузка...
             </strong>
         }
-        else if (_forecastings is null || _forecastings.Any() is false)
-        {
-            <strong style="text-align:center; font-size:large">
-                Нет данных для отображения...
-            </strong>
-        }
         else
         {
-            <table class="table-bordered" align="center">
-                <thead>
-                <tr>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Время измерения</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Температура внутри</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Температура снаружи</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Мощность системы охлаждения</th>
-                    <th style="word-wrap:break-word; font-size:small; text-align:center">Прогноз</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach (var record in _forecastings)
-                {
-                    <tr>
-                        <td style="font-size:small; text-align:center">
-                            @if (record.Time.HasValue)
-                            {
-                                @record.Time.Value.ToString("HH:mm:ss")
-                                <br/>
-                                @record.Time.Value.ToString("dd:MM:yyyy")
-                            }
-                            else
-                            {
-                                @NoValueString;
-                            }
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Feature is null ? NoValueString : record.Feature.TemperatureInside.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Feature is null ? NoValueString : record.Feature.TemperatureOutside.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                        <td style="font-size:small; text-align:center">
-                            @(record.Feature is null ? NoValueString : record.Feature.CoolingPower.ToString(CultureInfo.InvariantCulture))
-                        </td>
-                    </tr>
-                }
-                </tbody>
-            </table>
+            if (_forecast is not null)
+            {
+                <table class="table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="word-wrap:break-word; font-size:small; text-align:center">Вемя</th>
+                            <th style="word-wrap:break-word; font-size:small; text-align:center">Прогноз</th>
+                            <th style="word-wrap:break-word; font-size:small; text-align:center">Предупреждение</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < _forecast.Predictions.Count; i++)
+                        {
+                            var predictionTime = _forecast.Time.AddMinutes(10 * (i + 1));
 
+                            <tr>
+                                <td style="font-size:small; text-align:center">
+                                    @predictionTime.ToString("HH:mm:ss dd.MM.yyyy")
+                                </td>
+                                <td style="font-size:small; text-align:center">
+                                    @_forecast.Predictions[i].Value.ToString(CultureInfo.InvariantCulture)
+                                </td>
+                                <td style="font-size:small; text-align:center">
+                                    @_forecast.Predictions[i].Warning?.Message.ToString(CultureInfo.InvariantCulture)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
             <br/>
 
             <PaginationComponent
@@ -79,25 +63,25 @@
 </AuthorizeView>
 
 @code {
-    private const int RecordsPerPage = 15;
+    private const int RecordsPerPage = 1;
     private const int StartRecordsRequestCount = 0;
     private const string NoValueString = "-";
     private bool _isInitialized;
 
-    private List<ForecastDto> _forecastings;
+    private ForecastDto _forecast;
     private long _forecastingsRecordsCount;
 
     protected override async Task OnInitializedAsync()
     {
         _forecastingsRecordsCount = await ForecastService.GetForecastsCountAsync();
 
-        _forecastings = await ForecastService.GetForecastsAsync(StartRecordsRequestCount, RecordsPerPage);
+        _forecast = await ForecastService.GetForecastAsync(StartRecordsRequestCount);
 
         _isInitialized = true;
     }
 
     private async Task OnPageChanged(RecordsRequest request)
     {
-        _forecastings = await ForecastService.GetForecastsAsync(request.RecordsOffset, request.RecordsCount);
+       _forecast = await ForecastService.GetForecastAsync(request.RecordsOffset);
     }
 }

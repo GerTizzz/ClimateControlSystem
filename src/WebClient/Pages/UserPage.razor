@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Components
 @attribute [Authorize(Roles = "Admin")]
 @inject IUsersService UsersService
+@inject IJSRuntime JsRuntime
 
 @if (Id == default(Guid))
 {
@@ -35,6 +36,10 @@ else
     <br/>
     <button type="submit" class="btn btn-primary">@_btnText</button>
     <button type="button" class="btn btn-danger" @onclick="DeleteUser">Удалить пользователя</button>
+
+    <div>
+        <label for="error">@_error</label>
+    </div>
 </EditForm>
 
 @code {
@@ -44,12 +49,15 @@ else
     private UserDto _user;
 
     private string _btnText = string.Empty;
+    private string _error = string.Empty;
 
     private bool _isInitialized;
 
     protected override Task OnInitializedAsync()
     {
         _btnText = Id == default(Guid) ? "Создать пользователя" : "Редактировать пользователя";
+
+        _user = new UserDto();
 
         _isInitialized = true;
 
@@ -75,6 +83,19 @@ else
 
     async Task HandleSubmit()
     {
+        if (string.IsNullOrWhiteSpace(_user.Password))
+        {
+            _error = "Некорректный пароль!";
+
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(_user.Name))
+        {
+            _error = "Некорректное имя!";
+
+            return;
+        }
+
         if (Id == default(Guid))
         {
             await UsersService.CreateUser(_user);

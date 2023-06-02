@@ -9,16 +9,21 @@ public sealed class ForecastsBuilder
         _forecast = new Forecast(Guid.NewGuid());
     }
 
-    public ForecastsBuilder AddTracedTime(DateTimeOffset? time)
+    public ForecastsBuilder AddTracedTime(DateTimeOffset time)
     {
         _forecast.Time = time;
 
         return this;
     }
 
-    public ForecastsBuilder AddPrediction(List<PredictedValue> predictedValue)
+    public ForecastsBuilder AddPrediction(List<PredictedValue> predictions)
     {
-        _forecast.Predictions = predictedValue;
+        _forecast.Predictions = predictions;
+
+        foreach (PredictedValue prediction in predictions)
+        {
+            prediction.ForecastId = _forecast.Id;
+        }
 
         return this;
     }

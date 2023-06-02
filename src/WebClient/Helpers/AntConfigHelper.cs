@@ -4,38 +4,14 @@ using WebClient.Resources;
 namespace WebClient.Helpers;
 
 public static class AntConfigHelper
-{
-    public static LineConfig GetAccuracyConfig(List<GraphicData> accuracyData)
-    {
-        var config = GetBaseLineConfig();
-
-        config.Title.Text = "Точность прогноза температуры";
-        config.YAxis.Title.Text = "Точнсть прогноза %";
-        UpdateConfigsMinMaxLimits(ref config, accuracyData);
-        config.Point.Shape = "square";
-
-        return config;
-    }
-
-    public static LineConfig GetTemperatureLineConfig(List<GraphicData> temperatureData)
+{ 
+    public static LineConfig GetLineConfig(List<GraphicData> temperatureData)
     {
         var config = GetBaseLineConfig();
 
         config.Title.Text = "Температура";
         config.YAxis.Title.Text = "Градусы, °C";
         UpdateConfigsMinMaxLimits(ref config, temperatureData);
-
-        return config;
-    }
-
-    public static LineConfig GetHumidityLineConfig(List<GraphicData> humidityData)
-    {
-        var config = GetBaseLineConfig();
-
-        config.Title.Text = "Относительная влажность";
-        config.YAxis.Title.Text = "Процент влажности, %";
-        UpdateConfigsMinMaxLimits(ref config, humidityData);
-        config.Point.Shape = "circle";
 
         return config;
     }

@@ -5,40 +5,60 @@ namespace WebClient.Helpers;
 
 public static class AntDataHelper
 {
-    private const float AccuracyUpperLimit = 0f;
-
-    private static string GetXAxisDateTimeLabel(this ForecastDto monitoring)
+    public static IEnumerable<GraphicData> GetHistoryData(ForecastDto? forecast, ConfigsDto config)
     {
-        return monitoring.Time.HasValue is false ? string.Empty : monitoring.Time.Value.ToString("HH:mm:ss");
-    }
-
-    public static IEnumerable<GraphicData> GetTemperature(IEnumerable<ForecastDto> forecasts, ConfigsDto config)
-    {
-        var temperatureData = new List<GraphicData>();
-
-        foreach (var graphicsData in forecasts.Select(forecast => GetTemperatureGraphicData(forecast, config)))
-        {
-            temperatureData.AddRange(graphicsData);
-        }
-
-        return temperatureData;
-    }
-
-    private static IEnumerable<GraphicData> GetTemperatureGraphicData(ForecastDto monitoring, ConfigsDto config)
-    {
-        var graphicsData = new List<GraphicData>();
-
-        var time = monitoring.GetXAxisDateTimeLabel();
-
-        if (string.IsNullOrEmpty(time))
+        if (forecast is null || forecast.Predictions is null || forecast.Predictions.Any() is false)
         {
             return Enumerable.Empty<GraphicData>();
         }
 
-        foreach (var prediction in monitoring.Predictions)
+        return GetHistoryGraphicData(forecast, config);
+    }
+
+    private static IEnumerable<GraphicData> GetHistoryGraphicData(ForecastDto forecast, ConfigsDto config)
+    {
+        var graphicsData = new List<GraphicData>();
+
+        var startTime = forecast.Time;
+
+        for (int i = 0; i < forecast.Predictions.Count; i++)
         {
+            var time = startTime.AddMinutes(10 * (i + 1)).ToString("HH:mm:ss");
+
             graphicsData.Add(new GraphicData(time,
-                prediction.Value, "Спрогнозированная"));
+                forecast.Predictions[i].Value, "Архив"));
+
+            graphicsData.Add(new GraphicData(time,
+                config.UpperTemperatureWarningLimit, "Верхний лимит"));
+            graphicsData.Add(new GraphicData(time,
+                config.LowerTemperatureWarningLimit, "Нижний лимит"));
+        }
+
+        return graphicsData;
+    }
+
+    public static IEnumerable<GraphicData> GetPredictedData(ForecastDto? forecast, ConfigsDto config)
+    {
+        if (forecast is null || forecast.Predictions is null || forecast.Predictions.Any() is false)
+        {
+            return Enumerable.Empty<GraphicData>();
+        }
+
+        return GetPredictionGraphicData(forecast, config);
+    }
+
+    private static IEnumerable<GraphicData> GetPredictionGraphicData(ForecastDto forecast, ConfigsDto config)
+    {
+        var graphicsData = new List<GraphicData>();
+
+        var startTime = forecast.Time;
+
+        for (int i = 0; i < forecast.Predictions.Count; i++)
+        {
+            var time = startTime.AddMinutes(10 * (i + 1)).ToString("HH:mm:ss");
+
+            graphicsData.Add(new GraphicData(time,
+                forecast.Predictions[i].Value, "Прогноз"));
 
             graphicsData.Add(new GraphicData(time,
                 config.UpperTemperatureWarningLimit, "Верхний лимит"));

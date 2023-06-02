@@ -4,6 +4,7 @@
 @using WebClient.Helpers
 @using WebClient.Resources
 @using WebClient.Services.ConfigService
+@using WebClient.Services.FeaturesService
 
 @implements IAsyncDisposable
 
@@ -18,7 +19,7 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (_temperatureRenderableSeries.Any() is false)
+        @if (_temperatureGraphicData.Any() is false)
         {
             <p>
                 <em>Загрузка...</em>
@@ -26,7 +27,38 @@
         }
         else
         {
-            <Line @ref="_temperatureChart" Data="_temperatureRenderableSeries" Config="_temperatureDataLineConfig"/>
+            <Line @ref="_temperatureChart" Data="_temperatureGraphicData" Config="_temperatureLineConfig"/>
+
+            if (_forecast is not null)
+            {
+                <table class="table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="word-wrap:break-word; font-size:small; text-align:center">Вемя</th>
+                            <th style="word-wrap:break-word; font-size:small; text-align:center">Прогноз</th>
+                            <th style="word-wrap:break-word; font-size:small; text-align:center">Предупреждение</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < _forecast.Predictions.Count; i++)
+                        {
+                            var predictionTime = _forecast.Time.AddMinutes(10 * (i + 1));
+
+                            <tr>
+                                <td style="font-size:small; text-align:center">
+                                    @predictionTime.ToString("HH:mm:ss dd.MM.yyyy")
+                                </td>
+                                <td style="font-size:small; text-align:center">
+                                    @_forecast.Predictions[i].Value.ToString()
+                                </td>
+                                <td style="font-size:small; text-align:center">
+                                    @_forecast.Predictions[i].Warning?.Message.ToString()
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
         }
     </Authorized>
     <NotAuthorized>
@@ -35,18 +67,19 @@
 </AuthorizeView>
 
 @code {
-    private const int RecordsCount = 15;
+    private const int RecordsCount = 1;
+    private const int FeaturesOffst = 1;
     private const int RecordsRequestBeginningIndex = 0;
 
     private ConfigsDto _config;
 
     private Line _temperatureChart;
+    private LineConfig _temperatureLineConfig;
+    private List<GraphicData> _temperatureGraphicData;
 
-    private LineConfig _temperatureDataLineConfig;
+    private ForecastDto? _forecast;
 
-    private readonly List<GraphicData> _temperatureRenderableSeries = new();
-
-    private readonly List<ForecastDto> _forecasts = new();
+    private List<FeaturesDto> _features;
 
     private HubConnection? _forecastConnection;
 
@@ -57,14 +90,18 @@
     {
         var authState = await _authState;
 
-        if (authState.User.Identity is {IsAuthenticated: true })
+        if (authState.User.Identity is { IsAuthenticated: true })
         {
+            _temperatureGraphicData = new List<GraphicData>();
+
             _config = await ConfigService.GetConfigAsync();
-            _forecasts.AddRange(await ForecastService.GetForecastsAsync(RecordsRequestBeginningIndex, RecordsCount));
-            _forecasts.Reverse();
-            _forecasts.Capacity = RecordsCount;
+
+            _forecast = await ForecastService.GetForecastAsync(RecordsRequestBeginningIndex);
+
+            //_features = await ForecastService.GetFeaturesAsync(RecordsRequestBeginningIndex + FeaturesOffst, RecordsCount - FeaturesOffst);
 
             UpdateRenderableSeries();
+
             UpdateChartsConfigs();
 
             await CreateForecastConnection();
@@ -89,56 +126,33 @@
         {
             _ = Task.Run(() => ShowWarning(forecast));
 
-            AddForecast(forecast);
+            if (forecast is not null)
+            {
+                _forecast = forecast;
 
-            await UpdateCharts();
+                _features.RemoveAt(0);
+
+                _features.Add(forecast.Feature);
+
+                await UpdateCharts();
+            }
         }
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
         }
-    }
-
-    private void AddForecast(ForecastDto newForecast)
-    {
-        if (_forecasts is null)
-        {
-            return;
-        }
-
-        if (_forecasts.Any())
-        {
-            var lastForecast = _forecasts.Last();
-
-            var forecast = new ForecastDto()
-            {
-                Predictions = lastForecast.Predictions,
-                Time = newForecast.Time
-            };
-
-            _forecasts.Remove(lastForecast);
-            _forecasts.Add(forecast);
-        }
-        else
-        {
-            _forecasts.Add(newForecast);
-        }
-
-        _forecasts.Add(newForecast);
-
-        RemoveExtraForecasts();
     }
 
     private async Task ShowWarning(ForecastDto forecast)
     {
         try
         {
-            /*if (forecast.Warning is null)
+            if (forecast.Predictions is null || forecast.Predictions.FirstOrDefault() is null)
             {
                 return;
             }
-            
-            await JsRuntime.InvokeVoidAsync("Alert", forecast.Warning.Message);*/
+
+            await JsRuntime.InvokeVoidAsync("Alert", forecast.Predictions.First().Warning.Message);
         }
         catch (Exception e)
         {
@@ -146,38 +160,35 @@
         }
     }
 
-    private void RemoveExtraForecasts()
-    {
-        while (_forecasts.Count >= _forecasts.Capacity)
-        {
-            _forecasts.RemoveAt(0);
-        }
-    }
-
     private async Task UpdateCharts()
     {
         UpdateRenderableSeries();
+
         UpdateChartsConfigs();
+
         await RerenderCharts();
     }
 
     private void UpdateRenderableSeries()
     {
-        _temperatureRenderableSeries.Clear();
-        _temperatureRenderableSeries.AddRange(AntDataHelper.GetTemperature(_forecasts, _config));
+        _temperatureGraphicData.Clear();
+
+        //_temperatureGraphicData.AddRange(AntDataHelper.GetHistoryData(_forecast, _config));
+
+        _temperatureGraphicData.AddRange(AntDataHelper.GetPredictedData(_forecast, _config));
     }
 
     private void UpdateChartsConfigs()
     {
-        if (_temperatureRenderableSeries.Any())
+        if (_temperatureGraphicData.Any())
         {
-            _temperatureDataLineConfig = AntConfigHelper.GetTemperatureLineConfig(_temperatureRenderableSeries);
+            _temperatureLineConfig = AntConfigHelper.GetLineConfig(_temperatureGraphicData);
         }
     }
 
     private async Task RerenderCharts()
     {
-        await _temperatureChart.ChangeData(_temperatureRenderableSeries);
+        await _temperatureChart.ChangeData(_temperatureGraphicData);
     }
 
     public async ValueTask DisposeAsync()
@@ -187,7 +198,9 @@
             await _forecastConnection.DisposeAsync();
         }
 
-        _forecasts.Clear();
-        _temperatureRenderableSeries.Clear();
+        if (_temperatureGraphicData is not null)
+        {
+            _temperatureGraphicData.Clear();
+        }
     }
 }

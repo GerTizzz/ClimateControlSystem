@@ -9,7 +9,7 @@ public interface IForecastsRepository
 
     Task<long> GetForecastsCountAsync();
 
-    Task<IEnumerable<Feature>> GetLastFeatures(int count);
+    Task<IEnumerable<Feature>> GetLastFeatures(IDbRangeRequest rangeRequestLimits);
     
     Task<IEnumerable<Forecast>> GetForecastsAsync(IDbRangeRequest rangeRequestLimits);
 }

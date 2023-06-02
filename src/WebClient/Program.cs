@@ -8,6 +8,7 @@ using WebClient.Services.AuthenticationService;
 using WebClient.Services.ConfigService;
 using WebClient.Services.ForecastService;
 using WebClient.Services.UsersService;
+using WebClient.Services.FeaturesService;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -20,6 +21,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 
 builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<IForecastService, ForecastService>();
+builder.Services.AddScoped<IFeatureService, FeatureService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IConfigService, ConfigService>();
 

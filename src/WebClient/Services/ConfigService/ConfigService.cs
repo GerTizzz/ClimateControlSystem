@@ -63,10 +63,7 @@ public class ConfigService : IConfigService
         return new ConfigsDto
         {
             UpperTemperatureWarningLimit = 24f,
-            LowerTemperatureWarningLimit = 16f,
-            UpperHumidityWarningLimit = 21f,
-            LowerHumidityWarningLimit = 10f,
-            PredictionTimeIntervalSeconds = 5
+            LowerTemperatureWarningLimit = 16f
         };
     }
 }
