@@ -34,11 +34,11 @@ namespace WebClient.Services.FeaturesService
             return 0;
         }
 
-        public async Task<List<FeaturesDto>> GetFeaturesAsync(int start = 0, int count = 144)
+        public async Task<List<FeaturesDto>> GetFeaturesAsync(int start, int count)
         {
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<FeaturesDto>>($"api/features/interval/{start}/{count}");
+                var result = await _httpClient.GetFromJsonAsync<List<FeaturesDto>>($"api/features/range/{start}/{count}");
 
                 return result ?? Enumerable.Empty<FeaturesDto>().ToList();
             }

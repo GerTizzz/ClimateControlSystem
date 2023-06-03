@@ -5,28 +5,28 @@ namespace WebClient.Helpers;
 
 public static class AntDataHelper
 {
-    public static IEnumerable<GraphicData> GetHistoryData(ForecastDto? forecast, ConfigsDto config)
+    public static IEnumerable<GraphicData> GetHistoryData(DateTimeOffset forecastTime, List<FeaturesDto> features, ConfigsDto config)
     {
-        if (forecast is null || forecast.Predictions is null || forecast.Predictions.Any() is false)
+        if (features is null || features.Any() is false)
         {
             return Enumerable.Empty<GraphicData>();
         }
 
-        return GetHistoryGraphicData(forecast, config);
+        return GetHistoryGraphicData(forecastTime, features, config);
     }
 
-    private static IEnumerable<GraphicData> GetHistoryGraphicData(ForecastDto forecast, ConfigsDto config)
+    private static IEnumerable<GraphicData> GetHistoryGraphicData(DateTimeOffset forecastTime, List<FeaturesDto> features, ConfigsDto config)
     {
         var graphicsData = new List<GraphicData>();
 
-        var startTime = forecast.Time;
+        var startTime = forecastTime.AddMinutes(10 * features.Count);
 
-        for (int i = 0; i < forecast.Predictions.Count; i++)
+        for (int i = 0; i < features.Count; i++)
         {
             var time = startTime.AddMinutes(10 * (i + 1)).ToString("HH:mm:ss");
 
             graphicsData.Add(new GraphicData(time,
-                forecast.Predictions[i].Value, "Архив"));
+                features[i].TemperatureInside, "Архив"));
 
             graphicsData.Add(new GraphicData(time,
                 config.UpperTemperatureWarningLimit, "Верхний лимит"));

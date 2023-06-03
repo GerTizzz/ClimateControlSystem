@@ -19,7 +19,44 @@
         {
             if (_forecast is not null)
             {
-                <table class="table-bordered">
+                <h4 align="center">Исходные данные</h4>
+
+                <br/>
+
+                <table class="table-bordered" align="center">
+                    <thead>
+                        <tr>
+                            <th style="word-wrap:break-word; font-size:small; text-align:center">Вемя</th>
+                            <th style="word-wrap:break-word; font-size:small; text-align:center">Температура внутри</th>
+                            <th style="word-wrap:break-word; font-size:small; text-align:center">Температура снаружи</th>
+                            <th style="word-wrap:break-word; font-size:small; text-align:center">Мощность охлаждения</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-size:small; text-align:center">
+                                @_forecast.Time.ToString("HH:mm:ss dd.MM.yyyy")
+                            </td>
+                            <td style="font-size:small; text-align:center">
+                                @_forecast.Feature.TemperatureInside.ToString(CultureInfo.InvariantCulture)
+                            </td>                         
+                            <td style="font-size:small; text-align:center">
+                                @_forecast.Feature.TemperatureOutside.ToString(CultureInfo.InvariantCulture)
+                            </td>
+                            <td style="font-size:small; text-align:center">
+                                @_forecast.Feature.CoolingPower.ToString(CultureInfo.InvariantCulture)
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <br/>
+
+                <h4 align="center">Прогноз</h4>
+
+                <br/>
+
+                <table class="table-bordered" align="center">
                     <thead>
                         <tr>
                             <th style="word-wrap:break-word; font-size:small; text-align:center">Вемя</th>
@@ -47,6 +84,7 @@
                     </tbody>
                 </table>
             }
+
             <br/>
 
             <PaginationComponent

@@ -15,7 +15,7 @@ public class ConfigService : IConfigService
         _authService = authService;
     }
 
-    public async Task<ConfigsDto> GetConfigAsync()
+    public async Task<ConfigsDto?> GetConfigAsync()
     {
         try
         {
@@ -31,7 +31,7 @@ public class ConfigService : IConfigService
             }
         }
 
-        return GetDefaultConfig();
+        return null;
     }
 
     public async Task<bool> UpdateConfigAsync(ConfigsDto config)
@@ -56,14 +56,5 @@ public class ConfigService : IConfigService
     private static async Task<bool> UpdateConfigResponse(HttpResponseMessage result)
     {
         return await result.Content.ReadFromJsonAsync<bool>();
-    }
-
-    private static ConfigsDto GetDefaultConfig()
-    {
-        return new ConfigsDto
-        {
-            UpperTemperatureWarningLimit = 24f,
-            LowerTemperatureWarningLimit = 16f
-        };
     }
 }

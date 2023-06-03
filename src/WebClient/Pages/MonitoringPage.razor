@@ -10,6 +10,7 @@
 
 @inject NavigationManager NavigationManager
 @inject IForecastService ForecastService
+@inject IFeatureService FeatureService
 @inject IConfigService ConfigService
 @inject IJSRuntime JsRuntime
 
@@ -27,11 +28,13 @@
         }
         else
         {
+            <h4 align="center">Прогноз температуры на ближайший час</h4>
+
             <Line @ref="_temperatureChart" Data="_temperatureGraphicData" Config="_temperatureLineConfig"/>
 
             if (_forecast is not null)
             {
-                <table class="table-bordered">
+                <table class="table-bordered" align="center">
                     <thead>
                         <tr>
                             <th style="word-wrap:break-word; font-size:small; text-align:center">Вемя</th>
@@ -68,7 +71,8 @@
 
 @code {
     private const int RecordsCount = 1;
-    private const int FeaturesOffst = 1;
+    private const int FeaturesOffset = 1;
+    private const int FeaturesCount = 72;
     private const int RecordsRequestBeginningIndex = 0;
 
     private ConfigsDto _config;
@@ -98,7 +102,7 @@
 
             _forecast = await ForecastService.GetForecastAsync(RecordsRequestBeginningIndex);
 
-            //_features = await ForecastService.GetFeaturesAsync(RecordsRequestBeginningIndex + FeaturesOffst, RecordsCount - FeaturesOffst);
+            _features = await FeatureService.GetFeaturesAsync(RecordsRequestBeginningIndex + FeaturesOffset, FeaturesCount - FeaturesOffset);
 
             UpdateRenderableSeries();
 
@@ -173,7 +177,7 @@
     {
         _temperatureGraphicData.Clear();
 
-        //_temperatureGraphicData.AddRange(AntDataHelper.GetHistoryData(_forecast, _config));
+        _temperatureGraphicData.AddRange(AntDataHelper.GetHistoryData(_forecast.Time, _features, _config));
 
         _temperatureGraphicData.AddRange(AntDataHelper.GetPredictedData(_forecast, _config));
     }

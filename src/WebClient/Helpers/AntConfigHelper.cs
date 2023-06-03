@@ -9,7 +9,6 @@ public static class AntConfigHelper
     {
         var config = GetBaseLineConfig();
 
-        config.Title.Text = "Температура";
         config.YAxis.Title.Text = "Градусы, °C";
         UpdateConfigsMinMaxLimits(ref config, temperatureData);
 
