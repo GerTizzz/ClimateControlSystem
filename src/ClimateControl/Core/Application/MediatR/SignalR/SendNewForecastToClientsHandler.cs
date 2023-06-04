@@ -21,9 +21,9 @@ public sealed class SendNewForecastToClientsHandler : IRequestHandler<SendNewFor
     {
         try
         {
-            var monitoring = _mapper.Map<ForecastDto>(request.Forecast);
+            var forecastDto = _mapper.Map<ForecastDto>(request.Forecast);
 
-            await _monitoringHub.Clients.All.SendAsync("GetMonitoringResponse", monitoring, cancellationToken: cancellationToken);
+            await _monitoringHub.Clients.All.SendAsync("GetNewForecast", forecastDto, cancellationToken: cancellationToken);
 
             return true;
         }

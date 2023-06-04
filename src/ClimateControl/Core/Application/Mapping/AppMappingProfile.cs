@@ -41,10 +41,6 @@ public class AppMappingProfile : Profile
             .ForMember(userDto => userDto.Role, user => user
                 .MapFrom(u => u.Role.ToString()));
 
-        CreateMap<PredictedValue, WarningDto>()
-            .ForMember(dto => dto.Message, monEntity => monEntity
-                .MapFrom(entity => entity.Warning.Message));
-
         CreateMap<ConfigsDto, Config>()
             .ConstructUsing(dto => new Config(Guid.NewGuid(),
             dto.UpperTemperatureWarningLimit,

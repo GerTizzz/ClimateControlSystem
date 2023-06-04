@@ -1,4 +1,5 @@
 using Application.Mapping;
+using Application.Primitives;
 using AutoMapper;
 using Domain.Entities;
 using Shared.Dtos;
@@ -19,9 +20,9 @@ namespace ApplicationTests.Mapping
         [Test]
         public void PredictionsEntityToPredictionDto()
         {
-            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<PredictedValue, PredictionDto>());
+            var feature = new Feature(Guid.NewGuid(), 23f, 22f, 21f);
 
-            configuration.AssertConfigurationIsValid();
+            var tensor = _mapper.Map<TensorRequest>(feature);
 
             Assert.Pass();
         }

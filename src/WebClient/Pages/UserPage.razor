@@ -58,7 +58,14 @@ else
 
     protected override Task OnInitializedAsync()
     {
-        _id = GuidBase64.Decode(Id);
+        if (string.IsNullOrEmpty(Id) is false)
+        {
+            _id = GuidBase64.Decode(Id);
+        }
+        else
+        {
+            _id = default;
+        }
 
         _btnText = _id == default(Guid) ? "Создать пользователя" : "Редактировать пользователя";
 

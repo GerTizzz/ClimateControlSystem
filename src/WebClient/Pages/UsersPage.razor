@@ -73,7 +73,8 @@
 
     void CreateUser()
     {
-        NavigationManager.NavigateTo("/user");
+        var userId = GuidBase64.Encode(default(Guid));
+        NavigationManager.NavigateTo($"/user/{userId}");
     }
 
 }
